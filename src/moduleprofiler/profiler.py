@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from typing import Any, Callable, Optional, Union
-from .utils import make_list
+from typing import Any, Callable, Dict, Optional, Tuple, Union
+from .utils import make_list, dict_merge
 from .logger import Logger
 
 
@@ -70,6 +70,14 @@ class ModuleProfiler:
                 delattr(module, attr_)
 
     def _dtype_bits(self, dtype: torch.dtype) -> int:
+        """ Returns the size in bits of a numeric data type.
+
+        Args:
+            dtype (torch.dtype): Data type.
+
+        Returns:
+            (int): Size of ``dtype`` in bits.
+        """
         # Basic dtypes: https://pytorch.org/docs/stable/type_info.html
         # All dtypes: https://pytorch.org/docs/stable/tensor_attributes.html
         if dtype in [torch.uint8, torch.int8, torch.int16, torch.int32,
@@ -87,8 +95,64 @@ class ModuleProfiler:
 
     def _register_forward_hook(self, module: nn.Module,
                                hook: Callable) -> None:
+        """ Registers a forward hook in a module and stores the corresponding
+        handle to be deleted later.
+
+        Args:
+            module (nn.Module): Input module.
+            hook (Callable): Hook to be registered.
+        """
         self._hook_handles.append(module.register_forward_hook(hook))
 
     def _register_forward_pre_hook(self, module: nn.Module,
                                    hook: Callable) -> None:
+        """ Registers a forward pre hook in a module and stored the
+        corresponding handle to be deleted later.
+
+        Args:
+            module (nn.Module): Input module.
+            hook (Callable): Hook to be registered.
+        """
         self._hook_handles.append(module.register_forward_pre_hook(hook))
+
+    def _merge_specs(self, specs: Tuple[Dict[str, dict]]) -> Dict[str, dict]:
+        """ Merges two or more ``dict`` instances containing the same keys.
+        This will result in a ``dict`` containing the values of both ``dict``
+        instances.
+
+        Args:
+            specs (Tuple[Dict[str, dict]]): Specifications ``dict`` or tuple
+                with two or more specification ``dict`` instances to be
+                merged.
+
+        Returns:
+            (Dict[str, dict]): Merged ``dict`` containing the same keys
+            but a merged set of values for each key.
+        """
+        # Take first dict as reference
+        ref_spec = specs[0]
+        other_specs = specs[1:]
+
+        # Check all specs have the same keys
+        for idx, spec in enumerate(other_specs):
+            if not spec.keys() == ref_spec.keys():
+                ref_spec_keys_repr =\
+                    ", ".join([f"'{k}'" for k in ref_spec.keys()])
+                spec_keys_repr =\
+                    ", ".join([f"'{k}'" for k in spec.keys()])
+
+                raise ValueError(
+                    f"All specs to be merged should have the same keys. Found "
+                    f"specs[0] and specs[{idx + 1}] have different keys: "
+                    f"specs[0].keys()={ref_spec_keys_repr} and "
+                    f"specs[{idx + 1}].keys()={spec_keys_repr}"
+                )
+
+        # Merge dicts
+        merged_specs = ref_spec
+
+        for spec in specs[1:]:
+            for k in merged_specs.keys():
+                merged_specs[k] = dict_merge(merged_specs[k], spec[k])
+
+        return merged_specs
