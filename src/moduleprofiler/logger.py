@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 class Logger:
 
     _TEXT_COLORS = {
@@ -41,7 +42,7 @@ class Logger:
 
     def __init__(self, ts_fmt: str = "%Y-%m-%d %H:%M:%S"):
         super().__init__()
-        
+
         # Params
         self.ts_fmt = ts_fmt
 
@@ -49,10 +50,10 @@ class Logger:
         # Replace colors and decorators
         for k, v in self._TEXT_DECORATOR_TAGS.items():
             s = s.replace(k, v)
-        
+
         for k, v in self._TEXT_COLOR_TAGS.items():
             s = s.replace(k, v)
-        
+
         return s
 
     def print(self, msg: str) -> str:

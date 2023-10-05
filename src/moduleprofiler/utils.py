@@ -3,7 +3,19 @@ import psutil
 import platform
 import socket
 import multiprocessing
-from typing import List
+from typing import Any, List
+
+
+def make_list(x: Any) -> list:
+    """ If a single element into a list of one element.
+
+    Args:
+        x (Any): Element(s) to be returned as a list.
+
+    Returns:
+        (list): Resulting ``list``.
+    """
+    return [x] if not isinstance(x, list) and x is not None else x
 
 
 def get_hardware_specs() -> dict:
