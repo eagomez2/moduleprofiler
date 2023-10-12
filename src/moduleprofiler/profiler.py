@@ -1,8 +1,11 @@
 import torch
 import torch.nn as nn
+from tqdm import tqdm
 from typing import Any, Callable, Dict, Optional, Tuple, Union
 from .utils import make_list, dict_merge
 from .logger import Logger
+from .io_shapes import _DEFAULT_IO_SHAPES_FN_MAP
+from .ops import _DEFAULT_OPS_MAP
 
 
 class ModuleProfiler:
@@ -12,8 +15,8 @@ class ModuleProfiler:
                  ops_attr: str = "__ops__",
                  inference_start_attr: str = "__inference_start__",
                  inference_end_attr: str = "__inference_end__",
-                 io_shapes_fn_map: Optional[dict] = None,
-                 ops_fn_map: Optional[dict] = None,
+                 io_shapes_fn_map: dict = _DEFAULT_IO_SHAPES_FN_MAP,
+                 ops_fn_map: dict = _DEFAULT_OPS_MAP,
                  ts_fmt: str = "%Y-%m-%d %H:%M:%S",
                  verbose: bool = True):
         # TODO:
@@ -156,3 +159,81 @@ class ModuleProfiler:
                 merged_specs[k] = dict_merge(merged_specs[k], spec[k])
 
         return merged_specs
+
+    def count_params(self, module: nn.Module, param_size: bool = True,
+                     param_dtype: bool = True, percent: bool = True) -> dict:
+        """ Counts the number of parameters in a model.
+
+        Args:
+            module (nn.Module): Model whose parameters will be counted.
+            param_size (bool): If ``True``, the size in bits of each parameters
+                will be calculated.
+            param_dtype (bool): If ``True``, the data type of different
+                parameters will be reported.
+            percent (bool): If ``True``, the percentage each parameter
+                represents with respect to the total amount of parameters of
+                the model will be reported.
+
+        Returns:
+            (dict): Analysis results.
+        """
+        data = {}
+
+        if self.verbose:
+            self._logger.log(
+                "Counting parameters of "
+                f"<b><magenta>{module.__class__.__name__}</magenta></b>"
+            )
+
+        # TODO: Add progress bar if verbose=True, or use disable=True if it
+        # should not be displayed. Also, consider adding tqdm to the Logger
+        # class since it is required to print while the progress bar is on
+        for idx, (n, m) in enumerate(module.named_modules()):
+            # First entry corresponds to the module itself
+            if idx == 0:
+                n = "__root__"
+
+            data[n] = {
+                "type": m.__class__.__name__,
+                "trainable_params": 0,
+                "nontrainable_params": 0
+            }
+
+            for p in m.parameters():
+                if p.requires_grad:
+                    data[n]["trainable_params"] += p.numel()
+
+                    if param_dtype:
+                        data[n]["trainable_params_dtype"] = p.dtype
+
+                    if param_size:
+                        dtype_size = self._dtype_bits(p.dtype)
+                        data[n]["trainable_params_size_bits"] = \
+                            data[n]["trainable_params"] * dtype_size
+
+                else:
+                    data[n]["nontrainable_params"] += p.numel()
+
+                    if param_dtype:
+                        data[n]["nontrainable_params_dtype"] = p.dtype
+
+                    if param_size:
+                        dtype_size = self._dtype_bits(p.dtype)
+                        data[n]["nontrainable_params_size_bits"] = \
+                            data[n]["nontrainable_params"] * dtype_size
+
+        if percent:
+            # Percentage of total params
+            total_params = data["__root__"]["trainable_params"] + \
+                           data["__root__"]["nontrainable_params"]
+
+            for k in data.keys():
+                data[k]["trainable_params_percent"] = (
+                    data[k]["trainable_params"] / total_params
+                )
+
+                data[k]["nontrainable_params_percent"] = (
+                    data[k]["nontrainable_params"] / total_params
+                )
+
+        return data
