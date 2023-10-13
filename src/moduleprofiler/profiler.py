@@ -2,20 +2,22 @@ import torch
 import torch.nn as nn
 from tqdm import tqdm
 from typing import Any, Callable, Dict, Optional, Tuple, Union
+from time import perf_counter
 from .utils import make_list, dict_merge
 from .logger import Logger
-from .io_shapes import _DEFAULT_IO_SHAPES_FN_MAP
+from .io_size import _DEFAULT_IO_SIZE_FN_MAP
 from .ops import _DEFAULT_OPS_MAP
 
 
+# TODO: Separate layers by type when computing metrics?
 class ModuleProfiler:
     def __init__(self,
-                 input_shape_attr: str = "__input_shape__",
-                 output_shape_attr: str = "__output_shape__",
+                 input_size_attr: str = "__input_size__",
+                 output_size_attr: str = "__output_size__",
                  ops_attr: str = "__ops__",
                  inference_start_attr: str = "__inference_start__",
                  inference_end_attr: str = "__inference_end__",
-                 io_shapes_fn_map: dict = _DEFAULT_IO_SHAPES_FN_MAP,
+                 io_size_fn_map: dict = _DEFAULT_IO_SIZE_FN_MAP,
                  ops_fn_map: dict = _DEFAULT_OPS_MAP,
                  ts_fmt: str = "%Y-%m-%d %H:%M:%S",
                  verbose: bool = True):
@@ -24,12 +26,12 @@ class ModuleProfiler:
         super().__init__()
 
         # Params
-        self.input_shape_attr = input_shape_attr
-        self.output_shape_attr = output_shape_attr
+        self.input_size_attr = input_size_attr
+        self.output_size_attr = output_size_attr
         self.ops_attr = ops_attr
         self.inference_start_attr = inference_start_attr
         self.inference_end_attr = inference_end_attr
-        self.io_shapes_fn_map = io_shapes_fn_map
+        self.io_size_fn_map = io_size_fn_map
         self.ops_fn_map = ops_fn_map
         self.verbose = verbose
         self._logger = Logger(ts_fmt=ts_fmt)
@@ -159,7 +161,103 @@ class ModuleProfiler:
                 merged_specs[k] = dict_merge(merged_specs[k], spec[k])
 
         return merged_specs
+    
+    def _io_size_fn(self, module: nn.Module, input: Tuple[torch.Tensor],
+                    output: Tuple[torch.Tensor]) -> None:
+        """ Method used to obtain the input and output sizes of a
+        ``nn.Module`` instance based on its class type and the function
+        it is mapped to in ``io_size_fn_map``.
 
+        Args:
+            module (nn.Module): Input module.
+            input (Tuple[torch.Tensor]): Input tensor(s).
+            output (Tuple[torch.Tensor]): Output tensor(s).
+        """
+        # Obtain method to calculate io shapes
+        if type(module) not in self.io_size_fn_map.keys():
+            io_size_fn = self.io_size_fn_map["default"]
+        
+        else:
+            io_size_fn = self.io_size_fn_map[type(module)]
+        
+        # Calculate io size
+        input_size, output_size = io_size_fn(module, input, output)
+    
+        # Save input and output size in module attributes
+        setattr(module, self.input_shape_attr, input_size)
+        setattr(module, self.output_shape_attr, output_size)
+    
+    def _inference_time_start_fn(
+                self,
+                module: nn.Module,
+                input: Tuple[torch.Tensor]
+            ) -> None:
+        """ Triggers a counter before performing the inference and save it's
+        value to a module's attribute.
+
+        .. note::
+            Please note that this calculation may be affected by any other
+            pre-forward hook attached to the module.
+        
+        Args:
+            module (nn. Module): Input module.
+            input (Tuple[torch.Tensor]): Input tensor(s) of the module's
+                forward method.
+        """
+        setattr(module, self.inference_start_attr, perf_counter())
+
+    def _inference_time_end_fn(
+                self,
+                module: nn.Module,
+                input: Tuple[torch.Tensor],
+                output: Tuple[torch.Tensor]
+            ) -> None:
+        """ Triggers a counter after the inference has been performed and save
+        it's value to a module's attribute.
+
+        .. note::
+            Please note that this calculation may be affected by any other
+            forward hook attached to the module.
+        
+            Args:
+                module (nn.Module): Input module.
+                input (Tuple[torch.Tensor]): Input tensor(s) of the module's
+                    forward method.
+                output (Tuple[torch.Tensor]): Output tensor(s) of the module's
+                    forward method.
+        """
+        setattr(module, self.inference_end_attr, perf_counter())
+    
+    def _ops_fn(
+                self,
+                module: nn.Module, 
+                input: Tuple[torch.Tensor],
+                output: Tuple[torch.Tensor]
+            ) -> None:
+        """ Triggers a method that estimates the number of operations computed
+        by a module during the forward pass.
+
+        Args:
+            module (nn.Module): Input module.
+            input (Tuple[torch.Tensor]): Input tensor(s) of the module's
+                forward method.
+            output (Tuple[torch.Tensor]): Output tensor(s) of the module's
+                forward method.
+        """
+        # Obtain method to estimate ops
+        if module.__class__ in self.ops_fn_map.keys():
+            ops_fn = self.ops_fn_map[type(module)]
+
+        else:
+            ops_fn = self.ops_fn_map["default"]
+
+        # Estimate ops
+        ops_data = ops_fn(module, input, output)
+
+        # Save ops in attribute
+        setattr(module, self.ops_attr, ops_data)
+
+    # TODO: Separate params by data type?
     def count_params(self, module: nn.Module, param_size: bool = True,
                      param_dtype: bool = True, percent: bool = True) -> dict:
         """ Counts the number of parameters in a model.
