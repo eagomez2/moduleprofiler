@@ -7,6 +7,24 @@ def _default_ops_fn(module: nn.Module, input: Tuple[torch.Tensor],
                     output: torch.Tensor) -> Any:
     return None
 
+
+def _linear_ops_fn(module: nn.Linear, input: Tuple[torch.Tensor],
+                   output: torch.Tensor) -> int:
+    # Get input batch_size and num_channels (if any)
+    num_seqs = input[0].size()[:-1].numel()
+
+    # Get ops per sequence
+    if module.bias:
+        ops_per_seq = 2.0 * module.out_features * module.in_features
+
+    else:
+        ops_per_seq = module.out_features * (2.0 * module.in_features - 1.0)
+
+    total_ops = num_seqs * ops_per_seq
+
+    return total_ops
+
+
 def _conv1d_ops_fn(module: nn.Conv1d, input: Tuple[torch.Tensor],
                    output: torch.Tensor) -> int:
     # Get input
@@ -52,5 +70,6 @@ def _conv1d_ops_fn(module: nn.Conv1d, input: Tuple[torch.Tensor],
 
 _DEFAULT_OPS_MAP = {
     "default": _default_ops_fn,
+    nn.Linear: _linear_ops_fn,
     nn.Conv1d: _conv1d_ops_fn
 }
