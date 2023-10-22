@@ -21,8 +21,6 @@ class ModuleProfiler:
                  ops_fn_map: dict = _DEFAULT_OPS_MAP,
                  ts_fmt: str = "%Y-%m-%d %H:%M:%S",
                  verbose: bool = True):
-        # TODO:
-        # Keep track of ops ('exp', 'sum', 'mul', 'add', 'div', 'diff', etc)
         super().__init__()
 
         # Params
@@ -161,7 +159,7 @@ class ModuleProfiler:
                 merged_specs[k] = dict_merge(merged_specs[k], spec[k])
 
         return merged_specs
-    
+
     def _io_size_fn(self, module: nn.Module, input: Tuple[torch.Tensor],
                     output: Tuple[torch.Tensor]) -> None:
         """ Method used to obtain the input and output sizes of a
@@ -176,17 +174,17 @@ class ModuleProfiler:
         # Obtain method to calculate io shapes
         if type(module) not in self.io_size_fn_map.keys():
             io_size_fn = self.io_size_fn_map["default"]
-        
+
         else:
             io_size_fn = self.io_size_fn_map[type(module)]
-        
+
         # Calculate io size
         input_size, output_size = io_size_fn(module, input, output)
-    
+
         # Save input and output size in module attributes
         setattr(module, self.input_shape_attr, input_size)
         setattr(module, self.output_shape_attr, output_size)
-    
+
     def _inference_time_start_fn(
                 self,
                 module: nn.Module,
@@ -198,7 +196,7 @@ class ModuleProfiler:
         .. note::
             Please note that this calculation may be affected by any other
             pre-forward hook attached to the module.
-        
+
         Args:
             module (nn. Module): Input module.
             input (Tuple[torch.Tensor]): Input tensor(s) of the module's
@@ -218,7 +216,7 @@ class ModuleProfiler:
         .. note::
             Please note that this calculation may be affected by any other
             forward hook attached to the module.
-        
+
             Args:
                 module (nn.Module): Input module.
                 input (Tuple[torch.Tensor]): Input tensor(s) of the module's
@@ -227,10 +225,10 @@ class ModuleProfiler:
                     forward method.
         """
         setattr(module, self.inference_end_attr, perf_counter())
-    
+
     def _ops_fn(
                 self,
-                module: nn.Module, 
+                module: nn.Module,
                 input: Tuple[torch.Tensor],
                 output: Tuple[torch.Tensor]
             ) -> None:

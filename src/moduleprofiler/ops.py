@@ -68,8 +68,16 @@ def _conv1d_ops_fn(module: nn.Conv1d, input: Tuple[torch.Tensor],
     return int(total_ops)
 
 
+def _relu_ops_fn(module: nn.ReLU, input: Tuple[torch.Tensor],
+                 output: torch.Tensor) -> int:
+    # This estimation is not straightforward since the max() function is used.
+    # A simple estimation is to assume a single operation per element.
+    return input[0].numel()
+
+
 _DEFAULT_OPS_MAP = {
     "default": _default_ops_fn,
     nn.Linear: _linear_ops_fn,
-    nn.Conv1d: _conv1d_ops_fn
+    nn.Conv1d: _conv1d_ops_fn,
+    nn.ReLU: _relu_ops_fn
 }
