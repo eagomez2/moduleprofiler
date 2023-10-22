@@ -4,7 +4,7 @@ from typing import Tuple
 
 
 def _default_io_size_fn(module: nn.Module, input: Tuple[torch.Tensor],
-                          output: torch.Tensor) -> Tuple[tuple]:
+                        output: torch.Tensor) -> Tuple[tuple]:
     if len(input) == 0:
         input_ = None
 
@@ -27,7 +27,7 @@ def _default_io_size_fn(module: nn.Module, input: Tuple[torch.Tensor],
 
 
 def _lstm_io_size_fn(module: nn.LSTM, input: Tuple[torch.Tensor],
-                       output: torch.Tensor) -> Tuple[tuple]:
+                     output: torch.Tensor) -> Tuple[tuple]:
     input_shape = input[0].size()
     output_shape = output[0][0].size()
     hidden_state_shape = output[1][0].size()

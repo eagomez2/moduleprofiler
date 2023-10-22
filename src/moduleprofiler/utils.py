@@ -21,7 +21,7 @@ def make_list(x: Any) -> list:
 def get_hardware_specs() -> dict:
     """ Returns a ``dict`` with a set of hardware specifications of the host
     computer.
-    
+
     Returns:
         (dict): Hardware specifications including host name, OS, OS release,
             CPU count, total memory, and GPU.
@@ -163,11 +163,11 @@ def dict_keys_diff(input: dict, query: dict) -> List[str]:
 def dict_merge(input: dict, other: dict) -> dict:
     """ Merges two dictionaries (``input`` and ``other``) comining theyr
     keys and values.
-    
+
     Args:
         input (dict): Input dictionary.
         other (dict): Dictionary to be merged with ``input``.
-    
+
     Returns:
         (dict): Merged dictionary.
     """
