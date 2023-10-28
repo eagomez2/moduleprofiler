@@ -189,3 +189,7 @@ def dict_merge(input: dict, other: dict) -> dict:
         input[k] = other[k]
 
     return input
+
+
+def add_extension(file: str, extension: str) -> str:
+    return f"{file}.{extension}" if not file.endswith(extension) else file

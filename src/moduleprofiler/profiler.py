@@ -4,7 +4,7 @@ import pandas as pd
 from tqdm import tqdm
 from typing import Any, Callable, Dict, Tuple, Union
 from time import perf_counter
-from .utils import make_list, dict_merge
+from .utils import make_list, dict_merge, add_extension, get_hardware_specs
 from .logger import Logger
 from .io_size import _DEFAULT_IO_SIZE_FN_MAP
 from .ops import _DEFAULT_OPS_MAP
@@ -352,3 +352,95 @@ class ModuleProfiler:
             df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
 
         return df
+
+    def count_params_csv(self, file: str, *args, **kwargs) -> None:
+        """ Same as ``count_params`` but saves a ``.csv`` file instead. """
+        file = add_extension(file, ".csv")
+        df = self.count_params_df(*args, **kwargs)
+        df.to_csv(file, index=False)
+
+    def count_params_html(self, file: str, *args, **kwargs) -> None:
+        """ Same as ``count_params`` but saves a ``.html`` file instead. """
+        file = add_extension(file, ".html")
+        df = self.count_params_df(*args, **kwargs)
+
+        with open(file, "w") as f:
+            f.write(df.to_html())
+
+    def count_params_latex(self, *args, index: bool = False, **kwargs) -> str:
+        """ Same as ``count_params`` but returns a LaTeX output instead. """
+        df = self.count_params_df(*args, **kwargs)
+        return df.to_latex(index=index)
+
+    @torch.no_grad()
+    def estimate_inference_time(self):
+        # TODO: Per layer inference time
+        ...
+
+    @torch.no_grad()
+    def estimate_total_inference_time(
+                self,
+                module: nn.Module,
+                input: Union[torch.Tensor, Tuple[torch.Tensor]],
+                eval: bool = True,
+                num_iters: int = 1000,
+                drop_first: int = 100) -> dict:
+        # Assertions
+        if num_iters <= drop_first:
+            raise ValueError(
+                f"{num_iters=} should be greater than {drop_first=}"
+            )
+
+        if self.verbose:
+            self._logger.log(
+                "Estimating total inference time of "
+                f"<b><magenta>{module.__class__.__name__}</magenta></b>"
+            )
+
+        # Setup
+        if eval:
+            if self.verbose:
+                self._logger.log(
+                    f"Setting module <b><magenta>{module.__class__.__name__}"
+                    "</magenta></b> to <b><magenta>eval</magenta></b> mode"
+                )
+
+            was_training = True if module.training else False
+            module.eval()
+
+        # Store (start_time, end_time) tuples
+        stopwatch = []
+
+        # Compute inferences
+        for _ in range(num_iters):
+            start_time = perf_counter()
+            module(input)
+            end_time = perf_counter()
+            stopwatch.append((start_time, end_time))
+
+        # Tear down
+        if eval and was_training:
+            if self.verbose:
+                self._logger.log(
+                    f"Setting module <b><magenta>{module.__class__.__name__}"
+                    "</magenta></b> to <b><magenta>train</magenta></b> mode"
+                )
+
+            module.train()
+
+        # Collect stats
+        data = {
+            "__root__": {
+                "type": module.__class__.__name__,
+                "intraop_threads": torch.get_num_threads(),
+                "interop_threads": torch.get_num_interop_threads()
+            }
+        }
+        data["__root__"].update(get_hardware_specs())
+        data["__root__"].update({
+            "inference_time_ms":
+            [(t[1] - t[0]) * 1000.0 for t in stopwatch[drop_first:]]
+        })
+        import pdb;pdb.set_trace()
+
+        return data
