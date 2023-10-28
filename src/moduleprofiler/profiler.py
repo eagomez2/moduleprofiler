@@ -1,7 +1,9 @@
 import torch
+import tabulate
 import torch.nn as nn
+import pandas as pd
 from tqdm import tqdm
-from typing import Any, Callable, Dict, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Tuple, Union
 from time import perf_counter
 from .utils import make_list, dict_merge
 from .logger import Logger
@@ -63,7 +65,7 @@ class ModuleProfiler:
         """ Removes model attribute(s).
 
         Args:
-            module (nn.Module): Input modulei
+            module (nn.Module): Input module.
             attr (Union[str, list]): Name of the attribute(s) to be removed.
         """
         attrs = make_list(attr)
@@ -217,12 +219,12 @@ class ModuleProfiler:
             Please note that this calculation may be affected by any other
             forward hook attached to the module.
 
-            Args:
-                module (nn.Module): Input module.
-                input (Tuple[torch.Tensor]): Input tensor(s) of the module's
-                    forward method.
-                output (Tuple[torch.Tensor]): Output tensor(s) of the module's
-                    forward method.
+        Args:
+            module (nn.Module): Input module.
+            input (Tuple[torch.Tensor]): Input tensor(s) of the module's
+                forward method.
+            output (Tuple[torch.Tensor]): Output tensor(s) of the module's
+                forward method.
         """
         setattr(module, self.inference_end_attr, perf_counter())
 
@@ -255,7 +257,6 @@ class ModuleProfiler:
         # Save ops in attribute
         setattr(module, self.ops_attr, ops_data)
 
-    # TODO: Separate params by data type?
     def count_params(self, module: nn.Module, param_size: bool = True,
                      param_dtype: bool = True, percent: bool = True) -> dict:
         """ Counts the number of parameters in a model.
@@ -284,7 +285,11 @@ class ModuleProfiler:
         # TODO: Add progress bar if verbose=True, or use disable=True if it
         # should not be displayed. Also, consider adding tqdm to the Logger
         # class since it is required to print while the progress bar is on
-        for idx, (n, m) in enumerate(module.named_modules()):
+        for idx, (n, m) in tqdm(enumerate(module.named_modules()),
+                                desc="Counting parameters",
+                                unit="params",
+                                disable=not self.verbose,
+                                leave=False):
             # First entry corresponds to the module itself
             if idx == 0:
                 n = "__root__"
@@ -333,3 +338,18 @@ class ModuleProfiler:
                 )
 
         return data
+
+    def count_params_df(self, *args, **kwargs) -> pd.DataFrame:
+        """ Same as ``count_params`` but returns a ``DataFrame`` instead. """
+        # Count params
+        data = self.count_params(*args, **kwargs)
+
+        # Assemble data frame
+        df = pd.DataFrame()
+
+        for k, v in data.items():
+            row = {"module": k}
+            row.update(v)
+            df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+
+        return df
