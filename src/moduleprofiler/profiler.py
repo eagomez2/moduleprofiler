@@ -1,5 +1,4 @@
 import torch
-import tabulate
 import torch.nn as nn
 import pandas as pd
 from tqdm import tqdm
