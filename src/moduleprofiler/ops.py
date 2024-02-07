@@ -1,6 +1,9 @@
 import torch
 import torch.nn as nn
-from typing import Any, Tuple
+from typing import (
+    Any,
+    Tuple
+)
 
 
 def _default_ops_fn(module: nn.Module, input: Tuple[torch.Tensor],

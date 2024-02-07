@@ -2,9 +2,20 @@ import torch
 import torch.nn as nn
 import pandas as pd
 from tqdm import tqdm
-from typing import Any, Callable, Dict, Tuple, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Tuple, 
+    Union
+)
 from time import perf_counter
-from .utils import make_list, dict_merge, add_extension, get_hardware_specs
+from .utils import (
+    make_list,
+    dict_merge,
+    add_extension,
+    get_hardware_specs
+)
 from .logger import Logger
 from .io_size import _DEFAULT_IO_SIZE_FN_MAP
 from .ops import _DEFAULT_OPS_MAP
@@ -441,6 +452,22 @@ class ModuleProfiler:
             "inference_time_ms":
             [(t[1] - t[0]) * 1000.0 for t in stopwatch[drop_first:]]
         })
-        import pdb;pdb.set_trace()
 
         return data
+
+    def estimate_total_inference_time_df(self,
+                                         *args,
+                                         **kwargs) -> pd.DataFrame:
+        # Estimate inference time
+        data = self.estimate_total_inference_time(*args, **kwargs)
+
+        # Assemble data frame
+        df = pd.DataFrame()
+
+        # TODO: Each row should have a single inference entry like the csv
+        for k, v in data.items():
+            row = {"module": k}
+            row.update(v)
+            df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+
+        return df

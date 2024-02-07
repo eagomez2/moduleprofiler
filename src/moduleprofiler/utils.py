@@ -3,7 +3,11 @@ import psutil
 import platform
 import socket
 import multiprocessing
-from typing import Any, List, Optional
+from typing import (
+    Any,
+    List, 
+    Optional
+)
 
 
 def make_list(x: Any) -> list:
