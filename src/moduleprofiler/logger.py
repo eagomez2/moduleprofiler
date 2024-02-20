@@ -2,7 +2,6 @@ from datetime import datetime
 
 
 class Logger:
-
     _TEXT_COLORS = {
         "red": "\033[91m",
         "green": "\033[92m",
@@ -40,7 +39,7 @@ class Logger:
         "</magenta>": _TEXT_COLORS["end_color"]
     }
 
-    def __init__(self, ts_fmt: str = "%Y-%m-%d %H:%M:%S"):
+    def __init__(self, ts_fmt: str = "%Y-%m-%d %H:%M:%S") -> None:
         super().__init__()
 
         # Params

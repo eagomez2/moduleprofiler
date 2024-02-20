@@ -21,18 +21,20 @@ from .io_size import _DEFAULT_IO_SIZE_FN_MAP
 from .ops import _DEFAULT_OPS_MAP
 
 
-# TODO: Separate layers by type when computing metrics?
+# TODO: Separate layers by type when computing metrics? (ans: pd should be able to do it!)
 class ModuleProfiler:
-    def __init__(self,
-                 input_size_attr: str = "__input_size__",
-                 output_size_attr: str = "__output_size__",
-                 ops_attr: str = "__ops__",
-                 inference_start_attr: str = "__inference_start__",
-                 inference_end_attr: str = "__inference_end__",
-                 io_size_fn_map: dict = _DEFAULT_IO_SIZE_FN_MAP,
-                 ops_fn_map: dict = _DEFAULT_OPS_MAP,
-                 ts_fmt: str = "%Y-%m-%d %H:%M:%S",
-                 verbose: bool = True):
+    def __init__(
+            self,
+            input_size_attr: str = "__input_size__",
+            output_size_attr: str = "__output_size__",
+            ops_attr: str = "__ops__",
+            inference_start_attr: str = "__inference_start__",
+            inference_end_attr: str = "__inference_end__",
+            io_size_fn_map: dict = _DEFAULT_IO_SIZE_FN_MAP,
+            ops_fn_map: dict = _DEFAULT_OPS_MAP,
+            ts_fmt: str = "%Y-%m-%d %H:%M:%S",
+            verbose: bool = True
+    ) -> None:
         super().__init__()
 
         # Params
@@ -47,8 +49,12 @@ class ModuleProfiler:
         self._logger = Logger(ts_fmt=ts_fmt)
         self._hook_handles = []
 
-    def _setattr(self, module: nn.Module, attr: Union[str, list],
-                 value: Any = None) -> None:
+    def _setattr(
+            self,
+            module: nn.Module,
+            attr: Union[str, list],
+            value: Any = None
+    ) -> None:
         """ Sets attributes with a value. This is internally used to store
         temporary results in different nested ``nn.Module`` instances.
 
@@ -108,8 +114,11 @@ class ModuleProfiler:
 
         return bits
 
-    def _register_forward_hook(self, module: nn.Module,
-                               hook: Callable) -> None:
+    def _register_forward_hook(
+            self,
+            module: nn.Module,
+            hook: Callable
+    ) -> None:
         """ Registers a forward hook in a module and stores the corresponding
         handle to be deleted later.
 
@@ -119,8 +128,10 @@ class ModuleProfiler:
         """
         self._hook_handles.append(module.register_forward_hook(hook))
 
-    def _register_forward_pre_hook(self, module: nn.Module,
-                                   hook: Callable) -> None:
+    def _register_forward_pre_hook(
+            self, module: nn.Module,
+            hook: Callable
+    ) -> None:
         """ Registers a forward pre hook in a module and stored the
         corresponding handle to be deleted later.
 
@@ -172,8 +183,12 @@ class ModuleProfiler:
 
         return merged_specs
 
-    def _io_size_fn(self, module: nn.Module, input: Tuple[torch.Tensor],
-                    output: Tuple[torch.Tensor]) -> None:
+    def _io_size_fn(
+            self,
+            module: nn.Module,
+            input: Tuple[torch.Tensor],
+            output: Tuple[torch.Tensor]
+    ) -> None:
         """ Method used to obtain the input and output sizes of a
         ``nn.Module`` instance based on its class type and the function
         it is mapped to in ``io_size_fn_map``.
@@ -267,8 +282,13 @@ class ModuleProfiler:
         # Save ops in attribute
         setattr(module, self.ops_attr, ops_data)
 
-    def count_params(self, module: nn.Module, param_size: bool = True,
-                     param_dtype: bool = True, percent: bool = True) -> dict:
+    def count_params(
+            self,
+            module: nn.Module,
+            param_size: bool = True,
+            param_dtype: bool = True,
+            percent: bool = True
+    ) -> dict:
         """ Counts the number of parameters in a model.
 
         Args:
@@ -390,12 +410,13 @@ class ModuleProfiler:
 
     @torch.no_grad()
     def estimate_total_inference_time(
-                self,
-                module: nn.Module,
-                input: Union[torch.Tensor, Tuple[torch.Tensor]],
-                eval: bool = True,
-                num_iters: int = 1000,
-                drop_first: int = 100) -> dict:
+        self,
+        module: nn.Module,
+        input: Union[torch.Tensor, Tuple[torch.Tensor]],
+        eval: bool = True,
+        num_iters: int = 1000,
+        drop_first: int = 100
+    ) -> dict:
         # Assertions
         if num_iters <= drop_first:
             raise ValueError(

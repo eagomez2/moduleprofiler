@@ -6,13 +6,19 @@ from typing import (
 )
 
 
-def _default_ops_fn(module: nn.Module, input: Tuple[torch.Tensor],
-                    output: torch.Tensor) -> Any:
+def _default_ops_fn(
+        module: nn.Module,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> Any:
     return None
 
 
-def _linear_ops_fn(module: nn.Linear, input: Tuple[torch.Tensor],
-                   output: torch.Tensor) -> int:
+def _linear_ops_fn(
+        module: nn.Linear,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
     # Get input batch_size and num_channels (if any)
     num_seqs = input[0].size()[:-1].numel()
 
@@ -28,8 +34,11 @@ def _linear_ops_fn(module: nn.Linear, input: Tuple[torch.Tensor],
     return total_ops
 
 
-def _conv1d_ops_fn(module: nn.Conv1d, input: Tuple[torch.Tensor],
-                   output: torch.Tensor) -> int:
+def _conv1d_ops_fn(
+        module: nn.Conv1d,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
     # Get input
     x0 = input[0]
 
@@ -71,8 +80,11 @@ def _conv1d_ops_fn(module: nn.Conv1d, input: Tuple[torch.Tensor],
     return int(total_ops)
 
 
-def _relu_ops_fn(module: nn.ReLU, input: Tuple[torch.Tensor],
-                 output: torch.Tensor) -> int:
+def _relu_ops_fn(
+        module: nn.ReLU,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
     # This estimation is not straightforward since the max() function is used.
     # A simple estimation is to assume a single operation per element.
     return input[0].numel()
