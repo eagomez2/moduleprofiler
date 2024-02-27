@@ -668,3 +668,15 @@ class ModuleProfiler:
 
         with open(file, "w") as f:
             f.write(df.to_html())
+
+    def estimate_total_inference_time_latex(
+            self,
+            *args,
+            index: bool = False,
+            **kwargs
+    ) -> str:
+        """ Same as ``estimate_total_inference_time`` but returns a LaTeX
+        output instead.
+        """
+        df = self.estimate_inference_time_df(*args, **kwargs)
+        return df.to_latex(index=index)
