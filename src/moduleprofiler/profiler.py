@@ -542,6 +542,36 @@ class ModuleProfiler:
             df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
         
         return df
+    
+    def estimate_inference_time_csv(self, file: str, *args, **kwargs) -> None:
+        """ Same as ``estimate_inference_time`` but saves a ``.csv`` file
+        instead.
+        """
+        file = add_extension(file, ".csv")
+        df = self.estimate_inference_time_df(*args, **kwargs)
+        df.to_csv(file, index=False)
+    
+    def estimate_inference_time_html(self, file: str, *args, **kwargs) -> None:
+        """ Same as ``estimate_inference_time`` but saves a ``.html`` file
+        instead.
+        """
+        file = add_extension(file, ".html")
+        df = self.estimate_inference_time_df(*args, **kwargs)
+
+        with open(file, "w") as f:
+            f.write(df.to_html())
+        
+    def estimate_inference_time_latex(
+            self,
+            *args,
+            index: bool = False,
+            **kwargs
+    ) -> str:
+        """ Same as ``estimate_inference_time`` but return a LaTeX output
+        instead.
+        """
+        df = self.estimate_inference_time_df(*args, **kwargs)
+        return df.to_latex(index=index)
 
     @torch.no_grad()
     def estimate_total_inference_time(
