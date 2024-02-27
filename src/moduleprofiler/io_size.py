@@ -39,9 +39,13 @@ def _lstm_io_size_fn(
     hidden_state_shape = output[1][0].size()
     cell_state_shape = output[1][1].size()
 
-    return (tuple(input_shape),
-            (tuple(output_shape),
-            (tuple(hidden_state_shape), tuple(cell_state_shape))))
+    return (
+        tuple(input_shape),
+        (
+            tuple(output_shape),
+            (tuple(hidden_state_shape), tuple(cell_state_shape))
+        )
+    )
 
 
 _DEFAULT_IO_SIZE_FN_MAP = {

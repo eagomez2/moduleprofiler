@@ -16,3 +16,20 @@ dependencies = [
 
 [project.urls]
 Home = "https://github.com/eagomez2/moduleprofiler"
+
+[project.optional-dependencies]
+test = [
+    "pytest==7.4.3"
+]
+lint = [
+    "ruff==0.1.9"
+]
+
+[tool.ruff]
+extend-select = [
+    "C4",
+    "SIM",
+    "TCH"
+]
+ignore-init-module-imports = true
+line-length = 79

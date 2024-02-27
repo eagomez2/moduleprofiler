@@ -78,7 +78,7 @@ class ModuleProfiler:
                 setattr(module, attr_, value)
 
     def _delattr(self, module: nn.Module, attr: Union[str, list]) -> None:
-        """ Removes model attribute(s).
+        """ Removes model attribute(s) if present.
 
         Args:
             module (nn.Module): Input module.
@@ -101,16 +101,26 @@ class ModuleProfiler:
         """
         # Basic dtypes: https://pytorch.org/docs/stable/type_info.html
         # All dtypes: https://pytorch.org/docs/stable/tensor_attributes.html
-        if dtype in [torch.uint8, torch.int8, torch.int16, torch.int32,
-                     torch.int64]:
+        if dtype in [
+            torch.uint8,
+            torch.int8,
+            torch.int16,
+            torch.int32,
+            torch.int64
+        ]:
             bits = torch.iinfo(dtype).bits
 
-        elif dtype in [torch.float16, torch.bfloat16, torch.float32,
-                       torch.float64]:
+        elif dtype in [
+            torch.float16,
+            torch.bfloat16,
+            torch.float32,
+            torch.float64
+        ]:
             bits = torch.finfo(dtype).bits
 
         else:
-            raise AssertionError
+            # NOTE: If you hit this point, please open a GitHub issue
+            raise NotImplementedError
 
         return bits
 
@@ -132,7 +142,7 @@ class ModuleProfiler:
             self, module: nn.Module,
             hook: Callable
     ) -> None:
-        """ Registers a forward pre hook in a module and stored the
+        """ Registers a forward pre hook in a module and stores the
         corresponding handle to be deleted later.
 
         Args:
@@ -161,11 +171,11 @@ class ModuleProfiler:
 
         # Check all specs have the same keys
         for idx, spec in enumerate(other_specs):
-            if not spec.keys() == ref_spec.keys():
+            if spec.keys() != ref_spec.keys():
                 ref_spec_keys_repr =\
-                    ", ".join([f"'{k}'" for k in ref_spec.keys()])
+                    ", ".join([f"'{k}'" for k in ref_spec])
                 spec_keys_repr =\
-                    ", ".join([f"'{k}'" for k in spec.keys()])
+                    ", ".join([f"'{k}'" for k in spec])
 
                 raise ValueError(
                     f"All specs to be merged should have the same keys. Found "
@@ -178,7 +188,7 @@ class ModuleProfiler:
         merged_specs = ref_spec
 
         for spec in specs[1:]:
-            for k in merged_specs.keys():
+            for k in merged_specs:
                 merged_specs[k] = dict_merge(merged_specs[k], spec[k])
 
         return merged_specs
@@ -199,7 +209,7 @@ class ModuleProfiler:
             output (Tuple[torch.Tensor]): Output tensor(s).
         """
         # Obtain method to calculate io shapes
-        if type(module) not in self.io_size_fn_map.keys():
+        if type(module) not in self.io_size_fn_map:
             io_size_fn = self.io_size_fn_map["default"]
 
         else:
@@ -232,11 +242,11 @@ class ModuleProfiler:
         setattr(module, self.inference_start_attr, perf_counter())
 
     def _inference_time_end_fn(
-                self,
-                module: nn.Module,
-                input: Tuple[torch.Tensor],
-                output: Tuple[torch.Tensor]
-            ) -> None:
+            self,
+            module: nn.Module,
+            input: Tuple[torch.Tensor],
+            output: Tuple[torch.Tensor]
+    ) -> None:
         """ Triggers a counter after the inference has been performed and save
         it's value to a module's attribute.
 
@@ -254,11 +264,11 @@ class ModuleProfiler:
         setattr(module, self.inference_end_attr, perf_counter())
 
     def _ops_fn(
-                self,
-                module: nn.Module,
-                input: Tuple[torch.Tensor],
-                output: Tuple[torch.Tensor]
-            ) -> None:
+            self,
+            module: nn.Module,
+            input: Tuple[torch.Tensor],
+            output: Tuple[torch.Tensor]
+    ) -> None:
         """ Triggers a method that estimates the number of operations computed
         by a module during the forward pass.
 
@@ -270,7 +280,7 @@ class ModuleProfiler:
                 forward method.
         """
         # Obtain method to estimate ops
-        if module.__class__ in self.ops_fn_map.keys():
+        if module.__class__ in self.ops_fn_map:
             ops_fn = self.ops_fn_map[type(module)]
 
         else:
@@ -315,11 +325,13 @@ class ModuleProfiler:
         # TODO: Add progress bar if verbose=True, or use disable=True if it
         # should not be displayed. Also, consider adding tqdm to the Logger
         # class since it is required to print while the progress bar is on
-        for idx, (n, m) in tqdm(enumerate(module.named_modules()),
-                                desc="Counting parameters",
-                                unit="params",
-                                disable=not self.verbose,
-                                leave=False):
+        for idx, (n, m) in tqdm(
+            enumerate(module.named_modules()),
+            desc="Counting parameters",
+            unit="params",
+            disable=not self.verbose,
+            leave=False
+        ):
             # First entry corresponds to the module itself
             if idx == 0:
                 n = "__root__"
@@ -358,7 +370,7 @@ class ModuleProfiler:
             total_params = data["__root__"]["trainable_params"] + \
                            data["__root__"]["nontrainable_params"]
 
-            for k in data.keys():
+            for k in data:
                 data[k]["trainable_params_percent"] = (
                     data[k]["trainable_params"] / total_params
                 )
@@ -437,7 +449,7 @@ class ModuleProfiler:
                     "</magenta></b> to <b><magenta>eval</magenta></b> mode"
                 )
 
-            was_training = True if module.training else False
+            was_training = bool(module.training)
             module.eval()
 
         # Store (start_time, end_time) tuples
@@ -476,9 +488,11 @@ class ModuleProfiler:
 
         return data
 
-    def estimate_total_inference_time_df(self,
-                                         *args,
-                                         **kwargs) -> pd.DataFrame:
+    def estimate_total_inference_time_df(
+            self,
+            *args,
+            **kwargs
+    ) -> pd.DataFrame:
         # Estimate inference time
         data = self.estimate_total_inference_time(*args, **kwargs)
 
