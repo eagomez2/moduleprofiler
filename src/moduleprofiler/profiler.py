@@ -473,6 +473,10 @@ class ModuleProfiler:
             module.train()
 
         # Collect stats
+        times = pd.Series(
+            [(t[1] - t[0]) * 1000.0 for t in stopwatch[drop_first:]]
+        )
+
         data = {
             "__root__": {
                 "type": module.__class__.__name__,
@@ -482,8 +486,12 @@ class ModuleProfiler:
         }
         data["__root__"].update(get_hardware_specs())
         data["__root__"].update({
-            "inference_time_ms":
-            [(t[1] - t[0]) * 1000.0 for t in stopwatch[drop_first:]]
+            "inference_time_ms": times,
+            "inference_time_mean_ms": times.mean(),
+            "inference_time_max_ms": times.max(),
+            "inference_time_min_ms": times.min(),
+            "inference_time_std_ms": times.std(),
+            "inference_time_median_ms": times.median()
         })
 
         return data
