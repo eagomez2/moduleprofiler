@@ -150,6 +150,13 @@ class ModuleProfiler:
             hook (Callable): Hook to be registered.
         """
         self._hook_handles.append(module.register_forward_pre_hook(hook))
+    
+    def _remove_registered_hooks(self) -> None:
+        """ Removes all hooks registered by this object. """
+        for hook_handle in self._hook_handles:
+            hook_handle.remove()
+        
+        self._hook_handles = []
 
     def _merge_specs(self, specs: Tuple[Dict[str, dict]]) -> Dict[str, dict]:
         """ Merges two or more ``dict`` instances containing the same keys.
@@ -416,9 +423,125 @@ class ModuleProfiler:
         return df.to_latex(index=index)
 
     @torch.no_grad()
-    def estimate_inference_time(self):
+    def estimate_inference_time(
+        self,
+        module: nn.Module,
+        input: Union[torch.Tensor, Tuple[torch.Tensor]],
+        eval: bool = True,
+        num_iters: int = 1000,
+        drop_first: int = 100
+    ) -> dict:
         # TODO: Per layer inference time
-        ...
+        # Assertions
+        if num_iters <= drop_first:
+            raise ValueError(
+                f"{num_iters=} should be greater than {drop_first=}"
+            )
+        
+        if self.verbose:
+            self._logger.log(
+                "Estimating inference time of "
+                f"<b><magenta>{module.__class__.__name__}</magenta></b>"
+            )
+        
+        # Setup
+        if eval:
+            if self.verbose:
+                self._logger.log(
+                    f"Setting module <b><magenta>{module.__class__.__name__}"
+                    "</magenta></b> to <b><magenta>eval</magenta></b> mode"
+                )
+
+            was_training = bool(module.training)
+            module.eval()
+        
+        # Set hooks
+        for m in module.modules():
+            self._register_forward_pre_hook(m, self._inference_time_start_fn)
+            self._register_forward_hook(m, self._inference_time_end_fn)
+
+        # Measure
+        # NOTE: Key '' is removed since it corresponds to the root module
+        data = {
+            "__root__": {
+                "type": module.__class__.__name__,
+                "inference_time_ms": []
+            }
+        }
+        data.update(
+            {n: {"type": m.__class__.__name__, "inference_time_ms": []}
+             for n, m in module.named_modules()}
+        )
+        data.pop("")
+
+        for _ in tqdm(
+            range(num_iters),
+            desc="Measuring inference time",
+            unit="inferences",
+            disable=not self.verbose,
+            leave=False
+        ):
+            module(input)
+
+            for n, m in module.named_modules():
+                end = getattr(m, self.inference_end_attr)
+                start = getattr(m, self.inference_start_attr)
+                diff_ms = (end - start) * 1000.0
+                k = "__root__" if n == "" else n
+                data[k]["inference_time_ms"].append(diff_ms)
+
+        # Tear down
+        self._remove_registered_hooks()
+
+        if eval and was_training:
+            if self.verbose:
+                self._logger.log(
+                    f"Setting module <b><magenta>{module.__class__.__name__}"
+                    "</magenta></b> to <b><magenta>train</magenta></b> mode"
+                )
+
+            module.train()
+        
+        for k in data:
+            # Add time stats
+            times = pd.Series(data[k]["inference_time_ms"])
+            data[k].update(
+                {
+                    "inference_time_mean_ms": times.mean(),
+                    "inference_time_max_ms": times.max(),
+                    "inference_time_min_ms": times.min(),
+                    "inference_time_std_ms": times.std(),
+                    "inference_time_median_ms": times.median()
+                }
+            )
+
+            # Add misc data
+            data[k].update(
+                {
+                    "intraop_threads": torch.get_num_threads(),
+                    "interop_threads": torch.get_num_interop_threads()
+                }
+            )
+            data[k].update(get_hardware_specs())
+        
+        return data
+    
+    def estimate_inference_time_df(self, *args, **kwargs) -> pd.DataFrame:
+        """ Same as ``estimate_inference_time`` but returns a ``DataFrame``
+        instead.
+        """
+        # Estimate inference time
+        data = self.estimate_inference_time(*args, **kwargs)
+
+        # Assemble data frame
+        df = pd.DataFrame()
+        
+        for k, v in data.items():
+            row = {"module": k}
+            row.update(v)
+            df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+        
+        return df
 
     @torch.no_grad()
     def estimate_total_inference_time(
@@ -501,7 +624,10 @@ class ModuleProfiler:
             *args,
             **kwargs
     ) -> pd.DataFrame:
-        # Estimate inference time
+        """ Same as ``estimate_total_inference_time`` but returns a
+        ``DataFrame`` instead.
+        """
+        # Estimate inference total time
         data = self.estimate_total_inference_time(*args, **kwargs)
 
         # Assemble data frame
@@ -514,3 +640,31 @@ class ModuleProfiler:
             df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
 
         return df
+
+    def estimate_total_inference_time_csv(
+            self,
+            file: str,
+            *args,
+            **kwargs
+    ) -> None:
+        """ Same as ``estimate_total_inference_time`` but saves a ``.csv``
+        file instead.
+        """
+        file = add_extension(file, ".csv")
+        df = self.estimate_total_inference_time_df(*args, **kwargs)
+        df.to_csv(file, index=False)
+
+    def estimate_total_inference_time_html(
+            self,
+            file: str,
+            *args,
+            **kwargs
+    ) -> None:
+        """ Same as ``estimate_total_inference_time`` but saves a ``.html``
+        file instead.
+        """ 
+        file = add_extension(file, ".html")
+        df = self.estimate_total_inference_time_df(*args, **kwargs)
+
+        with open(file, "w") as f:
+            f.write(df.to_html())
