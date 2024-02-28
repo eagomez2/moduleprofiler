@@ -21,7 +21,6 @@ from .io_size import _DEFAULT_IO_SIZE_FN_MAP
 from .ops import _DEFAULT_OPS_MAP
 
 
-# TODO: Separate layers by type when computing metrics? (ans: pd should be able to do it!)
 class ModuleProfiler:
     def __init__(
             self,
@@ -431,7 +430,6 @@ class ModuleProfiler:
         num_iters: int = 1000,
         drop_first: int = 100
     ) -> dict:
-        # TODO: Per layer inference time
         # Assertions
         if num_iters <= drop_first:
             raise ValueError(
@@ -526,9 +524,15 @@ class ModuleProfiler:
         
         return data
     
-    def estimate_inference_time_df(self, *args, **kwargs) -> pd.DataFrame:
+    def estimate_inference_time_df(
+            self,
+            *args,
+            aggr: bool = True,
+            **kwargs
+    ) -> pd.DataFrame:
         """ Same as ``estimate_inference_time`` but returns a ``DataFrame``
-        instead.
+        instead. Additional argument ``aggr`` can be set to ``True`` if only
+        aggregations should be kept.
         """
         # Estimate inference time
         data = self.estimate_inference_time(*args, **kwargs)
@@ -540,6 +544,15 @@ class ModuleProfiler:
             row = {"module": k}
             row.update(v)
             df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+        
+        if aggr:
+            df = df.drop("inference_time_ms", axis=1)
+
+        else:
+            for n in ("mean", "min", "max", "std", "median"):
+                df = df.drop(f"inference_time_{n}_ms", axis=1)
+            
+            df = df.explode("inference_time_ms").reset_index(drop=True)
         
         return df
     
@@ -629,7 +642,6 @@ class ModuleProfiler:
         times = pd.Series(
             [(t[1] - t[0]) * 1000.0 for t in stopwatch[drop_first:]]
         )
-
         data = {
             "__root__": {
                 "type": module.__class__.__name__,
@@ -639,23 +651,25 @@ class ModuleProfiler:
         }
         data["__root__"].update(get_hardware_specs())
         data["__root__"].update({
-            "inference_time_ms": times,
+            "inference_time_ms": times.tolist(),
             "inference_time_mean_ms": times.mean(),
-            "inference_time_max_ms": times.max(),
             "inference_time_min_ms": times.min(),
+            "inference_time_max_ms": times.max(),
             "inference_time_std_ms": times.std(),
             "inference_time_median_ms": times.median()
         })
-
+        
         return data
 
     def estimate_total_inference_time_df(
             self,
             *args,
+            aggr: bool = False,
             **kwargs
     ) -> pd.DataFrame:
         """ Same as ``estimate_total_inference_time`` but returns a
-        ``DataFrame`` instead.
+        ``DataFrame`` instead. Additional argument ``aggr`` can be set to
+        ``True`` if only aggregations should be kept.
         """
         # Estimate inference total time
         data = self.estimate_total_inference_time(*args, **kwargs)
@@ -663,12 +677,20 @@ class ModuleProfiler:
         # Assemble data frame
         df = pd.DataFrame()
 
-        # TODO: Each row should have a single inference entry like the csv
         for k, v in data.items():
             row = {"module": k}
             row.update(v)
             df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+        
+        if aggr:
+            df = df.drop("inference_time_ms", axis=1)
 
+        else:
+            for n in ("mean", "min", "max", "std", "median"):
+                df = df.drop(f"inference_time_{n}_ms", axis=1)
+            
+            df = df.explode("inference_time_ms").reset_index(drop=True)
+        
         return df
 
     def estimate_total_inference_time_csv(
