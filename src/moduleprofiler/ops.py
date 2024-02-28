@@ -85,14 +85,29 @@ def _relu_ops_fn(
         input: Tuple[torch.Tensor],
         output: torch.Tensor
 ) -> int:
-    # This estimation is not straightforward since the max() function is used.
-    # A simple estimation is to assume a single operation per element.
+    # NOTE: This estimation is not straightforward since the max() function is
+    # used. A simple estimation is to assume a single operation per element.
     return input[0].numel()
 
 
+def _sigmoid_ops_fn(
+        module: nn.Sigmoid,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    # NOTE: Exponential is considered as a single op here
+    return input[0].numel() * 3
+
+
 _DEFAULT_OPS_MAP = {
+    # Default method
     "default": _default_ops_fn,
+
+    # Layers
     nn.Linear: _linear_ops_fn,
     nn.Conv1d: _conv1d_ops_fn,
-    nn.ReLU: _relu_ops_fn
+
+    # Activations
+    nn.ReLU: _relu_ops_fn,
+    nn.Sigmoid: _sigmoid_ops_fn,
 }

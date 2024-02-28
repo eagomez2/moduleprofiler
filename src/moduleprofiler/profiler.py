@@ -340,8 +340,7 @@ class ModuleProfiler:
             leave=False
         ):
             # First entry corresponds to the module itself
-            if idx == 0:
-                n = "__root__"
+            k = "__root__" if n == "" else n
 
             data[n] = {
                 "type": m.__class__.__name__,
