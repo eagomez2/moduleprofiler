@@ -760,11 +760,11 @@ class ModuleProfiler:
 
         # Set attrs and hooks
         for m in module.modules():
-            self._setattr(m, attr=self.input_size_attr)
-            self._setattr(m, attr=self.output_size_attr)
-            self._register_forward_hook(m, hook=self._io_size_fn)
+            self._setattr(m, self.input_size_attr)
+            self._setattr(m, self.output_size_attr)
+            self._register_forward_hook(m, self._io_size_fn)
         
-        # Setup
+        # Model setup
         if eval:
             if self.verbose:
                 self._logger.log(
@@ -840,7 +840,7 @@ class ModuleProfiler:
         df = self.trace_io_sizes_df(*args, **kwargs)
         df.to_csv(file, index=False)
 
-    def trace_io_sizes_html(self, file: str, * args, **kwargs) -> None:
+    def trace_io_sizes_html(self, file: str, *args, **kwargs) -> None:
         """ Same as ``trace_io_sizes`` but saves a ``.html`` file instead. """
         file = add_extension(file, ".html")
         df = self.trace_io_sizes_df(*args, **kwargs)
@@ -856,4 +856,114 @@ class ModuleProfiler:
     ) -> str:
         """ Same as ``trace_io_sizes`` but returns a LaTeX output instead. """
         df = self.trace_io_sizes_df(*args, **kwargs)
+        return df.to_latex(index=index)
+
+    @torch.no_grad()
+    def estimate_ops(
+        self,
+        module: nn.Module,
+        input: Union[
+            torch.Tensor,
+            Tuple[torch.Tensor],
+            Dict[str, torch.Tensor]
+        ],
+        pred_fn: Optional[Callable] = None,
+        eval: bool = True
+    ) -> dict:
+        if self.verbose:
+            self._logger.log(
+                f"Estimating ops of <b><magenta>{module.__class__.__name__}"
+                "</magenta></b>"
+            )
+        
+        # Set attrs and hooks
+        for m in module.modules():
+            self._setattr(m, self.ops_attr)
+            self._register_forward_hook(m, self._ops_fn)
+
+        # Model setup
+        if eval:
+            if self.verbose:
+                self._logger.log(
+                    f"Setting module <b><magenta>{module.__class__.__name__}"
+                    "</magenta></b> to <b><magenta>eval</magenta></b> mode"
+                )
+
+            was_training = bool(module.training)
+            module.eval()
+
+        # Estimate ops
+        if isinstance(input, dict):
+            if pred_fn is not None:
+                pred_fn(**input)
+            
+            else:
+                module(**input)
+        
+        else:
+            if pred_fn is not None:
+                pred_fn(input)
+            
+            else:
+                module(input)
+
+        # Collect data
+        data = {}
+
+        for n, m in module.named_modules():
+            k = "__root__" if n == "" else n
+            data[k] = {
+                "type": m.__class__.__name__,
+                "ops": getattr(m, self.ops_attr)
+            }
+
+        # Tear down
+        if eval and was_training:
+            if self.verbose:
+                self._logger.log(
+                    f"Setting module <b><magenta>{module.__class__.__name__}"
+                    "</magenta></b> to <b><magenta>train</magenta></b> mode"
+                )
+
+            module.train()
+        
+        for m in module.modules():
+            self._delattr(m, self.ops_attr)
+        
+        self._remove_registered_hooks()
+    
+        return data
+
+    def estimate_ops_df(self, *args, **kwargs) -> pd.DataFrame:
+        """ Same as ``estimate_ops`` but returns a ``DataFrame`` instead."""
+        # Estimate ops
+        data = self.estimate_ops(*args, **kwargs)
+
+        # Assemble data frame
+        df = pd.DataFrame()
+
+        for k, v in data.items():
+            row = {"module": k}
+            row.update(v)
+            df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+        
+        return df
+    
+    def estimate_ops_csv(self, file: str, *args, **kwargs) -> None:
+        """ Same as ``estimate_ops`` but saves a ``.csv`` file instead. """
+        file = add_extension(file, ".csv")
+        df = self.estimate_ops_df(*args, **kwargs)
+        df.to_csv(file, index=False)
+
+    def estimate_ops_html(self, file: str, *args, **kwargs) -> None:
+        """ Same as ``estimate_ops`` but saves a ``.html`` file instead. """
+        file = add_extension(file, ".html")
+        df = self.estimate_ops_df(*args, **kwargs)
+
+        with open(file, "w") as f:
+            f.write(df.to_html())
+
+    def estimate_ops_latex(self, *args, index: bool = False, **kwargs) -> str:
+        """ Same as ``estimate_ops`` but returns a LaTeX output instead. """
+        df = self.estimate_ops_df(*args, **kwargs)
         return df.to_latex(index=index)
