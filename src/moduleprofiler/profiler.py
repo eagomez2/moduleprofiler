@@ -6,6 +6,7 @@ from typing import (
     Any,
     Callable,
     Dict,
+    Optional,
     Tuple, 
     Union
 )
@@ -225,8 +226,8 @@ class ModuleProfiler:
         input_size, output_size = io_size_fn(module, input, output)
 
         # Save input and output size in module attributes
-        setattr(module, self.input_shape_attr, input_size)
-        setattr(module, self.output_shape_attr, output_size)
+        setattr(module, self.input_size_attr, input_size)
+        setattr(module, self.output_size_attr, output_size)
 
     def _inference_time_start_fn(
                 self,
@@ -453,8 +454,10 @@ class ModuleProfiler:
             was_training = bool(module.training)
             module.eval()
         
-        # Set hooks
+        # Set attrs and hooks
         for m in module.modules():
+            self._setattr(m, self.inference_start_attr)
+            self._setattr(m, self.inference_end_attr)
             self._register_forward_pre_hook(m, self._inference_time_start_fn)
             self._register_forward_hook(m, self._inference_time_end_fn)
 
@@ -489,6 +492,10 @@ class ModuleProfiler:
                 data[k]["inference_time_ms"].append(diff_ms)
 
         # Tear down
+        for m in module.modules():
+            self._delattr(m, self.inference_start_attr)
+            self._delattr(m, self.inference_end_attr)
+
         self._remove_registered_hooks()
 
         if eval and was_training:
@@ -732,3 +739,82 @@ class ModuleProfiler:
         """
         df = self.estimate_inference_time_df(*args, **kwargs)
         return df.to_latex(index=index)
+
+    @torch.no_grad()
+    def trace_io_sizes(
+            self,
+            module: nn.Module,
+            input: Union[
+                torch.Tensor,
+                Tuple[torch.Tensor],
+                Dict[str, torch.Tensor]
+            ],
+            pred_fn: Optional[Callable] = None,
+            eval: bool = False
+    ) -> dict:
+        if self.verbose:
+            self._logger.log(
+                "Tracing I/O shapes of <b><magenta>"
+                f"{module.__class__.__name__}</magenta></b>"
+            )
+
+        # Set attrs and hooks
+        for m in module.modules():
+            self._setattr(m, attr=self.input_size_attr)
+            self._setattr(m, attr=self.output_size_attr)
+            self._register_forward_hook(m, hook=self._io_size_fn)
+        
+        # Setup
+        if eval:
+            if self.verbose:
+                self._logger.log(
+                    f"Setting module <b><magenta>{module.__class__.__name__}"
+                    "</magenta></b> to <b><magenta>eval</magenta></b> mode"
+                )
+
+            was_training = bool(module.training)
+            module.eval()
+        
+        # Trace I/O sizes
+        if isinstance(input, dict):
+            if pred_fn is not None:
+                pred_fn(**input)
+            
+            else:
+                module(**input)
+
+        else:
+            if pred_fn is not None:
+                pred_fn(input)
+            
+            else:
+                module(input)
+            
+        # Collect data
+        data = {}
+
+        for n, m in module.named_modules():
+            k = "__root__" if n == "" else n
+            data[k] = {
+                "type": m.__class__.__name__,
+                "input_size": getattr(m, self.input_size_attr),
+                "output_size": getattr(m, self.output_size_attr)
+            }
+        
+        # Tear down
+        if eval and was_training:
+            if self.verbose:
+                self._logger.log(
+                    f"Setting module <b><magenta>{module.__class__.__name__}"
+                    "</magenta></b> to <b><magenta>train</magenta></b> mode"
+                )
+
+            module.train()
+        
+        for m in module.modules():
+            self._delattr(m, attr=self.input_size_attr)
+            self._delattr(m, attr=self.output_size_attr)
+        
+        self._remove_registered_hooks()
+
+        return data

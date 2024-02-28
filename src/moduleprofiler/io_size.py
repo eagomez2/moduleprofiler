@@ -8,11 +8,7 @@ def _default_io_size_fn(
         input: Tuple[torch.Tensor],
         output: torch.Tensor
 ) -> Tuple[tuple]:
-    if len(input) == 0:
-        input_ = None
-
-    else:
-        input_ = tuple(input[0].size())
+    input_ = None if len(input) == 0 else tuple(input[0].size())
 
     if output is None:
         output_ = None
@@ -21,7 +17,7 @@ def _default_io_size_fn(
         output_ = tuple(tuple(o.size()) for o in output)
 
     elif isinstance(output, list):
-        output_ = list(tuple(o.size()) for o in output)
+        output_ = [tuple(o.size()) for o in output]
 
     else:
         output_ = tuple(output.size())
