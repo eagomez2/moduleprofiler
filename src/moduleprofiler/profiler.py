@@ -329,11 +329,8 @@ class ModuleProfiler:
                 f"<b><magenta>{module.__class__.__name__}</magenta></b>"
             )
 
-        # TODO: Add progress bar if verbose=True, or use disable=True if it
-        # should not be displayed. Also, consider adding tqdm to the Logger
-        # class since it is required to print while the progress bar is on
-        for idx, (n, m) in tqdm(
-            enumerate(module.named_modules()),
+        for n, m in tqdm(
+            module.named_modules(),
             desc="Counting parameters",
             unit="params",
             disable=not self.verbose,
