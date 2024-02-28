@@ -409,6 +409,9 @@ class ModuleProfiler:
         df = self.count_params_df(*args, **kwargs)
         df.to_csv(file, index=False)
 
+        if self.verbose:
+            self._logger.log(f"Results saved to <b>{file}</b>")
+
     def count_params_html(self, file: str, *args, **kwargs) -> None:
         """ Same as ``count_params`` but saves a ``.html`` file instead. """
         file = add_extension(file, ".html")
@@ -416,6 +419,9 @@ class ModuleProfiler:
 
         with open(file, "w") as f:
             f.write(df.to_html())
+        
+        if self.verbose:
+            self._logger.log(f"Results saved to <b>{file}</b>")
 
     def count_params_latex(self, *args, index: bool = False, **kwargs) -> str:
         """ Same as ``count_params`` but returns a LaTeX output instead. """
@@ -570,6 +576,9 @@ class ModuleProfiler:
         file = add_extension(file, ".csv")
         df = self.estimate_inference_time_df(*args, **kwargs)
         df.to_csv(file, index=False)
+
+        if self.verbose:
+            self._logger.log(f"Results saved to <b>{file}</b>")
     
     def estimate_inference_time_html(self, file: str, *args, **kwargs) -> None:
         """ Same as ``estimate_inference_time`` but saves a ``.html`` file
@@ -580,6 +589,9 @@ class ModuleProfiler:
 
         with open(file, "w") as f:
             f.write(df.to_html())
+
+        if self.verbose:
+            self._logger.log(f"Results saved to <b>{file}</b>")
         
     def estimate_inference_time_latex(
             self,
@@ -713,6 +725,9 @@ class ModuleProfiler:
         df = self.estimate_total_inference_time_df(*args, **kwargs)
         df.to_csv(file, index=False)
 
+        if self.verbose:
+            self._logger.log(f"Results saved to <b>{file}</b>")
+
     def estimate_total_inference_time_html(
             self,
             file: str,
@@ -727,6 +742,9 @@ class ModuleProfiler:
 
         with open(file, "w") as f:
             f.write(df.to_html())
+        
+        if self.verbose:
+            self._logger.log(f"Results saved to <b>{file}</b>")
 
     def estimate_total_inference_time_latex(
             self,
@@ -840,6 +858,9 @@ class ModuleProfiler:
         df = self.trace_io_sizes_df(*args, **kwargs)
         df.to_csv(file, index=False)
 
+        if self.verbose:
+            self._logger.log(f"Results saved to <b>{file}</b>")
+
     def trace_io_sizes_html(self, file: str, *args, **kwargs) -> None:
         """ Same as ``trace_io_sizes`` but saves a ``.html`` file instead. """
         file = add_extension(file, ".html")
@@ -847,6 +868,9 @@ class ModuleProfiler:
         
         with open(file, "w") as f:
             f.write(df.to_html())
+        
+        if self.verbose:
+            self._logger.log(f"Results saved to <b>{file}</b>")
     
     def trace_io_sizes_latex(
             self,
@@ -935,7 +959,7 @@ class ModuleProfiler:
         return data
 
     def estimate_ops_df(self, *args, **kwargs) -> pd.DataFrame:
-        """ Same as ``estimate_ops`` but returns a ``DataFrame`` instead."""
+        """ Same as ``estimate_ops`` but returns a ``DataFrame`` instead. """
         # Estimate ops
         data = self.estimate_ops(*args, **kwargs)
 
@@ -955,6 +979,9 @@ class ModuleProfiler:
         df = self.estimate_ops_df(*args, **kwargs)
         df.to_csv(file, index=False)
 
+        if self.verbose:
+            self._logger.log(f"Results saved to <b>{file}</b>")
+
     def estimate_ops_html(self, file: str, *args, **kwargs) -> None:
         """ Same as ``estimate_ops`` but saves a ``.html`` file instead. """
         file = add_extension(file, ".html")
@@ -962,6 +989,9 @@ class ModuleProfiler:
 
         with open(file, "w") as f:
             f.write(df.to_html())
+        
+        if self.verbose:
+            self._logger.log(f"Results saved to <b>{file}</b>")
 
     def estimate_ops_latex(self, *args, index: bool = False, **kwargs) -> str:
         """ Same as ``estimate_ops`` but returns a LaTeX output instead. """
