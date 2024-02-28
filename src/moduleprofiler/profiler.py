@@ -812,9 +812,48 @@ class ModuleProfiler:
             module.train()
         
         for m in module.modules():
-            self._delattr(m, attr=self.input_size_attr)
-            self._delattr(m, attr=self.output_size_attr)
+            self._delattr(m, self.input_size_attr)
+            self._delattr(m, self.output_size_attr)
         
         self._remove_registered_hooks()
 
         return data
+
+    def trace_io_sizes_df(self, *args, **kwargs) -> pd.DataFrame:
+        """ Same as ``trace_io_sizes`` but returns a ``DataFrame`` instead. """
+        # Trace I/O sizes
+        data = self.trace_io_sizes(*args, **kwargs)
+
+        # Assemble data frame
+        df = pd.DataFrame()
+    
+        for k, v in data.items():
+            row = {"module": k}
+            row.update(v)
+            df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+        
+        return df
+
+    def trace_io_sizes_csv(self, file: str, *args, **kwargs) -> None:
+        """ Same as ``trace_io_sizes`` but saves a ``.csv`` file instead. """
+        file = add_extension(file, ".csv")
+        df = self.trace_io_sizes_df(*args, **kwargs)
+        df.to_csv(file, index=False)
+
+    def trace_io_sizes_html(self, file: str, * args, **kwargs) -> None:
+        """ Same as ``trace_io_sizes`` but saves a ``.html`` file instead. """
+        file = add_extension(file, ".html")
+        df = self.trace_io_sizes_df(*args, **kwargs)
+        
+        with open(file, "w") as f:
+            f.write(df.to_html())
+    
+    def trace_io_sizes_latex(
+            self,
+            *args,
+            index: bool = False,
+            **kwargs
+    ) -> str:
+        """ Same as ``trace_io_sizes`` but returns a LaTeX output instead. """
+        df = self.trace_io_sizes_df(*args, **kwargs)
+        return df.to_latex(index=index)
