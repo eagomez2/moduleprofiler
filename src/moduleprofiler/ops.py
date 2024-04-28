@@ -1,4 +1,5 @@
 import torch
+import math
 import torch.nn as nn
 from typing import (
     Any,
@@ -112,7 +113,22 @@ def _softmax_ops_fn(
         input: Tuple[torch.Tensor],
         output: torch.Tensor
 ) -> int:
-    ...
+    # Ops per row along dim dimension
+    # NOTE: Exponential is considered as a single op here
+    row_ops = 4 * input[0].size(module.dim) - 1
+
+    # Get remaining dims
+    if len(input[0].size()) == 1:
+        other_dims = 1
+    
+    else:
+        other_dims = list(input[0].size())
+        other_dims.pop(module.dim)
+        other_dims = math.prod(other_dims)
+    
+    total_ops = other_dims * row_ops
+
+    return total_ops
 
 
 _DEFAULT_OPS_MAP = {
