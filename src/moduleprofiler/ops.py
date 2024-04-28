@@ -14,6 +14,14 @@ def _default_ops_fn(
     return None
 
 
+def _identity_ops_fn(
+        module: nn.Identity,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    return 0
+
+
 def _linear_ops_fn(
         module: nn.Linear,
         input: Tuple[torch.Tensor],
@@ -23,7 +31,7 @@ def _linear_ops_fn(
     num_seqs = input[0].size()[:-1].numel()
 
     # Get ops per sequence
-    if module.bias:
+    if module.bias is not None:
         ops_per_seq = 2.0 * module.out_features * module.in_features
 
     else:
@@ -31,7 +39,7 @@ def _linear_ops_fn(
 
     total_ops = num_seqs * ops_per_seq
 
-    return total_ops
+    return int(total_ops)
 
 
 def _conv1d_ops_fn(
@@ -99,15 +107,25 @@ def _sigmoid_ops_fn(
     return input[0].numel() * 3
 
 
+def _softmax_ops_fn(
+        module: nn.Softmax,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    ...
+
+
 _DEFAULT_OPS_MAP = {
     # Default method
     "default": _default_ops_fn,
 
     # Layers
+    nn.Identity: _identity_ops_fn,
     nn.Linear: _linear_ops_fn,
     nn.Conv1d: _conv1d_ops_fn,
 
     # Activations
     nn.ReLU: _relu_ops_fn,
     nn.Sigmoid: _sigmoid_ops_fn,
+    nn.Softmax: _softmax_ops_fn
 }
