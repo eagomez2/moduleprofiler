@@ -18,8 +18,8 @@ from .utils import (
     get_hardware_specs
 )
 from .logger import Logger
-from .io_size import _DEFAULT_IO_SIZE_FN_MAP
-from .ops import _DEFAULT_OPS_MAP
+from .io_size import _get_default_io_size_map
+from .ops import _get_default_ops_map
 
 
 class ModuleProfiler:
@@ -30,8 +30,8 @@ class ModuleProfiler:
             ops_attr: str = "__ops__",
             inference_start_attr: str = "__inference_start__",
             inference_end_attr: str = "__inference_end__",
-            io_size_fn_map: dict = _DEFAULT_IO_SIZE_FN_MAP,
-            ops_fn_map: dict = _DEFAULT_OPS_MAP,
+            io_size_fn_map: dict = _get_default_io_size_map(),
+            ops_fn_map: dict = _get_default_ops_map(),
             ts_fmt: str = "%Y-%m-%d %H:%M:%S",
             verbose: bool = True
     ) -> None:

@@ -59,10 +59,11 @@ def _lstm_io_size_fn(
     )
 
 
-_DEFAULT_IO_SIZE_FN_MAP = {
-    nn.GRUCell: _gru_io_size_fn,
-    nn.GRU: _gru_io_size_fn,
-    nn.LSTMCell: _lstm_io_size_fn,
-    nn.LSTM: _lstm_io_size_fn,
-    "default": _default_io_size_fn
-}
+def _get_default_io_size_map() -> dict:
+    return {
+        nn.GRUCell: _gru_io_size_fn,
+        nn.GRU: _gru_io_size_fn,
+        nn.LSTMCell: _lstm_io_size_fn,
+        nn.LSTM: _lstm_io_size_fn,
+        "default": _default_io_size_fn
+    }

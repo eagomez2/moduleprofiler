@@ -89,6 +89,34 @@ def _conv1d_ops_fn(
     return int(total_ops)
 
 
+def _grucell_ops_fn(
+        module: nn.GRUCell,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    # Get params
+    batch_size = 1 if len(input[0].size()) == 1 else input[0].size(0)
+    h_out = module.hidden_size
+    h_in = module.input_size
+
+    if module.bias is not None:
+        r_ops = 2 * batch_size * h_out * (h_in + h_out + 2)
+        z_ops = r_ops
+        n_ops = batch_size * h_out * (9 + 2 * (h_in + h_out))
+    
+    else:
+        r_ops = 2 * batch_size * h_out * (h_in + h_out + 1)
+        z_ops = r_ops
+        n_ops = batch_size * h_out * (9 + 2 * (h_in + h_out - 1))
+
+    # Same regardless of bias
+    h_prime_ops = 4 * batch_size * h_out
+
+    total_ops = r_ops + z_ops + n_ops + h_prime_ops
+
+    return total_ops
+
+
 def _relu_ops_fn(
         module: nn.ReLU,
         input: Tuple[torch.Tensor],
@@ -131,17 +159,19 @@ def _softmax_ops_fn(
     return total_ops
 
 
-_DEFAULT_OPS_MAP = {
-    # Default method
-    "default": _default_ops_fn,
+def _get_default_ops_map() -> dict:
+    return {
+        # Default method
+        "default": _default_ops_fn,
 
-    # Layers
-    nn.Identity: _identity_ops_fn,
-    nn.Linear: _linear_ops_fn,
-    nn.Conv1d: _conv1d_ops_fn,
+        # Layers
+        nn.Identity: _identity_ops_fn,
+        nn.Linear: _linear_ops_fn,
+        nn.Conv1d: _conv1d_ops_fn,
+        nn.GRUCell: _grucell_ops_fn,
 
-    # Activations
-    nn.ReLU: _relu_ops_fn,
-    nn.Sigmoid: _sigmoid_ops_fn,
-    nn.Softmax: _softmax_ops_fn
-}
+        # Activations
+        nn.ReLU: _relu_ops_fn,
+        nn.Sigmoid: _sigmoid_ops_fn,
+        nn.Softmax: _softmax_ops_fn
+    }
