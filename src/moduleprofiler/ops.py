@@ -174,7 +174,7 @@ def _sigmoid_ops_fn(
         input: Tuple[torch.Tensor],
         output: torch.Tensor
 ) -> int:
-    # NOTE: Exponential is considered as a single op here
+    # NOTE: Exponential is considered as a single op
     return input[0].numel() * 3
 
 
@@ -184,7 +184,7 @@ def _softmax_ops_fn(
         output: torch.Tensor
 ) -> int:
     # Ops per row along dim dimension
-    # NOTE: Exponential is considered as a single op here
+    # NOTE: Exponential is considered as a single op
     row_ops = 4 * input[0].size(module.dim) - 1
 
     # Get remaining dims
@@ -201,6 +201,15 @@ def _softmax_ops_fn(
     return total_ops
 
 
+def _elu_ops_fn(
+        module: nn.ELU,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    # NOTE: Exponential is considered as a single op
+    return input[0].numel() * 3
+
+
 def _get_default_ops_map() -> dict:
     return {
         # Default method
@@ -215,6 +224,7 @@ def _get_default_ops_map() -> dict:
 
         # Activations
         nn.ReLU: _relu_ops_fn,
+        nn.ELU: _elu_ops_fn,
         nn.Sigmoid: _sigmoid_ops_fn,
         nn.Softmax: _softmax_ops_fn
     }
