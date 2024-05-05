@@ -117,6 +117,48 @@ def _grucell_ops_fn(
     return total_ops
 
 
+def _gru_ops_fn(
+        module: nn.GRU,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    # Get params
+    if len(input[0].size()) == 2:
+        batch_size = 1
+        num_steps = input[0].size(0)
+    
+    elif input[0].size() == 3:
+        batch_size = (
+            input[0].size(0) if module.batch_first else input[0].size(1)
+        )
+        num_steps = (
+            input[0].size(1) if module.batch_first else input[0].size(0)
+        )
+    
+    num_layers = module.num_layers
+    num_directions = 2 if module.bidirectional else 1
+    h_out = module.hidden_size
+    h_in = module.input_size
+
+    if module.bias is not None:
+        r_ops = 2 * batch_size * h_out * (h_in + h_out + 2)
+        z_ops = r_ops
+        n_ops = batch_size * h_out * (9 + 2 * (h_in + h_out))
+    
+    else:
+        r_ops = 2 * batch_size * h_out * (h_in + h_out + 1)
+        z_ops = r_ops
+        n_ops = batch_size * h_out * (9 + 2 * (h_in + h_out - 1))
+
+    # Same regardless of bias
+    h_prime_ops = 4 * batch_size * h_out
+
+    grucell_ops = r_ops + z_ops + n_ops + h_prime_ops
+    total_ops = num_directions * num_steps * num_layers * grucell_ops
+
+    return total_ops
+
+
 def _relu_ops_fn(
         module: nn.ReLU,
         input: Tuple[torch.Tensor],
@@ -169,6 +211,7 @@ def _get_default_ops_map() -> dict:
         nn.Linear: _linear_ops_fn,
         nn.Conv1d: _conv1d_ops_fn,
         nn.GRUCell: _grucell_ops_fn,
+        nn.GRU: _gru_ops_fn,
 
         # Activations
         nn.ReLU: _relu_ops_fn,
