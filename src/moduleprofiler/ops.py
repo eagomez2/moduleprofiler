@@ -285,6 +285,22 @@ def _elu_ops_fn(
     return input[0].numel() * 3
 
 
+def _prelu_ops_fn(
+        module: nn.PReLU,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    return input[0].numel() * 4
+
+
+def _tanh_ops_fn(
+        module: nn.Tanh,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    return input[0].numel() * 7
+
+
 def _get_default_ops_map() -> dict:
     return {
         # Default method
@@ -299,9 +315,15 @@ def _get_default_ops_map() -> dict:
         nn.LSTMCell: _lstmcell_ops_fn,
         nn.LSTM: _lstm_ops_fn,
 
+        # Norm
+
+        # Pooling
+
         # Activations
         nn.ReLU: _relu_ops_fn,
         nn.ELU: _elu_ops_fn,
+        nn.PReLU: _prelu_ops_fn,
         nn.Sigmoid: _sigmoid_ops_fn,
-        nn.Softmax: _softmax_ops_fn
+        nn.Softmax: _softmax_ops_fn,
+        nn.Tanh: _tanh_ops_fn
     }
