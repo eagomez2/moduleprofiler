@@ -159,6 +159,35 @@ def _gru_ops_fn(
     return total_ops
 
 
+def _lstmcell_ops_fn(
+        module: nn.LSTMCell,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    # Get params
+    batch_size = 1 if len(input[0].size()) == 1 else input[0].size(0)
+    h_out = module.hidden_size
+    h_in = module.input_size
+
+    if module.bias is not None:
+        i_ops = 2 * batch_size * h_out * (2 + h_in + h_out)
+        g_ops = 2 * batch_size * h_out * (4 + h_in + h_out)
+    
+    else:
+        i_ops = 2 * batch_size * h_out * (1 + h_in + h_out)
+        g_ops = 2 * batch_size * h_out * (3 + h_in + h_out)
+    
+    # Other gate ops
+    f_ops = i_ops
+    g_ops = i_ops
+    c_prime_ops = 3 * batch_size * h_out
+    h_prime_ops = 8 * batch_size * h_out
+
+    total_ops = i_ops + g_ops + f_ops + c_prime_ops + h_prime_ops
+
+    return total_ops
+
+
 def _relu_ops_fn(
         module: nn.ReLU,
         input: Tuple[torch.Tensor],
@@ -221,6 +250,7 @@ def _get_default_ops_map() -> dict:
         nn.Conv1d: _conv1d_ops_fn,
         nn.GRUCell: _grucell_ops_fn,
         nn.GRU: _gru_ops_fn,
+        nn.LSTMCell: _lstmcell_ops_fn,
 
         # Activations
         nn.ReLU: _relu_ops_fn,
