@@ -188,6 +188,52 @@ def _lstmcell_ops_fn(
     return total_ops
 
 
+def _lstm_ops_fn(
+        module: nn.LSTM,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    # NOTE: Not currently implemented!
+    assert module.proj_size == 0
+
+    # Get params
+    if len(input[0].size()) == 2:
+        batch_size = 1
+        num_steps = input[0].size(0)
+    
+    elif input[0].size() == 3:
+        batch_size = (
+            input[0].size(0) if module.batch_first else input[0].size(1)
+        )
+        num_steps = (
+            input[0].size(1) if module.batch_first else input[0].size(0)
+        )
+    
+    num_layers = module.num_layers
+    num_directions = 2 if module.bidirectional else 1
+    h_out = module.hidden_size
+    h_in = module.input_size
+
+    if module.bias is not None:
+        i_ops = 2 * batch_size * h_out * (2 + h_in + h_out)
+        g_ops = 2 * batch_size * h_out * (4 + h_in + h_out)
+    
+    else:
+        i_ops = 2 * batch_size * h_out * (1 + h_in + h_out)
+        g_ops = 2 * batch_size * h_out * (3 + h_in + h_out)
+    
+    # Other gate ops
+    f_ops = i_ops
+    g_ops = i_ops
+    c_prime_ops = 3 * batch_size * h_out
+    h_prime_ops = 8 * batch_size * h_out
+
+    lstmcell_ops = i_ops + g_ops + f_ops + c_prime_ops + h_prime_ops
+    total_ops = num_directions * num_steps * num_layers * lstmcell_ops
+
+    return total_ops
+
+
 def _relu_ops_fn(
         module: nn.ReLU,
         input: Tuple[torch.Tensor],
@@ -251,6 +297,7 @@ def _get_default_ops_map() -> dict:
         nn.GRUCell: _grucell_ops_fn,
         nn.GRU: _gru_ops_fn,
         nn.LSTMCell: _lstmcell_ops_fn,
+        nn.LSTM: _lstm_ops_fn,
 
         # Activations
         nn.ReLU: _relu_ops_fn,
