@@ -1,5 +1,5 @@
 # ModuleProfiler
-Free open-source package to profile `torch.nn.Module` models and obtain useful information to design a model that fits your needs and constraints at development time.
+Free open-source package to profile `torch.nn.Module` modules and obtain useful information to design a model that fits your needs and constraints at development time.
 
 With `moduleprofiler` you can:
 - Calculate the number of parameters of your model.
@@ -18,7 +18,7 @@ All results can be obtained in one of the following formats:
 2. [Quickstart](#quickstart)
 3. [Supported modules](#supported-modules)
 
-#Installation
+# Installation
 `moduleprofiler` can be installed as any regular `python` module within your environment:
 
 ```bash
