@@ -19,10 +19,10 @@ Home = "https://github.com/eagomez2/moduleprofiler"
 
 [project.optional-dependencies]
 test = [
-    "pytest==7.4.3"
+    "pytest>=7.4.3"
 ]
 lint = [
-    "ruff==0.1.9"
+    "ruff>=0.1.9"
 ]
 
 [tool.ruff]
