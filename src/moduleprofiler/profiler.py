@@ -22,6 +22,7 @@ from .io_size import _get_default_io_size_map
 from .ops import _get_default_ops_map
 
 
+# TODO: Remove verbose mode
 class ModuleProfiler:
     def __init__(
             self,
@@ -55,7 +56,7 @@ class ModuleProfiler:
             attr: Union[str, list],
             value: Any = None
     ) -> None:
-        """ Sets attributes with a value. This is internally used to store
+        """Sets attributes with a value. This is internally used to store
         temporary results in different nested ``nn.Module`` instances.
 
         Args:
@@ -78,7 +79,7 @@ class ModuleProfiler:
                 setattr(module, attr_, value)
 
     def _delattr(self, module: nn.Module, attr: Union[str, list]) -> None:
-        """ Removes model attribute(s) if present.
+        """Removes model attribute(s) if present.
 
         Args:
             module (nn.Module): Input module.
@@ -91,7 +92,7 @@ class ModuleProfiler:
                 delattr(module, attr_)
 
     def _dtype_bits(self, dtype: torch.dtype) -> int:
-        """ Returns the size in bits of a numeric data type.
+        """Returns the size in bits of a numeric data type.
 
         Args:
             dtype (torch.dtype): Data type.
@@ -101,21 +102,21 @@ class ModuleProfiler:
         """
         # Basic dtypes: https://pytorch.org/docs/stable/type_info.html
         # All dtypes: https://pytorch.org/docs/stable/tensor_attributes.html
-        if dtype in [
+        if dtype in (
             torch.uint8,
             torch.int8,
             torch.int16,
             torch.int32,
             torch.int64
-        ]:
+        ):
             bits = torch.iinfo(dtype).bits
 
-        elif dtype in [
+        elif dtype in (
             torch.float16,
             torch.bfloat16,
             torch.float32,
             torch.float64
-        ]:
+        ):
             bits = torch.finfo(dtype).bits
 
         else:
@@ -129,7 +130,7 @@ class ModuleProfiler:
             module: nn.Module,
             hook: Callable
     ) -> None:
-        """ Registers a forward hook in a module and stores the corresponding
+        """Registers a forward hook in a module and stores the corresponding
         handle to be deleted later.
 
         Args:
@@ -142,7 +143,7 @@ class ModuleProfiler:
             self, module: nn.Module,
             hook: Callable
     ) -> None:
-        """ Registers a forward pre hook in a module and stores the
+        """Registers a forward pre hook in a module and stores the
         corresponding handle to be deleted later.
 
         Args:
@@ -159,7 +160,7 @@ class ModuleProfiler:
         self._hook_handles = []
 
     def _merge_specs(self, specs: Tuple[Dict[str, dict]]) -> Dict[str, dict]:
-        """ Merges two or more ``dict`` instances containing the same keys.
+        """Merges two or more ``dict`` instances containing the same keys.
         This will result in a ``dict`` containing the values of both ``dict``
         instances.
 
@@ -169,8 +170,8 @@ class ModuleProfiler:
                 merged.
 
         Returns:
-            (Dict[str, dict]): Merged ``dict`` containing the same keys
-            but a merged set of values for each key.
+            Dict[str, dict]: Merged ``dict`` containing the same keys
+                but a merged set of values for each key.
         """
         # Take first dict as reference
         ref_spec = specs[0]
@@ -206,7 +207,7 @@ class ModuleProfiler:
             input: Tuple[torch.Tensor],
             output: Tuple[torch.Tensor]
     ) -> None:
-        """ Method used to obtain the input and output sizes of a
+        """Method used to obtain the input and output sizes of a
         ``nn.Module`` instance based on its class type and the function
         it is mapped to in ``io_size_fn_map``.
 
@@ -234,7 +235,7 @@ class ModuleProfiler:
                 module: nn.Module,
                 input: Tuple[torch.Tensor]
             ) -> None:
-        """ Triggers a counter before performing the inference and save it's
+        """Triggers a counter before performing the inference and save it's
         value to a module's attribute.
 
         .. note::
@@ -254,8 +255,8 @@ class ModuleProfiler:
             input: Tuple[torch.Tensor],
             output: Tuple[torch.Tensor]
     ) -> None:
-        """ Triggers a counter after the inference has been performed and save
-        it's value to a module's attribute.
+        """Triggers a counter after the inference has been performed and save
+        its value to a module's attribute.
 
         .. note::
             Please note that this calculation may be affected by any other
@@ -276,7 +277,7 @@ class ModuleProfiler:
             input: Tuple[torch.Tensor],
             output: Tuple[torch.Tensor]
     ) -> None:
-        """ Triggers a method that estimates the number of operations computed
+        """Triggers a method that estimates the number of operations computed
         by a module during the forward pass.
 
         Args:
@@ -306,7 +307,7 @@ class ModuleProfiler:
             param_dtype: bool = True,
             percent: bool = True
     ) -> dict:
-        """ Counts the number of parameters in a model.
+        """Counts the number of parameters in a model.
 
         Args:
             module (nn.Module): Model whose parameters will be counted.
@@ -319,7 +320,7 @@ class ModuleProfiler:
                 the model will be reported.
 
         Returns:
-            (dict): Analysis results.
+            dict: Analysis results.
         """
         data = {}
 
@@ -337,7 +338,8 @@ class ModuleProfiler:
             leave=False
         ):
             # First entry corresponds to the module itself
-            k = "__root__" if n == "" else n
+            if n == "":
+                n = "__root__"
 
             data[n] = {
                 "type": m.__class__.__name__,
@@ -385,7 +387,7 @@ class ModuleProfiler:
         return data
 
     def count_params_df(self, *args, **kwargs) -> pd.DataFrame:
-        """ Same as ``count_params`` but returns a ``DataFrame`` instead. """
+        """Same as ``count_params`` but returns a ``DataFrame`` instead."""
         # Count params
         data = self.count_params(*args, **kwargs)
 
@@ -400,7 +402,7 @@ class ModuleProfiler:
         return df
 
     def count_params_csv(self, file: str, *args, **kwargs) -> None:
-        """ Same as ``count_params`` but saves a ``.csv`` file instead. """
+        """Same as ``count_params`` but saves a ``.csv`` file instead."""
         file = add_extension(file, ".csv")
         df = self.count_params_df(*args, **kwargs)
         df.to_csv(file, index=False)
@@ -409,7 +411,7 @@ class ModuleProfiler:
             self._logger.log(f"Results saved to <b>{file}</b>")
 
     def count_params_html(self, file: str, *args, **kwargs) -> None:
-        """ Same as ``count_params`` but saves a ``.html`` file instead. """
+        """Same as ``count_params`` but saves a ``.html`` file instead."""
         file = add_extension(file, ".html")
         df = self.count_params_df(*args, **kwargs)
 
@@ -420,7 +422,7 @@ class ModuleProfiler:
             self._logger.log(f"Results saved to <b>{file}</b>")
 
     def count_params_latex(self, *args, index: bool = False, **kwargs) -> str:
-        """ Same as ``count_params`` but returns a LaTeX output instead. """
+        """Same as ``count_params`` but returns a LaTeX output instead."""
         df = self.count_params_df(*args, **kwargs)
         return df.to_latex(index=index)
 
