@@ -24,6 +24,7 @@ from .ops import _get_default_ops_map
 
 # TODO: Remove verbose mode
 class ModuleProfiler:
+    """Main profiler class."""
     def __init__(
             self,
             input_size_attr: str = "__input_size__",
