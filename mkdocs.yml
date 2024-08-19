@@ -4,7 +4,7 @@ nav:
   - Tutorial: tutorial.md
   - Reference: reference.md
 copyright: |
-  &copy; <a href="https://www.estebangomez.me" target="_blank">Esteban Gómez</a> 2024
+  &copy; 2024 <a href="https://www.estebangomez.me" target="_blank">Esteban Gómez</a>
 theme:
   name: material
   features:
@@ -31,3 +31,20 @@ theme:
         name: Switch to light mode
       primary: teal
       accent: lime
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.arithmatex:
+      generic: true
+extra_javascript:
+  - js/katex.js
+  - https://unpkg.com/katex@0/dist/katex.min.js
+  - https://unpkg.com/katex@0/dist/contrib/auto-render.min.js
+
+extra_css:
+  - https://unpkg.com/katex@0/dist/katex.min.css
