@@ -1,8 +1,14 @@
 site_name: moduleprofiler
 nav:
-  - Documentation: index.md
+  - About: index.md
+  - Documentation: documentation.md
   - Tutorial: tutorial.md
-  - Reference: reference.md
+  - Reference:
+    - Introduction: reference.md
+    - "Modules":
+      - modules/linear.md
+      - modules/conv1d.md
+  - License: license.md
 copyright: |
   &copy; 2024 <a href="https://www.estebangomez.me" target="_blank">Esteban Gómez</a>
 theme:
@@ -32,6 +38,11 @@ theme:
       primary: teal
       accent: lime
 markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span

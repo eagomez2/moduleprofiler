@@ -1,0 +1,2 @@
+# Documentation
+::: moduleprofiler.profiler
