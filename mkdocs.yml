@@ -1,4 +1,10 @@
 site_name: moduleprofiler
+nav:
+  - Documentation: index.md
+  - Tutorial: tutorial.md
+  - Reference: reference.md
+copyright: |
+  &copy; <a href="https://www.estebangomez.me" target="_blank">Esteban Gómez</a> 2024
 theme:
   name: material
   features:
