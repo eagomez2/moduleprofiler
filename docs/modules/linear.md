@@ -19,7 +19,7 @@ The weight tensor $A$ will apply a linear transformation or mapping to the input
 
 ## Complexity
 A linear module involves two tensor-tensor operations: one multiplication and one addition. In order to simplify the calculations, 
-$x$ will be assumed to have size $\left(1, H_\text{in}\right)$. After computing the results, they will be expanded for higher dimensions. If $A$ is a rank-2 tensor of size $\left(H_\text{out}, H_\text{in}\right)$, then $A^T$ has size $\left(H_\text{in}, H_\text{out}\right)$. Then
+$x$ will be assumed to have size $\left(1, H_\text{in}\right)$. After computing the results, they will be expanded for higher dimensions. If $A$ is a rank-2 tensor of size $\left(H_\text{out}, H_\text{in}\right)$, then $A^T$ has size $\left(H_\text{in}, H_\text{out}\right)$. Therefore
 
 $$
 \begin{equation}
@@ -73,9 +73,9 @@ $$
 $$
 
 !!! note
-    Please note that `torch.nn.Linear` allows the batch size $\beta$ to be composed of a single dimension or many, so its definition slightly differs from the batch size definition of other type of modules. As an example, if the input tensor $x$ has size $\left(2, 3, 4\right)$ then the batch dimension is $6$, and the number of input features $H_\text{in}$ is $4$. This is because `torch.nn.Linear` considers only the very last dimensions as input features.
+    Please note that `torch.nn.Linear` allows the batch size $\beta$ to be composed of a single dimension or many, so its definition slightly differs from the batch size definition of other type of modules. As an example, if the input tensor $x$ has size $\left(2, 3, 4\right)$ then the batch dimension is $6$, and the number of input features $H_\text{in}$ is $4$. This is because `torch.nn.Linear` considers only the very last dimension as input features.
 
-The previously calculated number of operations is then repeated $\beta$. Finally, the total number of operations per forward pass is
+The previously calculated number of operations is then repeated $\beta$ times. Finally, the total number of operations per forward pass is
 
 $$
 \begin{equation}
