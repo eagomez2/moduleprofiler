@@ -68,25 +68,37 @@ Finally, it is necessary to add the batch size. Since $\ast$ is any set of dimen
 
 $$
 \begin{equation}
-\beta=\prod^{N - 2}d_n
+\beta=\prod^{N - 2}d_n=d_0\times d_1\times\cdots\times d_{N-2}
 \end{equation}
 $$
 
 !!! note
-    Please note that `torch.nn.Linear` allows the batch size $\beta$ to be composed of a single dimension or many, so its definition slightly differs from the batch size definition of other type of modules. As an example, if the input tensor $x$ has shape $\left(2, 3, 4\right)$ then the batch dimension is $6$, and the number of input features $H_\text{in}$ is $4$. This is because `torch.nn.Linear` considers only the very last dimensions as input features.
+    Please note that `torch.nn.Linear` allows the batch size $\beta$ to be composed of a single dimension or many, so its definition slightly differs from the batch size definition of other type of modules. As an example, if the input tensor $x$ has size $\left(2, 3, 4\right)$ then the batch dimension is $6$, and the number of input features $H_\text{in}$ is $4$. This is because `torch.nn.Linear` considers only the very last dimensions as input features.
+
+The previously calculated number of operations is then repeated $\beta$. Finally, the total number of operations per forward pass is
+
+$$
+\begin{equation}
+\phi=\begin{cases}
+    2\times\beta\times H_\text{out}\times H_\text{in}, & \text{if}\ \text{bias}=\text{True} \\
+    \beta\times H_\text{out}\times\left(2 \times H_\text{in} - 1\right), &\text{if}\ \text{bias}=\text{False}
+\end{cases}
+\end{equation}
+$$
 
 ## Summary
-The number of operations performed by a `torch.nn.Linear` can be estimated as
+The number of operations $\phi$ performed by a `torch.nn.Linear` module can be estimated as
 
 !!! success ""
 
-    === "If `bias=False`"
-        $x$
-
     === "If `bias=True`"
+        $\phi = 2\times\beta\times H_\text{out}\times H_\text{in}$
 
-        ``` markdown
-        1. Sed sagittis eleifend rutrum
-        2. Donec vitae suscipit est
-        3. Nulla tempor lobortis orci
-        ```
+    === "If `bias=False`"
+        $\phi = \beta\times H_\text{out}\times\left(2 \times H_\text{in} - 1\right)$
+
+Where
+
+* $H_\text{in}$ is the number of input features.
+* $H_\text{out}$ is the number of output features.
+* $\beta$ is the batch size. For the case of `torch.nn.Linear` and a rank-N input tensor $x$ of size $\left(d_0, d_1, \cdots, d_{N-1}\right)$ it is defined as $d_0\times d_1\times\cdots\times d_{N-2}$. 
