@@ -62,8 +62,8 @@ $$
 Now the [number of filters](#number-of-filters) $\psi$ are known, it is necessary to compute how many operations each filter performs. As shown in [Figure 1](#conv1d-kernel-diagram), for each kernel position there will be $\text{kernel\_size}$ multiplications (i.e. each kernel element multiplied by a slice of the input tensor of the same size) and $\text{kernel\_size}-1$ additions to aggregate the result and obtain one element of the output.
 
 <figure markdown="span" id="conv1d-kernel-diagram">
-  ![Image title](/img/conv1d-kernel-diagram-light.svg#only-light){ width="600" }
-  ![Image title](/img/conv1d-kernel-diagram-dark.svg#only-dark){ width="600" }
+  ![conv1d-kernel-diagram](../figures/conv1d-kernel-diagram-light.svg#only-light){ width="600" }
+  ![conv1d-kernel-diagram](../figures/conv1d-kernel-diagram-dark.svg#only-dark){ width="600" }
   <figcaption>Figure 1. Operations per kernel position to obtain the output tensor.</figcaption>
 </figure>
 
@@ -72,6 +72,25 @@ Since each element in $L_\text{out}$ is the result of the operations carried out
 $$
 \begin{equation}
 \lambda=L_{\text{out}}\times\left(\text{kernel\_size}+\left(\text{kernel\_size}-1\right)\right)
+\end{equation}
+$$
+
+If `bias=True` there is an additional sum of the bias term $b$ for each element in $L_\text{out}$ and the expression becomes
+
+$$
+\begin{equation}
+\lambda=L_{\text{out}}\times\left(\text{kernel\_size}+\left(\text{kernel\_size}-1\right)+1\right)=2\times L_\text{out}\times\text{kernel\_size}
+\end{equation}
+$$
+
+Therefore
+
+$$
+\begin{equation}
+\lambda=\begin{cases}
+    \lambda=2\times L_\text{out}\times\text{kernel\_size}, & \text{if}\ \text{bias}=\text{True} \\
+    \lambda=L_{\text{out}}\times\left(\text{kernel\_size}+\left(\text{kernel\_size}-1\right)\right), & \text{if}\ \text{bias}=\text{False}
+\end{cases}
 \end{equation}
 $$
 
@@ -112,5 +131,13 @@ Where
 * $\psi$ is the [number of filters](#number-of-filters).
 * $\lambda$ is the number of [operations per filter](#operations-per-filter).
 * $\gamma$ is the number of [filter aggregation](#filter-aggregation) operations.
+
+For the case of `bias=True` this can be expanded to
+
+$$
+\begin{equation}
+\small{\phi=N\times\left(\left(\frac{C_{\text{in}}\times C_{\text{out}}}{\text{groups}}\right)\times\left(2\times L_{\text{out}}\times\text{kernel\_size}\right)+C_{\text{out}}\times L_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}\right)\right)}
+\end{equation}
+$$
 
 ## Summary
