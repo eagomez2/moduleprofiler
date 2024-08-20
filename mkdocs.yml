@@ -50,6 +50,8 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  - md_in_html
+  - attr_list
   - pymdownx.arithmatex:
       generic: true
 plugins:
@@ -69,3 +71,4 @@ extra_javascript:
   - https://unpkg.com/katex@0/dist/contrib/auto-render.min.js
 extra_css:
   - https://unpkg.com/katex@0/dist/katex.min.css
+  - stylesheets/extra.css
