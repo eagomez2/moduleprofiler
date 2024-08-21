@@ -141,3 +141,22 @@ $$
 $$
 
 ## Summary
+The number of operations $\phi$ performed by a `torch.nn.Conv1d` module can be estimated as
+
+!!! success ""
+
+    === "If `bias=True`"
+        $\large{\phi=N\times\left(\left(\frac{C_{\text{in}}\times C_{\text{out}}}{\text{groups}}\right)\times\left(2\times L_{\text{out}}\times\text{kernel\_size}\right)+C_{\text{out}}\times L_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}\right)\right)}$
+
+    === "If `bias=False`"
+        TODO
+
+Where
+
+
+* $N$ is the batch size.
+* $C_{\text{in}}$ is the number of input channels.
+* $C_{\text{out}}$ is the number of output channels.
+* $\text{groups}$ is the number of groups.
+* $L_{\text{out}}$ is the length of the output tensor (i.e. `y.size(-1)` assuming an output tensor `y`).
+* $\text{kernel\_size}$ is the length of the kernel.
