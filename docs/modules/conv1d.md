@@ -71,26 +71,7 @@ Since each element in $L_\text{out}$ is the result of the operations carried out
 
 $$
 \begin{equation}
-\lambda=L_{\text{out}}\times\left(\text{kernel\_size}+\left(\text{kernel\_size}-1\right)\right)
-\end{equation}
-$$
-
-If `bias=True` there is an additional sum of the bias term $b$ for each element in $L_\text{out}$ and the expression becomes
-
-$$
-\begin{equation}
-\lambda=L_{\text{out}}\times\left(\text{kernel\_size}+\left(\text{kernel\_size}-1\right)+1\right)=2\times L_\text{out}\times\text{kernel\_size}
-\end{equation}
-$$
-
-Therefore
-
-$$
-\begin{equation}
-\lambda=\begin{cases}
-    \lambda=2\times L_\text{out}\times\text{kernel\_size}, & \text{if}\ \text{bias}=\text{True} \\
-    \lambda=L_{\text{out}}\times\left(\text{kernel\_size}+\left(\text{kernel\_size}-1\right)\right), & \text{if}\ \text{bias}=\text{False}
-\end{cases}
+\lambda=L_{\text{out}}\times\left(\text{kernel\_size}+\left(\text{kernel\_size}-1\right)\right)=L_{\text{out}}\times\left(2\times\text{kernel\_size}-1\right)
 \end{equation}
 $$
 
@@ -117,6 +98,11 @@ $$
 \end{equation}
 $$
 
+!!! note
+    Please note that the bias term $b$ was not included in  [Operations per filter](#operations-per-filter) and is added here instead. Even though according to <a href="https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html" target="_blank">PyTorch ``torch.nn.Conv1d`` documentation</a> $b$ has shape $\left(C_\text{out}\right)$, in practice this tensor is implicitly broadcastes following <a href="https://pytorch.org/docs/stable/notes/broadcasting.html" target="_blank">PyTorch broadcasting semantics</a> in such a way that each tensor value will be added with its corresponding channel bias.
+
+### Total operations
+ 
 Now putting together all different factors that contribute to the total number of operations $\phi$ as well including the batch size $N$, the total number of operations $\phi$ can be summarized as
 
 $$
@@ -136,7 +122,24 @@ For the case of `bias=True` this can be expanded to
 
 $$
 \begin{equation}
-\small{\phi=N\times\left(\left(\frac{C_{\text{in}}\times C_{\text{out}}}{\text{groups}}\right)\times\left(2\times L_{\text{out}}\times\text{kernel\_size}\right)+C_{\text{out}}\times L_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}\right)\right)}
+\small{\phi=N\times\left(\left(\frac{C_{\text{in}}\times C_{\text{out}}}{\text{groups}}\right)\times\left(L_{\text{out}}\times\left(2\times\text{kernel\_size}-1\right)\right)+C_{\text{out}}\times L_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}\right)\right)}
+\end{equation}
+$$
+
+Rearranging terms it can be simplified to
+
+$$
+\begin{equation}
+\phi=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times L_{\text{out}}\times2\times\text{kernel\_size}}{\text{groups}}\right)
+\end{equation}
+$$
+
+
+For the case of `bias=False` $\gamma=C_{\text{out}}\times L_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}-1\right)$  and the whole expression can be simplified to
+
+$$
+\begin{equation}
+\phi=N\times\left(\frac{C_{\text{out}}\times L_{\text{out}}\times\left( C_\text{in}\times2\times\text{kernel\_size}-\text{groups}\right)}{\text{groups}}\right)
 \end{equation}
 $$
 
@@ -146,10 +149,10 @@ The number of operations $\phi$ performed by a `torch.nn.Conv1d` module can be e
 !!! success ""
 
     === "If `bias=True`"
-        $\large{\phi=N\times\left(\left(\frac{C_{\text{in}}\times C_{\text{out}}}{\text{groups}}\right)\times\left(2\times L_{\text{out}}\times\text{kernel\_size}\right)+C_{\text{out}}\times L_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}\right)\right)}$
+        $\Large{\phi=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times L_{\text{out}}\times2\times\text{kernel\_size}}{\text{groups}}\right)}$
 
     === "If `bias=False`"
-        TODO
+        $\Large{\phi=N\times\left(\frac{C_{\text{out}}\times L_{\text{out}}\times\left( C_\text{in}\times2\times\text{kernel\_size} - \text{groups}\right)}{\text{groups}}\right)}$
 
 Where
 
