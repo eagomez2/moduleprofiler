@@ -11,7 +11,7 @@ from typing import (
 
 
 def make_list(x: Any) -> list:
-    """ If a single element into a list of one element.
+    """If a single element into a list of one element.
 
     Args:
         x (Any): Element(s) to be returned as a list.
@@ -23,7 +23,7 @@ def make_list(x: Any) -> list:
 
 
 def get_hardware_specs() -> dict:
-    """ Returns a ``dict`` with a set of hardware specifications of the host
+    """Returns a ``dict`` with a set of hardware specifications of the host
     computer.
 
     Returns:
@@ -54,10 +54,10 @@ def ops_to_flops(ops_per_frame: int,
                  sample_rate: int,
                  frame_size: int,
                  hop_size: Optional[int] = None) -> float:
-    """ Calculates the number of floating-point operations per second FLOPs
+    """Calculates the number of floating-point operations per second FLOPs
     based on a give number of operations per frame and frame size.
 
-    .. note::
+    !!! note
         Please note that frame size refers to the size of the output of a time
         step in the case of real time models. For example, if a model performs
         an inference over a Short-time Fourier Transform with overlap,
@@ -92,7 +92,7 @@ def realtime_factor(inference_time: float,
                     frame_size: int,
                     hop_size: Optional[int] = None,
                     inverse: bool = False) -> float:
-    """ Calculates the real-time factor of a model.
+    """Calculates the real-time factor of a model.
 
     Args:
         inference_time (float): Time in milliseconds needed by a model to
@@ -123,7 +123,7 @@ def realtime_factor(inference_time: float,
 
 
 def dict_keys_common(input: dict, query: dict) -> List[str]:
-    """ Returns a list with all common keys that are in ``query`` ``dict`` and
+    """Returns a list with all common keys that are in ``query`` ``dict`` and
     in ``input`` ``dict``.
 
     Args:
@@ -131,12 +131,12 @@ def dict_keys_common(input: dict, query: dict) -> List[str]:
         query (dict): Query ``dict``.
 
     Returns:
-        (list) Keys that are present in both ``query`` and ``input``.
+        (list): Keys that are present in both ``query`` and ``input``.
     """
     input_keys = list(input.keys())
     common_keys = []
 
-    for k in query.keys():
+    for k in query:
         if k in input_keys:
             common_keys.append(k)
 
@@ -144,7 +144,7 @@ def dict_keys_common(input: dict, query: dict) -> List[str]:
 
 
 def dict_keys_diff(input: dict, query: dict) -> List[str]:
-    """ Returns a list with all keys that are in ``query`` ``dict`` but not
+    """Returns a list with all keys that are in ``query`` ``dict`` but not
     in ``input`` ``dict``.
 
     Args:
@@ -157,7 +157,7 @@ def dict_keys_diff(input: dict, query: dict) -> List[str]:
     input_keys = list(input.keys())
     diff_keys = []
 
-    for k in query.keys():
+    for k in query:
         if k not in input_keys:
             diff_keys.append(k)
 
@@ -165,7 +165,7 @@ def dict_keys_diff(input: dict, query: dict) -> List[str]:
 
 
 def dict_merge(input: dict, other: dict) -> dict:
-    """ Merges two dictionaries (``input`` and ``other``) comining theyr
+    """Merges two dictionaries (``input`` and ``other``) combining their
     keys and values.
 
     Args:
@@ -196,4 +196,11 @@ def dict_merge(input: dict, other: dict) -> dict:
 
 
 def add_extension(file: str, extension: str) -> str:
+    """Adds an extension to a filename. If the file already has the extension,
+    then the name is returned without modifications.
+    
+    Args:
+        file (str): Input filename.
+        extension (str): Extension to be added.
+    """
     return f"{file}.{extension}" if not file.endswith(extension) else file

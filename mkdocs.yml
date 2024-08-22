@@ -66,6 +66,7 @@ plugins:
           options:
             show_source: false
             line_length: 79
+  - autorefs
 extra_javascript:
   - js/katex.js
   - https://unpkg.com/katex@0/dist/katex.min.js

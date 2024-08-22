@@ -22,9 +22,31 @@ from .io_size import _get_default_io_size_map
 from .ops import _get_default_ops_map
 
 
-# TODO: Remove verbose mode
 class ModuleProfiler:
-    """Main profiler class."""
+    """Main class used to profile an arbitraty ``nn.Module`` and describe
+    different specifications of it such as tracing input and output shapes,
+    counting model parameters or estimating the number of operations the model
+    peforms:
+
+    Args:
+        input_size_attr (str): Hidden attribute in the module under measurement
+            used to store its input size.
+        output_size_attr (str): Hidden attribute in the module under
+            measurement used to store its output size.
+        ops_attr (str): Hidden attribute in the module under measurement used
+            to store the number of operations it performs.
+        inference_start_attr (str): Hidden attribute used to store inference
+            start times while timing a model.
+        inference_end_attr (str): Hidden attribute used to store inference end
+            times while timing a model.
+        io_size_fn_map (dict): Dictionary containing a map between modules and   
+            their corresponding functions useed to trace the its size.
+        ops_fn_map (dict): Dictionary containing a map between modules and
+            their corresponding function to estimate the number of operations.
+        ts_fmt (str): Timestamp format used to print messages if
+            `verbose=True`.
+        verbose (bool): If ``True``, enabled verbose output mode.
+    """
     def __init__(
             self,
             input_size_attr: str = "__input_size__",
@@ -154,7 +176,7 @@ class ModuleProfiler:
         self._hook_handles.append(module.register_forward_pre_hook(hook))
     
     def _remove_registered_hooks(self) -> None:
-        """ Removes all hooks registered by this object. """
+        """Removes all hooks registered by this object. """
         for hook_handle in self._hook_handles:
             hook_handle.remove()
         
@@ -239,7 +261,7 @@ class ModuleProfiler:
         """Triggers a counter before performing the inference and save it's
         value to a module's attribute.
 
-        .. note::
+        !!! note
             Please note that this calculation may be affected by any other
             pre-forward hook attached to the module.
 
@@ -259,7 +281,7 @@ class ModuleProfiler:
         """Triggers a counter after the inference has been performed and save
         its value to a module's attribute.
 
-        .. note::
+        !!! note
             Please note that this calculation may be affected by any other
             forward hook attached to the module.
 
@@ -321,7 +343,8 @@ class ModuleProfiler:
                 the model will be reported.
 
         Returns:
-            dict: Analysis results.
+            (dict): Analysis results containing the measured module names and
+                each corresponding parameter count.
         """
         data = {}
 
@@ -427,7 +450,6 @@ class ModuleProfiler:
         df = self.count_params_df(*args, **kwargs)
         return df.to_latex(index=index)
 
-    @torch.no_grad()
     def estimate_inference_time(
         self,
         module: nn.Module,
@@ -436,105 +458,128 @@ class ModuleProfiler:
         num_iters: int = 1000,
         drop_first: int = 100
     ) -> dict:
-        # Assertions
-        if num_iters <= drop_first:
-            raise ValueError(
-                f"{num_iters=} should be greater than {drop_first=}"
-            )
+        """Estimates the time spent on each module during the forward pass of
+        a model. The final results are statistical aggregation of ``num_iters``
+        dropping the first ``drop_first`` iterations to avoid outliers caused
+        by warmup routines.
+
+        Args:
+            module (nn.Module): Input module.
+            input (Union[torch.Tensor], Tuple[torch.Tensor]): Model input.
+            eval (bool): If ``True``, the module is set to eval mode before
+                computing the inference time.
+            num_iters (int): Number of iterations to be performed.
+            drop_first (int): Inferences to be dropped before aggregating the
+                results.
         
-        if self.verbose:
-            self._logger.log(
-                "Estimating inference time of "
-                f"<b><magenta>{module.__class__.__name__}</magenta></b>"
-            )
-        
-        # Setup
-        if eval:
+        Returns:
+            (dict): Measurement results.
+        """
+        with torch.no_grad():
+            # Assertions
+            if num_iters <= drop_first:
+                raise ValueError(
+                    f"{num_iters=} should be greater than {drop_first=}"
+                )
+            
             if self.verbose:
                 self._logger.log(
-                    f"Setting module <b><magenta>{module.__class__.__name__}"
-                    "</magenta></b> to <b><magenta>eval</magenta></b> mode"
+                    "Estimating inference time of "
+                    f"<b><magenta>{module.__class__.__name__}</magenta></b>"
                 )
+            
+            # Setup
+            if eval:
+                if self.verbose:
+                    self._logger.log(
+                        "Setting module <b><magenta>"
+                        f"{module.__class__.__name__}</magenta></b> to "
+                        "<b><magenta>eval</magenta></b> mode"
+                    )
 
-            was_training = bool(module.training)
-            module.eval()
-        
-        # Set attrs and hooks
-        for m in module.modules():
-            self._setattr(m, self.inference_start_attr)
-            self._setattr(m, self.inference_end_attr)
-            self._register_forward_pre_hook(m, self._inference_time_start_fn)
-            self._register_forward_hook(m, self._inference_time_end_fn)
+                was_training = bool(module.training)
+                module.eval()
+            
+            # Set attrs and hooks
+            for m in module.modules():
+                self._setattr(m, self.inference_start_attr)
+                self._setattr(m, self.inference_end_attr)
+                self._register_forward_pre_hook(
+                    m,
+                    self._inference_time_start_fn
+                )
+                self._register_forward_hook(m, self._inference_time_end_fn)
 
-        # Measure
-        # NOTE: Key '' is removed since it corresponds to the root module
-        data = {
-            "__root__": {
-                "type": module.__class__.__name__,
-                "inference_time_ms": []
+            # Measure
+            # NOTE: Key '' is removed since it corresponds to the root module
+            data = {
+                "__root__": {
+                    "type": module.__class__.__name__,
+                    "inference_time_ms": []
+                }
             }
-        }
-        data.update(
-            {n: {"type": m.__class__.__name__, "inference_time_ms": []}
-             for n, m in module.named_modules()}
-        )
-        data.pop("")
+            data.update(
+                {n: {"type": m.__class__.__name__, "inference_time_ms": []}
+                for n, m in module.named_modules()}
+            )
+            data.pop("")
 
-        for _ in tqdm(
-            range(num_iters),
-            desc="Measuring inference time",
-            unit="inferences",
-            disable=not self.verbose,
-            leave=False
-        ):
-            module(input)
+            for _ in tqdm(
+                range(num_iters),
+                desc="Measuring inference time",
+                unit="inferences",
+                disable=not self.verbose,
+                leave=False
+            ):
+                module(input)
 
-            for n, m in module.named_modules():
-                end = getattr(m, self.inference_end_attr)
-                start = getattr(m, self.inference_start_attr)
-                diff_ms = (end - start) * 1000.0
-                k = "__root__" if n == "" else n
-                data[k]["inference_time_ms"].append(diff_ms)
+                for n, m in module.named_modules():
+                    end = getattr(m, self.inference_end_attr)
+                    start = getattr(m, self.inference_start_attr)
+                    diff_ms = (end - start) * 1000.0
+                    k = "__root__" if n == "" else n
+                    data[k]["inference_time_ms"].append(diff_ms)
 
-        # Tear down
-        for m in module.modules():
-            self._delattr(m, self.inference_start_attr)
-            self._delattr(m, self.inference_end_attr)
+            # Tear down
+            for m in module.modules():
+                self._delattr(m, self.inference_start_attr)
+                self._delattr(m, self.inference_end_attr)
 
-        self._remove_registered_hooks()
+            self._remove_registered_hooks()
 
-        if eval and was_training:
-            if self.verbose:
-                self._logger.log(
-                    f"Setting module <b><magenta>{module.__class__.__name__}"
-                    "</magenta></b> to <b><magenta>train</magenta></b> mode"
+            if eval and was_training:
+                if self.verbose:
+                    self._logger.log(
+                        "Setting module <b><magenta>"
+                        f"{module.__class__.__name__}</magenta></b> to "
+                        "<b><magenta>train</magenta></b> mode"
+                    )
+
+                module.train()
+            
+            for k in data:
+                # Add time stats
+                times = pd.Series(data[k]["inference_time_ms"])
+                data[k].update(
+                    {
+                        "inference_time_mean_ms": times.mean(),
+                        "inference_time_max_ms": times.max(),
+                        "inference_time_min_ms": times.min(),
+                        "inference_time_std_ms": times.std(),
+                        "inference_time_median_ms": times.median()
+                    }
                 )
 
-            module.train()
-        
-        for k in data:
-            # Add time stats
-            times = pd.Series(data[k]["inference_time_ms"])
-            data[k].update(
-                {
-                    "inference_time_mean_ms": times.mean(),
-                    "inference_time_max_ms": times.max(),
-                    "inference_time_min_ms": times.min(),
-                    "inference_time_std_ms": times.std(),
-                    "inference_time_median_ms": times.median()
-                }
-            )
-
-            # Add misc data
-            data[k].update(
-                {
-                    "intraop_threads": torch.get_num_threads(),
-                    "interop_threads": torch.get_num_interop_threads()
-                }
-            )
-            data[k].update(get_hardware_specs())
-        
-        return data
+                # Add misc data
+                data[k].update(
+                    {
+                        "intraop_threads": torch.get_num_threads(),
+                        "interop_threads": torch.get_num_interop_threads()
+                    }
+                )
+                data[k].update(get_hardware_specs())
+            
+            return data
     
     def estimate_inference_time_df(
             self,
@@ -542,7 +587,7 @@ class ModuleProfiler:
             aggr: bool = True,
             **kwargs
     ) -> pd.DataFrame:
-        """ Same as ``estimate_inference_time`` but returns a ``DataFrame``
+        """Same as ``estimate_inference_time`` but returns a ``DataFrame``
         instead. Additional argument ``aggr`` can be set to ``True`` if only
         aggregations should be kept.
         """
@@ -569,7 +614,7 @@ class ModuleProfiler:
         return df
     
     def estimate_inference_time_csv(self, file: str, *args, **kwargs) -> None:
-        """ Same as ``estimate_inference_time`` but saves a ``.csv`` file
+        """Same as ``estimate_inference_time`` but saves a ``.csv`` file
         instead.
         """
         file = add_extension(file, ".csv")
@@ -580,7 +625,7 @@ class ModuleProfiler:
             self._logger.log(f"Results saved to <b>{file}</b>")
     
     def estimate_inference_time_html(self, file: str, *args, **kwargs) -> None:
-        """ Same as ``estimate_inference_time`` but saves a ``.html`` file
+        """Same as ``estimate_inference_time`` but saves a ``.html`` file
         instead.
         """
         file = add_extension(file, ".html")
@@ -598,13 +643,12 @@ class ModuleProfiler:
             index: bool = False,
             **kwargs
     ) -> str:
-        """ Same as ``estimate_inference_time`` but return a LaTeX output
+        """Same as ``estimate_inference_time`` but return a LaTeX output
         instead.
         """
         df = self.estimate_inference_time_df(*args, **kwargs)
         return df.to_latex(index=index)
 
-    @torch.no_grad()
     def estimate_total_inference_time(
         self,
         module: nn.Module,
@@ -613,71 +657,89 @@ class ModuleProfiler:
         num_iters: int = 1000,
         drop_first: int = 100
     ) -> dict:
-        # Assertions
-        if num_iters <= drop_first:
-            raise ValueError(
-                f"{num_iters=} should be greater than {drop_first=}"
-            )
-
-        if self.verbose:
-            self._logger.log(
-                "Estimating total inference time of "
-                f"<b><magenta>{module.__class__.__name__}</magenta></b>"
-            )
-
-        # Setup
-        if eval:
-            if self.verbose:
-                self._logger.log(
-                    f"Setting module <b><magenta>{module.__class__.__name__}"
-                    "</magenta></b> to <b><magenta>eval</magenta></b> mode"
-                )
-
-            was_training = bool(module.training)
-            module.eval()
-
-        # Store (start_time, end_time) tuples
-        stopwatch = []
-
-        # Compute inferences
-        for _ in range(num_iters):
-            start_time = perf_counter()
-            module(input)
-            end_time = perf_counter()
-            stopwatch.append((start_time, end_time))
-
-        # Tear down
-        if eval and was_training:
-            if self.verbose:
-                self._logger.log(
-                    f"Setting module <b><magenta>{module.__class__.__name__}"
-                    "</magenta></b> to <b><magenta>train</magenta></b> mode"
-                )
-
-            module.train()
-
-        # Collect stats
-        times = pd.Series(
-            [(t[1] - t[0]) * 1000.0 for t in stopwatch[drop_first:]]
-        )
-        data = {
-            "__root__": {
-                "type": module.__class__.__name__,
-                "intraop_threads": torch.get_num_threads(),
-                "interop_threads": torch.get_num_interop_threads()
-            }
-        }
-        data["__root__"].update(get_hardware_specs())
-        data["__root__"].update({
-            "inference_time_ms": times.tolist(),
-            "inference_time_mean_ms": times.mean(),
-            "inference_time_min_ms": times.min(),
-            "inference_time_max_ms": times.max(),
-            "inference_time_std_ms": times.std(),
-            "inference_time_median_ms": times.median()
-        })
+        """Estimates the total inference time taken by the model to run an
+        inference.
         
-        return data
+        Args:
+            module (nn.Module): Input module.
+            input (Union[torch.Tensor, Tuple[torch.Tensor]]): Model input.
+            eval (bool): If ``True``, the module is set to eval mode before
+                computing the inference time.
+            num_iters (int): Number of iterations to be performed.
+            drop_first (int): Inferences to be dropped before aggregating the
+                results.
+
+        Returns:
+            (dict): Measurement results.
+        """
+        with torch.no_grad():
+            # Assertions
+            if num_iters <= drop_first:
+                raise ValueError(
+                    f"{num_iters=} should be greater than {drop_first=}"
+                )
+
+            if self.verbose:
+                self._logger.log(
+                    "Estimating total inference time of "
+                    f"<b><magenta>{module.__class__.__name__}</magenta></b>"
+                )
+
+            # Setup
+            if eval:
+                if self.verbose:
+                    self._logger.log(
+                        "Setting module <b><magenta>"
+                        f"{module.__class__.__name__}</magenta></b> to "
+                        "<b><magenta>eval</magenta></b> mode"
+                    )
+
+                was_training = bool(module.training)
+                module.eval()
+
+            # Store (start_time, end_time) tuples
+            stopwatch = []
+
+            # Compute inferences
+            for _ in range(num_iters):
+                start_time = perf_counter()
+                module(input)
+                end_time = perf_counter()
+                stopwatch.append((start_time, end_time))
+
+            # Tear down
+            if eval and was_training:
+                if self.verbose:
+                    self._logger.log(
+                        "Setting module <b><magenta>"
+                        f"{module.__class__.__name__}</magenta></b> to "
+                        "<b><magenta>train</magenta></b> mode"
+                    )
+
+                module.train()
+
+            # Collect stats
+            times = pd.Series(
+                [(t[1] - t[0]) * 1000.0 for t in stopwatch[drop_first:]]
+            )
+            data = {
+                "__root__": {
+                    "type": module.__class__.__name__,
+                    "intraop_threads": torch.get_num_threads(),
+                    "interop_threads": torch.get_num_interop_threads()
+                }
+            }
+            data["__root__"].update(get_hardware_specs())
+            data["__root__"].update({
+                "inference_time_ms": times.tolist(),
+                "inference_time_mean_ms": times.mean(),
+                "inference_time_min_ms": times.min(),
+                "inference_time_max_ms": times.max(),
+                "inference_time_std_ms": times.std(),
+                "inference_time_median_ms": times.median()
+            })
+            
+            return data
 
     def estimate_total_inference_time_df(
             self,
@@ -685,7 +747,7 @@ class ModuleProfiler:
             aggr: bool = False,
             **kwargs
     ) -> pd.DataFrame:
-        """ Same as ``estimate_total_inference_time`` but returns a
+        """Same as ``estimate_total_inference_time`` but returns a
         ``DataFrame`` instead. Additional argument ``aggr`` can be set to
         ``True`` if only aggregations should be kept.
         """
@@ -717,7 +779,7 @@ class ModuleProfiler:
             *args,
             **kwargs
     ) -> None:
-        """ Same as ``estimate_total_inference_time`` but saves a ``.csv``
+        """Same as ``estimate_total_inference_time`` but saves a ``.csv``
         file instead.
         """
         file = add_extension(file, ".csv")
@@ -733,7 +795,7 @@ class ModuleProfiler:
             *args,
             **kwargs
     ) -> None:
-        """ Same as ``estimate_total_inference_time`` but saves a ``.html``
+        """Same as ``estimate_total_inference_time`` but saves a ``.html``
         file instead.
         """ 
         file = add_extension(file, ".html")
@@ -751,90 +813,103 @@ class ModuleProfiler:
             index: bool = False,
             **kwargs
     ) -> str:
-        """ Same as ``estimate_total_inference_time`` but returns a LaTeX
+        """Same as ``estimate_total_inference_time`` but returns a LaTeX
         output instead.
         """
         df = self.estimate_inference_time_df(*args, **kwargs)
         return df.to_latex(index=index)
 
-    @torch.no_grad()
     def trace_io_sizes(
             self,
             module: nn.Module,
-            input: Union[
-                torch.Tensor,
-                Tuple[torch.Tensor],
-                Dict[str, torch.Tensor]
-            ],
+            input: Union[torch.Tensor, Tuple[torch.Tensor]],
             pred_fn: Optional[Callable] = None,
             eval: bool = False
     ) -> dict:
-        if self.verbose:
-            self._logger.log(
-                "Tracing I/O shapes of <b><magenta>"
-                f"{module.__class__.__name__}</magenta></b>"
-            )
-
-        # Set attrs and hooks
-        for m in module.modules():
-            self._setattr(m, self.input_size_attr)
-            self._setattr(m, self.output_size_attr)
-            self._register_forward_hook(m, self._io_size_fn)
+        """Traces the input and output tensor shapes of a module given a
+        sample input.
         
-        # Model setup
-        if eval:
+        Args:
+            module (nn.Module): Input module.
+            input (Union[torch.Tensor, Tuple[torch.Tensor]): Model input.
+            pred_fn (Optional[Callable]): Optional prediction function that
+                replaced the forward call if the module requires additional
+                steps.
+            eval (bool): If ``True``, the module is set to eval mode before
+                computing the inference time.
+        
+        Returns:
+            (dict): Results containing input and output shapes of each module.
+        """
+        with torch.no_grad():
             if self.verbose:
                 self._logger.log(
-                    f"Setting module <b><magenta>{module.__class__.__name__}"
-                    "</magenta></b> to <b><magenta>eval</magenta></b> mode"
+                    "Tracing I/O shapes of <b><magenta>"
+                    f"{module.__class__.__name__}</magenta></b>"
                 )
 
-            was_training = bool(module.training)
-            module.eval()
-        
-        # Trace I/O sizes
-        if isinstance(input, dict):
-            if pred_fn is not None:
-                pred_fn(**input)
+            # Set attrs and hooks
+            for m in module.modules():
+                self._setattr(m, self.input_size_attr)
+                self._setattr(m, self.output_size_attr)
+                self._register_forward_hook(m, self._io_size_fn)
             
+            # Model setup
+            if eval:
+                if self.verbose:
+                    self._logger.log(
+                        "Setting module <b><magenta>"
+                        f"{module.__class__.__name__}</magenta></b> to "
+                        "<b><magenta>eval</magenta></b> mode"
+                    )
+
+                was_training = bool(module.training)
+                module.eval()
+            
+            # Trace I/O sizes
+            if isinstance(input, dict):
+                if pred_fn is not None:
+                    pred_fn(**input)
+                
+                else:
+                    module(**input)
+
             else:
-                module(**input)
+                if pred_fn is not None:
+                    pred_fn(input)
+                
+                else:
+                    module(input)
+                
+            # Collect data
+            data = {}
 
-        else:
-            if pred_fn is not None:
-                pred_fn(input)
+            for n, m in module.named_modules():
+                k = "__root__" if n == "" else n
+                data[k] = {
+                    "type": m.__class__.__name__,
+                    "input_size": getattr(m, self.input_size_attr),
+                    "output_size": getattr(m, self.output_size_attr)
+                }
             
-            else:
-                module(input)
+            # Tear down
+            if eval and was_training:
+                if self.verbose:
+                    self._logger.log(
+                        "Setting module <b><magenta>"
+                        f"{module.__class__.__name__}</magenta></b> to "
+                        "<b><magenta>train</magenta></b> mode"
+                    )
+
+                module.train()
             
-        # Collect data
-        data = {}
+            for m in module.modules():
+                self._delattr(m, self.input_size_attr)
+                self._delattr(m, self.output_size_attr)
+            
+            self._remove_registered_hooks()
 
-        for n, m in module.named_modules():
-            k = "__root__" if n == "" else n
-            data[k] = {
-                "type": m.__class__.__name__,
-                "input_size": getattr(m, self.input_size_attr),
-                "output_size": getattr(m, self.output_size_attr)
-            }
-        
-        # Tear down
-        if eval and was_training:
-            if self.verbose:
-                self._logger.log(
-                    f"Setting module <b><magenta>{module.__class__.__name__}"
-                    "</magenta></b> to <b><magenta>train</magenta></b> mode"
-                )
-
-            module.train()
-        
-        for m in module.modules():
-            self._delattr(m, self.input_size_attr)
-            self._delattr(m, self.output_size_attr)
-        
-        self._remove_registered_hooks()
-
-        return data
+            return data
 
     def trace_io_sizes_df(self, *args, **kwargs) -> pd.DataFrame:
         """ Same as ``trace_io_sizes`` but returns a ``DataFrame`` instead. """
