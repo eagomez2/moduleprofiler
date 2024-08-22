@@ -956,84 +956,97 @@ class ModuleProfiler:
         df = self.trace_io_sizes_df(*args, **kwargs)
         return df.to_latex(index=index)
 
-    @torch.no_grad()
     def estimate_ops(
         self,
         module: nn.Module,
-        input: Union[
-            torch.Tensor,
-            Tuple[torch.Tensor],
-            Dict[str, torch.Tensor]
-        ],
+        input: Union[torch.Tensor, Tuple[torch.Tensor]],
         pred_fn: Optional[Callable] = None,
         eval: bool = True
     ) -> dict:
-        if self.verbose:
-            self._logger.log(
-                f"Estimating ops of <b><magenta>{module.__class__.__name__}"
-                "</magenta></b>"
-            )
-        
-        # Set attrs and hooks
-        for m in module.modules():
-            self._setattr(m, self.ops_attr)
-            self._register_forward_hook(m, self._ops_fn)
+        """Estimates the number of operations computed in a forward pass of a
+        module.
 
-        # Model setup
-        if eval:
+        Args:
+            module (nn.Module): Input module.
+            input (Union[torch.Tensor, Tuple[torch.Tensor]]): Model input.
+            pred_fn (Optional[Callable]): Optional prediction function that
+                replaced the forward call if the module requires additional
+                steps.
+            eval (bool): If ``True``, the module is set to eval mode before
+                computing the inference time.
+        
+        Returns:
+            (dict): Results containing the estimated operations per module.
+        """
+        with torch.no_grad():
             if self.verbose:
                 self._logger.log(
-                    f"Setting module <b><magenta>{module.__class__.__name__}"
-                    "</magenta></b> to <b><magenta>eval</magenta></b> mode"
+                    f"Estimating ops of <b><magenta>"
+                    f"{module.__class__.__name__}</magenta></b>"
                 )
+            
+            # Set attrs and hooks
+            for m in module.modules():
+                self._setattr(m, self.ops_attr)
+                self._register_forward_hook(m, self._ops_fn)
 
-            was_training = bool(module.training)
-            module.eval()
+            # Model setup
+            if eval:
+                if self.verbose:
+                    self._logger.log(
+                        "Setting module <b><magenta>"
+                        f"{module.__class__.__name__}</magenta></b> to "
+                        "<b><magenta>eval</magenta></b> mode"
+                    )
 
-        # Estimate ops
-        if isinstance(input, dict):
-            if pred_fn is not None:
-                pred_fn(**input)
+                was_training = bool(module.training)
+                module.eval()
+
+            # Estimate ops
+            if isinstance(input, dict):
+                if pred_fn is not None:
+                    pred_fn(**input)
+                
+                else:
+                    module(**input)
             
             else:
-                module(**input)
-        
-        else:
-            if pred_fn is not None:
-                pred_fn(input)
+                if pred_fn is not None:
+                    pred_fn(input)
+                
+                else:
+                    module(input)
+
+            # Collect data
+            data = {}
+
+            for n, m in module.named_modules():
+                k = "__root__" if n == "" else n
+                data[k] = {
+                    "type": m.__class__.__name__,
+                    "ops": getattr(m, self.ops_attr)
+                }
+
+            # Tear down
+            if eval and was_training:
+                if self.verbose:
+                    self._logger.log(
+                        "Setting module <b><magenta>"
+                        f"{module.__class__.__name__}</magenta></b> to "
+                        "<b><magenta>train</magenta></b> mode"
+                    )
+
+                module.train()
             
-            else:
-                module(input)
-
-        # Collect data
-        data = {}
-
-        for n, m in module.named_modules():
-            k = "__root__" if n == "" else n
-            data[k] = {
-                "type": m.__class__.__name__,
-                "ops": getattr(m, self.ops_attr)
-            }
-
-        # Tear down
-        if eval and was_training:
-            if self.verbose:
-                self._logger.log(
-                    f"Setting module <b><magenta>{module.__class__.__name__}"
-                    "</magenta></b> to <b><magenta>train</magenta></b> mode"
-                )
-
-            module.train()
+            for m in module.modules():
+                self._delattr(m, self.ops_attr)
+            
+            self._remove_registered_hooks()
         
-        for m in module.modules():
-            self._delattr(m, self.ops_attr)
-        
-        self._remove_registered_hooks()
-    
-        return data
+            return data
 
     def estimate_ops_df(self, *args, **kwargs) -> pd.DataFrame:
-        """ Same as ``estimate_ops`` but returns a ``DataFrame`` instead. """
+        """Same as ``estimate_ops`` but returns a ``DataFrame`` instead."""
         # Estimate ops
         data = self.estimate_ops(*args, **kwargs)
 
@@ -1048,7 +1061,7 @@ class ModuleProfiler:
         return df
     
     def estimate_ops_csv(self, file: str, *args, **kwargs) -> None:
-        """ Same as ``estimate_ops`` but saves a ``.csv`` file instead. """
+        """Same as ``estimate_ops`` but saves a ``.csv`` file instead."""
         file = add_extension(file, ".csv")
         df = self.estimate_ops_df(*args, **kwargs)
         df.to_csv(file, index=False)
@@ -1057,7 +1070,7 @@ class ModuleProfiler:
             self._logger.log(f"Results saved to <b>{file}</b>")
 
     def estimate_ops_html(self, file: str, *args, **kwargs) -> None:
-        """ Same as ``estimate_ops`` but saves a ``.html`` file instead. """
+        """Same as ``estimate_ops`` but saves a ``.html`` file instead."""
         file = add_extension(file, ".html")
         df = self.estimate_ops_df(*args, **kwargs)
 
@@ -1068,6 +1081,6 @@ class ModuleProfiler:
             self._logger.log(f"Results saved to <b>{file}</b>")
 
     def estimate_ops_latex(self, *args, index: bool = False, **kwargs) -> str:
-        """ Same as ``estimate_ops`` but returns a LaTeX output instead. """
+        """Same as ``estimate_ops`` but returns a LaTeX output instead."""
         df = self.estimate_ops_df(*args, **kwargs)
         return df.to_latex(index=index)
