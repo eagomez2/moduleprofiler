@@ -912,7 +912,7 @@ class ModuleProfiler:
             return data
 
     def trace_io_sizes_df(self, *args, **kwargs) -> pd.DataFrame:
-        """ Same as ``trace_io_sizes`` but returns a ``DataFrame`` instead. """
+        """Same as ``trace_io_sizes`` but returns a ``DataFrame`` instead."""
         # Trace I/O sizes
         data = self.trace_io_sizes(*args, **kwargs)
 
@@ -927,7 +927,7 @@ class ModuleProfiler:
         return df
 
     def trace_io_sizes_csv(self, file: str, *args, **kwargs) -> None:
-        """ Same as ``trace_io_sizes`` but saves a ``.csv`` file instead. """
+        """Same as ``trace_io_sizes`` but saves a ``.csv`` file instead."""
         file = add_extension(file, ".csv")
         df = self.trace_io_sizes_df(*args, **kwargs)
         df.to_csv(file, index=False)
@@ -936,7 +936,7 @@ class ModuleProfiler:
             self._logger.log(f"Results saved to <b>{file}</b>")
 
     def trace_io_sizes_html(self, file: str, *args, **kwargs) -> None:
-        """ Same as ``trace_io_sizes`` but saves a ``.html`` file instead. """
+        """Same as ``trace_io_sizes`` but saves a ``.html`` file instead."""
         file = add_extension(file, ".html")
         df = self.trace_io_sizes_df(*args, **kwargs)
         
@@ -952,7 +952,7 @@ class ModuleProfiler:
             index: bool = False,
             **kwargs
     ) -> str:
-        """ Same as ``trace_io_sizes`` but returns a LaTeX output instead. """
+        """Same as ``trace_io_sizes`` but returns a LaTeX output instead."""
         df = self.trace_io_sizes_df(*args, **kwargs)
         return df.to_latex(index=index)
 

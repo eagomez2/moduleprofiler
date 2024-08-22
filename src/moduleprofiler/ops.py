@@ -52,24 +52,13 @@ def _conv1d_ops_fn(
     x0 = input[0]
 
     # Get batch size
-    batch_size = 1 if len(x0.size()) == 2 else x0.size(0)
-
-    # Compute input length of a single channel
-    # x0_len = x0.size(-1)
+    batch_size = 1 if x0.ndim == 2 else x0.size(0)
 
     # Avoid invalid operations caused by incompatible types
-    # padding = module.padding[0]
-    # dilation = module.dilation[0]
     kernel_size = module.kernel_size[0]
-    # stride = module.stride[0]
 
     # Compute output length
-    # NOTE: It can also be directly derived from the module's output
-    # y0_len = (
-    #     ((x0_len + 2 * padding - dilation * (kernel_size - 1) - 1) / stride)
-    #     + 1
-    # )
-    y0_len = output.numel()
+    y0_len = output.size(-1)
 
     # Compute number of filters
     num_filters = ((module.in_channels * module.out_channels) / module.groups)
