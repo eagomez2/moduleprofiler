@@ -1,5 +1,5 @@
 # LSTMCell (`torch.nn.LSTMCell`)
-A `torch.nn.LSTMCell` correspond to a single cell of a Long Short-Term Memory Layer (`torch.nn.LSTM`). A `torch.nn.LSTMCell` takes in an **input** $x$, a **hidden state** $h$ and a **cell state** $c$ . Internally, it has an **input gate** $i$, a **forget gate** $f$, a **cell gate** $g$ and an **output gate** $o$ that help to propagate information between time steps. These are combined to generate the `torch.nn.LSTMCell` outputs. The relationship between these tensors is the following:
+A `torch.nn.LSTMCell` correspond to a single cell of a Long Short-Term Memory Layer (`torch.nn.LSTM`). A `torch.nn.LSTMCell` takes in an **input** $x$, a **hidden state** $h$ and a **cell state** $c$ . Internally, it has an **input gate** $i$, a **forget gate** $f$, a **cell gate** $g$ and an **output gate** $o$ that help to propagate information between time steps. These are combined to generate the `torch.nn.LSTMCell` outputs. The relationship between these tensors is defined as
 
 $$
 \begin{align}
@@ -15,8 +15,8 @@ $$
 Where
 
 * $x$ is the input tensor of size $\left(N, H_{in}\right)$ or $\left(H_{in}\right)$.
-* $h$ is the hidden tensor of size $\left(N, H_{out}\right)$.
-* $c$ is the cell state tensor of size $\left(N, H_{out}\right)$.
+* $h$ is the hidden tensor of size $\left(N, H_{out}\right)$ or $\left(H_{out}\right)$.
+* $c$ is the cell state tensor of size $\left(N, H_{out}\right)$ or $\left(H_{out}\right)$.
 * $W_{ii}$, $W_{if}$, $W_{ig}$ and $W_{io}$ are weight tensors of size $\left(H_{out}, H_{in}\right)$. 
 * $W_{hi}$, $W_{hf}$, $W_{hg}$ and $W_{ho}$ are weight tensors of size $\left(H_{out}, H_{out}\right)$.
 * $\sigma$ is the sigmoid function and can be defined as $\sigma\left(x\right)=\frac{1}{1+e^{-x}}$.
@@ -35,11 +35,11 @@ The tensor sizes involved in the operations performed to calculate the input gat
 
 $$
 \begin{align}
-i = \sigma\Bigg(\underbrace{\left(H_{out}, H_{in}\right) \times \left(N, H_{in}\right)}_{W_{ii}x} + \underbrace{H_{out}}_{b_{ii}} + \underbrace{\left(H_{out}, H_{out}\right) \times \left(N, H_{out}\right)}_{W_{hi}h} + \underbrace{H_{out}}_{b_{hi}}\Bigg)
+    i = \sigma\Bigg(\underbrace{\left(H_{out}, H_{in}\right) \times \left(N, H_{in}\right)}_{W_{ii}x} + \underbrace{H_{out}}_{b_{ii}} + \underbrace{\left(H_{out}, H_{out}\right) \times \left(N, H_{out}\right)}_{W_{hi}h} + \underbrace{H_{out}}_{b_{hi}}\Bigg)
 \end{align}
 $$
 
-In this case, $x$ (with shape $\left(N, H_{in}\right)$) has to be transposed. Additionally, $b$ will be implicitly broadcasted to be able to be summed with the tensor multiplication results. Then, the unwrapped and transposed shapes involved in the operations are
+In this case, $x$ (with shape $\left(N, H_{in}\right)$) and $h$ (with shape $\left(N, H_{out}\right)$) have to be transposed. Additionally, $b_{ii}$ and $b_{hi}$ will be implicitly broadcasted to be able to be summed with the tensor multiplication results. Then, the unwrapped and transposed shapes involved in the operations are
 
 $$
 \begin{align}
@@ -52,13 +52,13 @@ This will result in a tensor of shape $\left(H_{out}, N\right)$. To estimate the
 1. The operations to needed compute $W_{ii}x+b_{ii}$.
 2. The operations needed to compute $W_{hi}h+b_{hi}$.
 3. The operations needed to sum both results.
-4. The operations needed to compute the sigmoid function $\sigma$ over this result.
+4. The operations needed to compute the sigmoid function $\sigma$ of this result.
 
 For simplicity sake, the following definitions will be used:
 
 $$
 \begin{align}
-i &= \sigma\left(\underbrace{W_{ii}x^T+b_{ii}}_{i_0}+\underbrace{W_{hi}h^T+b_{hi}}_{i_1}\right)
+    i &= \sigma\left(\underbrace{W_{ii}x^T+b_{ii}}_{i_0}+\underbrace{W_{hi}h^T+b_{hi}}_{i_1}\right)
 \end{align}
 $$
 
@@ -79,7 +79,7 @@ and when `bias=False`
 $$
 \begin{align}
     i_{0_{ops}} &=\left(W_{ii}x^T+b_{ii}\right)_{ops} = N\times H_{out}\times \left(2\times H_{in}-1\right) \\
-    i_{i_{ops}}
+    i_{1_{ops}}
     &=\left(W_{hi}x^T+b_{hi}\right)_{ops}=N\times H_{out}\times\left(2\times H_{out}-1\right) \\
     \left(i_0+i_1\right)_{ops} &= N\times H_{out} \\
     \sigma_{ops} &= 3\times N\times H_{out}\\
