@@ -4,7 +4,7 @@ import torch.nn as nn
 
 
 @pytest.mark.parametrize(
-        "in_size,out_features,bias", [
+        "in_size, out_features, bias", [
             # 1d case
             ((1,), 1, False),
             ((1,), 1, True),

@@ -103,11 +103,11 @@ $$
 
 ### Total operations
  
-Now putting together all different factors that contribute to the total number of operations $\phi$ as well including the batch size $N$, the total number of operations $\phi$ can be summarized as
+Now putting together all different factors that contribute to the total number of operations as well as including the batch size $N$
 
 $$
 \begin{equation}
-\phi=N\times\left(\psi\times\lambda+\gamma\right)
+    \text{Conv1d}_{ops}=N\times\left(\psi\times\lambda+\gamma\right)
 \end{equation}
 $$
 
@@ -122,7 +122,7 @@ For the case of `bias=True` this can be expanded to
 
 $$
 \begin{equation}
-\small{\phi=N\times\left(\left(\frac{C_{\text{in}}\times C_{\text{out}}}{\text{groups}}\right)\times\left(L_{\text{out}}\times\left(2\times\text{kernel\_size}-1\right)\right)+C_{\text{out}}\times L_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}\right)\right)}
+\small{\text{Conv1d}_{ops}=N\times\left(\left(\frac{C_{\text{in}}\times C_{\text{out}}}{\text{groups}}\right)\times\left(L_{\text{out}}\times\left(2\times\text{kernel\_size}-1\right)\right)+C_{\text{out}}\times L_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}\right)\right)}
 \end{equation}
 $$
 
@@ -130,7 +130,7 @@ Rearranging terms it can be simplified to
 
 $$
 \begin{equation}
-\phi=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times L_{\text{out}}\times2\times\text{kernel\_size}}{\text{groups}}\right)
+\text{Conv1d}_{ops}=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times L_{\text{out}}\times2\times\text{kernel\_size}}{\text{groups}}\right)
 \end{equation}
 $$
 
@@ -139,20 +139,20 @@ For the case of `bias=False` $\gamma=C_{\text{out}}\times L_\text{out}\times\lef
 
 $$
 \begin{equation}
-\phi=N\times\left(\frac{C_{\text{out}}\times L_{\text{out}}\times\left( C_\text{in}\times2\times\text{kernel\_size}-\text{groups}\right)}{\text{groups}}\right)
+\text{Conv1d}_{ops}=N\times\left(\frac{C_{\text{out}}\times L_{\text{out}}\times\left( C_\text{in}\times2\times\text{kernel\_size}-\text{groups}\right)}{\text{groups}}\right)
 \end{equation}
 $$
 
 ## Summary
-The number of operations $\phi$ performed by a `torch.nn.Conv1d` module can be estimated as
+The number of operations performed by a `torch.nn.Conv1d` module can be estimated as
 
 !!! success ""
 
     === "If `bias=True`"
-        $\Large{\phi=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times L_{\text{out}}\times2\times\text{kernel\_size}}{\text{groups}}\right)}$
+        $\large{\text{Conv1d}_{ops}=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times L_{\text{out}}\times2\times\text{kernel\_size}}{\text{groups}}\right)}$
 
     === "If `bias=False`"
-        $\Large{\phi=N\times\left(\frac{C_{\text{out}}\times L_{\text{out}}\times\left( C_\text{in}\times2\times\text{kernel\_size} - \text{groups}\right)}{\text{groups}}\right)}$
+        $\large{\text{Conv1d}_{ops}=N\times\left(\frac{C_{\text{out}}\times L_{\text{out}}\times\left( C_\text{in}\times2\times\text{kernel\_size} - \text{groups}\right)}{\text{groups}}\right)}$
 
 Where
 

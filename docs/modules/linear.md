@@ -37,11 +37,11 @@ y_0=\sum\limits_{n=0}^{H_\text{in}-1}x_n a_{n, 0}=x_0 a_{0, 0}+x_1 a_{1, 0}+\cdo
 \end{equation}
 $$
 
-This operation requires $H_\text{in}$ multiplications and $H_\text{in} - 1$ additions. Therefore, the total number of operations per output feature is $2 \times H_\text{in} - 1$. This has to be repeated $H_\text{out}$ times. Then, the total number of operations $\phi$ so far is
+This operation requires $H_\text{in}$ multiplications and $H_\text{in} - 1$ additions. Therefore, the total number of operations per output feature is $2 \times H_\text{in} - 1$. This has to be repeated $H_\text{out}$ times. Then, the total number of operations $\text{Linear}_{ops}$ so far is
 
 $$
 \begin{equation}
-\phi=H_\text{out}\times\left(2 \times H_\text{in} - 1\right)
+\text{Linear}_{ops}=H_\text{out}\times\left(2 \times H_\text{in} - 1\right)
 \end{equation}
 $$
 
@@ -49,7 +49,7 @@ Next, it is necessary to add the bias tensor $b$. This is rather straightforward
 
 $$
 \begin{equation}
-\phi=H_\text{out}\times\left(2 \times H_\text{in} - 1\right) + H_\text{out} = 2\times H_\text{in}\times H_\text{out}
+\text{Linear}_{ops}=H_\text{out}\times\left(2 \times H_\text{in} - 1\right) + H_\text{out} = 2\times H_\text{in}\times H_\text{out}
 \end{equation}
 $$
 
@@ -57,7 +57,7 @@ Depending on whether module was instantiated using `bias=True` or `bias=False`, 
 
 $$
 \begin{equation}
-\phi=\begin{cases}
+\text{Linear}_{ops}=\begin{cases}
     2\times H_\text{in}\times H_\text{out}, & \text{if}\ \text{bias}=\text{True} \\
     H_\text{out}\times\left(2 \times H_\text{in} - 1\right), &\text{if}\ \text{bias}=\text{False}
 \end{cases}
@@ -79,7 +79,7 @@ The previously calculated number of operations is then repeated $\beta$ times. F
 
 $$
 \begin{equation}
-\phi=\begin{cases}
+\text{Linear}_{ops}=\begin{cases}
     2\times\beta\times H_\text{out}\times H_\text{in}, & \text{if}\ \text{bias}=\text{True} \\
     \beta\times H_\text{out}\times\left(2 \times H_\text{in} - 1\right), &\text{if}\ \text{bias}=\text{False}
 \end{cases}
@@ -87,15 +87,15 @@ $$
 $$
 
 ## Summary
-The number of operations $\phi$ performed by a `torch.nn.Linear` module can be estimated as
+The number of operations performed by a `torch.nn.Linear` module can be estimated as
 
 !!! success ""
 
     === "If `bias=True`"
-        $\phi = 2\times\beta\times H_\text{out}\times H_\text{in}$
+        $\text{Linear}_{ops} = 2\times\beta\times H_\text{out}\times H_\text{in}$
 
     === "If `bias=False`"
-        $\phi = \beta\times H_\text{out}\times\left(2 \times H_\text{in} - 1\right)$
+        $\text{Linear}_{ops} = \beta\times H_\text{out}\times\left(2 \times H_\text{in} - 1\right)$
 
 Where
 
