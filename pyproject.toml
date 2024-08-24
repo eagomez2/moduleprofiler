@@ -7,7 +7,7 @@ name = "moduleprofiler"
 authors = [{name = "Esteban Gómez", email = "esteban.gomezmellado@aalto.fi"}]
 readme = "README.md"
 license = {file = "LICENSE"}
-classifiers = ["License :: OSI Approved :: MIT License"]
+classifiers = ["License :: OSI Approved :: Creative Commons Attribution-ShareAlike 4.0 International"]
 dynamic = ["version", "description"]
 requires-python = ">=3.9"
 dependencies = [
