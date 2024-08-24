@@ -78,9 +78,9 @@ and when `bias=False`
 
 $$
 \begin{align}
-    i_{0_{ops}} &=\left(W_{ii}x^T+b_{ii}\right)_{ops} = N\times H_{out}\times \left(2\times H_{in}-1\right) \\
+    i_{0_{ops}} &=\left(W_{ii}x^T\right)_{ops} = N\times H_{out}\times \left(2\times H_{in}-1\right) \\
     i_{1_{ops}}
-    &=\left(W_{hi}x^T+b_{hi}\right)_{ops}=N\times H_{out}\times\left(2\times H_{out}-1\right) \\
+    &=\left(W_{hi}x^T\right)_{ops}=N\times H_{out}\times\left(2\times H_{out}-1\right) \\
     \left(i_0+i_1\right)_{ops} &= N\times H_{out} \\
     \sigma_{ops} &= 3\times N\times H_{out}\\
     i_{ops} &= 2\times N\times H_{out}\times\left(1+H_{in}+ H_{out}\right)
