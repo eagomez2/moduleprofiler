@@ -93,7 +93,7 @@ $$
 \end{equation}
 $$
 
-Where the term $\left(\frac{C_{\text{in}}}{\text{groups}}-1\right)$ corresponds to the number of grouped connections between input and outputs channels $\frac{C_{\text{in}}}{\text{groups}}$, subtracted by $1$ because the operation is an addition. The $L_\text{out}$ factor accounts for the number of elements per filters, and $C_{\text{out}}$ expand this calculation to all output channels. Finally, the remaining $+1$ corresponds to the bias term $b$ that was not included so far, and that is added to each resulting output channel element. Note that this last term is only added if the module is instantiated using `bias=True`.
+Where the term $\left(\frac{C_{\text{in}}}{\text{groups}}-1\right)$ corresponds to the number of grouped connections between input and outputs channels $\frac{C_{\text{in}}}{\text{groups}}$, subtracted by $1$ because the operation is an addition. The $L_\text{out}$ factor accounts for the number of elements per filters, and $C_{\text{out}}$ expands this calculation to all output channels. Finally, the remaining $+1$ corresponds to the bias term $b$ that was not included so far, and that is added to each resulting output channel element. Note that this last term is only added if the module is instantiated using `bias=True`.
 
 $$
 \begin{equation}
@@ -105,7 +105,7 @@ $$
 $$
 
 !!! note
-    Please note that the bias term $b$ was not included in  [Operations per filter](#operations-per-filter) and is added here instead. Even though according to <a href="https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html" target="_blank">PyTorch ``torch.nn.Conv1d`` documentation</a> $b$ has shape $\left(C_\text{out}\right)$, in practice this tensor is implicitly broadcastes following <a href="https://pytorch.org/docs/stable/notes/broadcasting.html" target="_blank">PyTorch broadcasting semantics</a> in such a way that each tensor value will be added with its corresponding channel bias.
+    Please note that the bias term $b$ was not included in  [Operations per filter](#operations-per-filter) and is added here instead. Even though according to <a href="https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html" target="_blank">PyTorch ``torch.nn.Conv1d`` documentation</a> $b$ has shape $\left(C_\text{out}\right)$, in practice this tensor is implicitly broadcasted following <a href="https://pytorch.org/docs/stable/notes/broadcasting.html" target="_blank">PyTorch broadcasting semantics</a> in such a way that each tensor value will be added with its corresponding channel bias.
 
 
 ### Total operations 
@@ -129,7 +129,7 @@ For the case of `bias=True` this can be expanded to
 
 $$
 \begin{equation}
-\small{\text{Conv1d}_{ops}=N\times\left(\left(\frac{C_{\text{in}}\times C_{\text{out}}}{\text{groups}}\right)\times\left(L_{\text{out}}\times\left(2\times\text{kernel\_size}-1\right)\right)+C_{\text{out}}\times L_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}\right)\right)}
+    \small{\text{Conv1d}_{ops}=N\times\left(\left(\frac{C_{\text{in}}\times C_{\text{out}}}{\text{groups}}\right)\times\left(L_{\text{out}}\times\left(2\times\text{kernel\_size}-1\right)\right)+C_{\text{out}}\times L_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}\right)\right)}
 \end{equation}
 $$
 
@@ -169,6 +169,6 @@ Where
 * $N$ is the batch size.
 * $C_{\text{in}}$ is the number of input channels.
 * $C_{\text{out}}$ is the number of output channels.
-* $\text{groups}$ is the number of groups.
 * $L_{\text{out}}$ is the length of the output tensor (i.e. `y.size(-1)` assuming an output tensor `y`).
 * $\text{kernel\_size}$ is the length of the kernel.
+* $\text{groups}$ is the number of groups.

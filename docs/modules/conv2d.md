@@ -99,6 +99,87 @@ Because the kernel is a 2-dimensional tensor of dimensions $\left(\text{kernel\_
 
 Now that the [number of filters](#number-of-filters) and the number of [operations per filter](#operations-per-filter) are known, it is necessary compute the operations needed to aggregate each group of filters $\gamma$ to produce each output channel $C_\text{out}$. These operations correspond to simple element-wise additions and can be expressed as
 
+$$
+\begin{equation}
+    \gamma=C_{\text{out}}\times H_\text{out}\times W_\text{out}\times\left(\left(\frac{C_{\text{in}}}{\text{groups}}-1\right)+1\right)
+\end{equation}
+$$
+
+Where the term $\left(\frac{C_{\text{in}}}{\text{groups}}-1\right)$ corresponds to the number of grouped connections between input and outputs channels $\frac{C_{\text{in}}}{\text{groups}}$, subtracted by $1$ because the operation is an addition. The $H_\text{out}\times W_\text{out}$ factor accounts for the number of elements per filters, and $C_{\text{out}}$ expands this calculation to all output channels. Finally, the remaining $+1$ corresponds to the bias term $b$ that was not included so far, and that is added to each resulting output channel element. Note that this last term is only added if the module is instantiated using `bias=True`.
+
+$$
+\begin{equation}
+\gamma=\begin{cases}
+    C_{\text{out}}\times H_\text{out}\times W_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}\right), & \text{if}\ \text{bias}=\text{True} \\
+    C_{\text{out}}\times H_\text{out}\times W_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}-1\right), & \text{if}\ \text{bias}=\text{False}
+\end{cases}
+\end{equation}
+$$
+
+!!! note
+    Please note that the bias term $b$ was not included in  [Operations per filter](#operations-per-filter) and is added here instead. Even though according to <a href="https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html" target="_blank">PyTorch ``torch.nn.Conv1d`` documentation</a> $b$ has shape $\left(C_\text{out}\right)$, in practice this tensor is implicitly broadcasted following <a href="https://pytorch.org/docs/stable/notes/broadcasting.html" target="_blank">PyTorch broadcasting semantics</a> in such a way that each tensor value will be added with its corresponding channel bias.
+
+
 ### Total operations
 
+Now putting together all different factors that contribute to the total number of operations as well as including the batch size $N$
+
+$$
+\begin{equation}
+    \text{Conv2d}_{ops}=N\times\left(\psi\times\lambda+\gamma\right)
+\end{equation}
+$$
+
+Where
+
+* $N$ is the batch size.
+* $\psi$ is the [number of filters](#number-of-filters).
+* $\lambda$ is the number of [operations per filter](#operations-per-filter).
+* $\gamma$ is the number of [filter aggregation](#filter-aggregation) operations.
+
+For the case of `bias=True` this can be expanded to
+
+$$
+\begin{equation}
+    \scriptsize{\text{Conv2d}_{ops}=N\times\left(\left(\frac{C_{\text{in}}\times C_{\text{out}}}{\text{groups}}\right)\times\left(H_{\text{out}}\times W_\text{out}\times\left(2\times\text{kernel\_size[0]}\times\text{kernel\_size[1]}-1\right)\right)+C_{\text{out}}\times H_\text{out}\times W_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}\right)\right)}
+\end{equation}
+$$
+
+Rearranging terms it can be simplified to
+
+$$
+\begin{equation}
+\text{Conv2d}_{ops}=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times H_{\text{out}}\times W_\text{out}\times\left(2\times\text{kernel\_size[0]}\times\text{kernel\_size[1]}+1\right)}{\text{groups}}\right)
+\end{equation}
+$$
+
+For the case of `bias=False` $\gamma=C_{\text{out}}\times H_\text{out}\times W_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}-1\right)$  and the whole expression can be simplified to
+
+$$
+\begin{equation}
+\text{Conv2d}_{ops}=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times H_{\text{out}}\times W_\text{out}\times\left(2\times\text{kernel\_size[0]}\times\text{kernel\_size[1]}-\text{groups}\right)}{\text{groups}}\right)
+\end{equation}
+$$
+
 ## Summary
+
+The number of operations performed by a `torch.nn.Conv2d` module can be estimated as
+
+!!! success ""
+
+    === "If `bias=True`"
+        $\large{\text{Conv2d}_{ops}=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times H_{\text{out}}\times W_\text{out}\times\left(2\times\text{kernel\_size[0]}\times\text{kernel\_size[1]}+1\right)}{\text{groups}}\right)}$
+
+    === "If `bias=False`"
+        $\large{\text{Conv2d}_{ops}=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times H_{\text{out}}\times W_\text{out}\times\left(2\times\text{kernel\_size[0]}\times\text{kernel\_size[1]}-\text{groups}\right)}{\text{groups}}\right)}$
+
+Where
+
+
+* $N$ is the batch size.
+* $C_{\text{in}}$ is the number of input channels.
+* $C_{\text{out}}$ is the number of output channels.
+* $H_{\text{in}}$ is the height of the input tensor (i.e. `x.size(-2)` assuming an input tensor `x`)
+* $W_{\text{in}}$ is the width of the input tensor (i.e. `x.size(-1)` assuming an input tensor `x`)
+* $\text{groups}$ is the number of groups.
+* $\text{kernel\_size[0]}$ and $\text{kernel\_size[1]}$ are the first and second dimensions of the kernel tensor `weight`.
