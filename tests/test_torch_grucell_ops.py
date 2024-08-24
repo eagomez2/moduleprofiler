@@ -4,7 +4,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-
 @pytest.mark.parametrize(
         "batch_size, input_size, hidden_size", [
             # batch_size=1, bias=False
@@ -57,7 +56,7 @@ def test_grucell_output_match_no_bias(
 
     # NOTE: Computing all with pytorch function may differ from the underlying
     # optimized module implementation so small differences are expected
-    assert torch.allclose(h_prime_torch, h_prime_mp)
+    assert torch.allclose(h_prime_torch, h_prime_mp, atol=1e-5)
 
 
 @pytest.mark.parametrize(
@@ -127,4 +126,4 @@ def test_grucell_output_match_bias(
 
     # NOTE: Computing all with pytorch function may differ from the underlying
     # optimized module implementation so small differences are expected
-    assert torch.allclose(h_prime_torch, h_prime_mp)
+    assert torch.allclose(h_prime_torch, h_prime_mp, atol=1e-5)
