@@ -6,11 +6,12 @@ nav:
   - Reference:
     - Introduction: reference.md
     - "Modules":
-      - modules/linear.md
       - modules/conv1d.md
-      - modules/lstmcell.md
       - modules/grucell.md
       - modules/gru.md
+      - modules/linear.md
+      - modules/lstmcell.md
+      - modules/relu.md
   - License: license.md
 copyright: |
   &copy; 2024 <a href="https://www.estebangomez.me" target="_blank">Esteban Gómez</a>
