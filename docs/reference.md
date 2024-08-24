@@ -6,8 +6,10 @@ This complementary section explains the derivation of the formulas used by `modu
 
 This package currently supports the following modules:
 
-- [Linear (`torch.nn.Linear`)](modules/linear.md)
 - [Conv1d (`torch.nn.Conv1d`)](modules/conv1d.md)
-- [LSTMCell (`torch.nn.LSTMCell`)](modules/lstmcell.md)
+- [Conv2d (`torch.nn.Conv2d`)](modules/conv2d.md)
 - [GRUCell (`torch.nn.GRUCell`)](modules/grucell.md)
 - [GRU (`torch.nn.GRU`)](modules/gru.md)
+- [Linear (`torch.nn.Linear`)](modules/linear.md)
+- [LSTMCell (`torch.nn.LSTMCell`)](modules/lstmcell.md)
+- [ReLU (`torch.nn.ReLU`)](modules/relu.md)

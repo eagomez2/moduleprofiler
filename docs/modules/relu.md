@@ -28,6 +28,6 @@ $$
 The number of operations performed by a `torch.nn.ReLU` module can be estimated as
 
 !!! success ""
-    $\text{ReLU}_{ops}=\prod^{N - 1}d_n=d_0\times d_1\times\cdots\times d_{N-1}$
+    $\text{ReLU}_{ops}=\displaystyle\prod^{N - 1}d_n=d_0\times d_1\times\cdots\times d_{N-1}$
 
 Where $x$ is a rank-N tensor of size $\left(d_0, d_1, \cdots, d_{N-1}\right)$. 
