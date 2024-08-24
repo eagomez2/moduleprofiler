@@ -83,34 +83,25 @@ def _conv2d_ops_fn(
     # Get batch size
     batch_size = 1 if x0.ndim == 2 else x0.size(0)
 
-    # Compute input length of a single channel
-    # x0_len = x0.size(-2) * x0.size(-1)
-
     # Avoid invalid operations caused by incompatible types
-    kernel_size = (
+    kernel_size_prod = (
         module.kernel_size[0] if isinstance(module.kernel_size, int)
         else module.kernel_size[0] * module.kernel_size[1]
     )
 
-    # Compute output length
-    # NOTE: It can also be directly derived from the model's output
-    y0_len = output.numel()
-
-    # Compute number of filters
-    num_filters = ((module.in_channels * module.out_channels) / module.groups)
-
-    # Compute operations per filter
-    ops_per_filter = y0_len * (2 * kernel_size - 1)
-
-    # Compute number of aggregation operations
-    aggr_ops_bias = (0 if module.bias is not None else 1)
-    aggr_ops = (
-        y0_len
-        * module.out_channels
-        * ((module.in_channels / module.groups) - aggr_ops_bias)
-    )
-
-    total_ops = batch_size * (num_filters * ops_per_filter * aggr_ops)
+    if module.bias is not None:
+        numerator = (
+            module.out_channels * output.size(-1) * output.size(-2)
+            * module.in_channels * 2 * kernel_size_prod
+        )
+    
+    else:
+        numerator = (
+            module.out_channels * output.size(-1) * output.size(-2)
+            * (module.in_channels * 2 * kernel_size_prod - module.groups)
+        )
+    
+    total_ops = batch_size * (numerator / module.groups)
 
     return int(total_ops)
 

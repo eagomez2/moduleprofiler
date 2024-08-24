@@ -182,4 +182,4 @@ Where
 * $H_{\text{in}}$ is the height of the input tensor (i.e. `x.size(-2)` assuming an input tensor `x`)
 * $W_{\text{in}}$ is the width of the input tensor (i.e. `x.size(-1)` assuming an input tensor `x`)
 * $\text{groups}$ is the number of groups.
-* $\text{kernel\_size[0]}$ and $\text{kernel\_size[1]}$ are the first and second dimensions of the kernel tensor `weight`.
+* $\text{kernel\_size[0]}$ and $\text{kernel\_size[1]}$ are the first and second dimensions of the `kernel_size` tuple.
