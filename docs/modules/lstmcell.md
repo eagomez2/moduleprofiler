@@ -175,7 +175,6 @@ $$
 The number of operations $\phi$ operformed by a `torch.nn.LSTMCell` module can be estimated as
 
 !!! success ""
-
     === "If `bias=True`"
         $\text{LSTMCell}_{ops} = 8\times N\times H_{out}\times\left( H_{in}+H_{out}+3.875\right)$
 

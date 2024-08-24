@@ -10,3 +10,4 @@ This package currently supports the following modules:
 - [Conv1d (`torch.nn.Conv1d`)](modules/conv1d.md)
 - [LSTMCell (`torch.nn.LSTMCell`)](modules/lstmcell.md)
 - [GRUCell (`torch.nn.GRUCell`)](modules/grucell.md)
+- [GRU (`torch.nn.GRU`)](modules/gru.md)

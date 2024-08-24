@@ -10,6 +10,7 @@ nav:
       - modules/conv1d.md
       - modules/lstmcell.md
       - modules/grucell.md
+      - modules/gru.md
   - License: license.md
 copyright: |
   &copy; 2024 <a href="https://www.estebangomez.me" target="_blank">Esteban Gómez</a>

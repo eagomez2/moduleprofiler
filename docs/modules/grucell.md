@@ -14,7 +14,7 @@ $$
 Where
 
 * $x$ is the input tensor of size $\left(N, H_{in}\right)$ or $\left(H_{in}\right)$.
-* $h$ is the hidden tensor of size $\left(N, H_{out}\right)$ or $\left(H_{out}\right)$.
+* $h$ is the hidden state tensor of size $\left(N, H_{out}\right)$ or $\left(H_{out}\right)$.
 * $W_{ir}$, $W_{iz}$ and $W_{in}$ are weight tensors of size $\left(H_{out}, H_{in}\right)$. 
 * $W_{hr}$, $W_{hz}$ and $W_{hn}$ are weight tensors of size $\left(H_{out}, H_{out}\right)$. 
 * $\sigma$ is the sigmoid function and can be defined as $\sigma\left(x\right)=\frac{1}{1+e^{-x}}$.
@@ -26,7 +26,7 @@ Where
 In order to compute the complexity of a single nn.GRUCell, we just need to estimate the number of operations of all four aforementioned equations. For the sake of simplicity, for operations involving sigmoid and hyperbolic tangent, the listed equations will be used and exponentials will be counted as a single operation.
 
 !!! note
-    During the following operations, some tensors have to be transposed in order to have compatible dimensions to perform matrix multiplication, even thought this is not explicitly mentioned in <a href="https://pytorch.org/docs/stable/generated/torch.nn.GRUCell.html", target="_blank">PyTorch nn.GRUCell’s documentation</a>. Additionally, some weight tensors are stacked. For instance, $W_{ir}$, $W_{iz}$ and $W_{in}$ are implemented as a single tensor of size $\left(3\times H_{out}, H_{in}\right)$, and $W_{hr}$, $W_{hz}$ and $W_{hn}$ are implemented as a single tensor of size $\left(3\times H_{out}, H_{out}\right)$, possibly due to efficiency reasons.
+    During the following operations, some tensors have to be transposed in order to have compatible dimensions to perform matrix multiplication, even thought this is not explicitly mentioned in <a href="https://pytorch.org/docs/stable/generated/torch.nn.GRUCell.html", target="_blank">PyTorch `torch.nn.GRUCel`’s documentation</a>. Additionally, some weight tensors are stacked. For instance, $W_{ir}$, $W_{iz}$ and $W_{in}$ are implemented as a single tensor of size $\left(3\times H_{out}, H_{in}\right)$, and $W_{hr}$, $W_{hz}$ and $W_{hn}$ are implemented as a single tensor of size $\left(3\times H_{out}, H_{out}\right)$, possibly due to efficiency reasons.
 
 ### Reset gate
 The tensor sizes involved in the operations performed to calculate the reset gate $r$ are
@@ -208,3 +208,17 @@ $$
 $$
 
 ## Summary
+The number of operations $\phi$ operformed by a `torch.nn.GRUCell` module can be estimated as
+
+!!! success ""
+    === "If `bias=True`"
+        $\text{GRUCell}_{ops} = 6\times N \times H_{out} \left(H_{in}+H_{out}+3.5\right)$
+
+    === "If `bias=False`"
+        $\text{GRUCell}_{ops} = 6\times N \times H_{out} \left(H_{in}+H_{out}+2.5\right)$
+
+Where
+
+* $N$ is the batch size.
+* $H_\text{in}$ is the number of input features.
+* $H_\text{out}$ is the number of output features.
