@@ -22,7 +22,11 @@ import torch.nn as nn
             ((2, 3, 4), 8, True),
         ]
 )
-def test_linear_ops(in_size: tuple, out_features: int, bias: bool) -> None:
+def test_linear_output_match(
+    in_size: tuple,
+    out_features: int,
+    bias: bool
+) -> None:
     # Sample tensor
     x = torch.rand(in_size)
 
@@ -42,4 +46,6 @@ def test_linear_ops(in_size: tuple, out_features: int, bias: bool) -> None:
     if bias:
         y_mp += net.bias
     
-    assert torch.equal(y_torch, y_mp)
+    # NOTE: Computing all with pytorch function may differ from the underlying
+    # optimized module implementation so small differences are expected
+    assert torch.allclose(y_torch, y_mp)
