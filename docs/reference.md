@@ -13,3 +13,4 @@ This package currently supports the following modules:
 - [Linear (`torch.nn.Linear`)](modules/linear.md)
 - [LSTMCell (`torch.nn.LSTMCell`)](modules/lstmcell.md)
 - [ReLU (`torch.nn.ReLU`)](modules/relu.md)
+- [Softmax (`torch.nn.Softmax`)](modules/softmax.md)

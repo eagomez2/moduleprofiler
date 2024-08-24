@@ -13,6 +13,7 @@ nav:
       - modules/linear.md
       - modules/lstmcell.md
       - modules/relu.md
+      - modules/softmax.md
   - License: license.md
 copyright: |
   &copy; 2024 <a href="https://www.estebangomez.me" target="_blank">Esteban Gómez</a>
