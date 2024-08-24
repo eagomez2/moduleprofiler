@@ -149,7 +149,7 @@ Rearranging terms it can be simplified to
 
 $$
 \begin{equation}
-\text{Conv2d}_{ops}=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times H_{\text{out}}\times W_\text{out}\times\left(2\times\text{kernel\_size[0]}\times\text{kernel\_size[1]}+1\right)}{\text{groups}}\right)
+\text{Conv2d}_{ops}=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times H_{\text{out}}\times W_\text{out}\times2\times\text{kernel\_size[0]}\times\text{kernel\_size[1]}}{\text{groups}}\right)
 \end{equation}
 $$
 
@@ -157,7 +157,7 @@ For the case of `bias=False` $\gamma=C_{\text{out}}\times H_\text{out}\times W_\
 
 $$
 \begin{equation}
-\text{Conv2d}_{ops}=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times H_{\text{out}}\times W_\text{out}\times\left(2\times\text{kernel\_size[0]}\times\text{kernel\_size[1]}-\text{groups}\right)}{\text{groups}}\right)
+\text{Conv2d}_{ops}=N\times\left(\frac{C_{\text{out}}\times H_{\text{out}}\times W_\text{out}\times\left(C_{\text{in}}\times 2\times\text{kernel\_size[0]}\times\text{kernel\_size[1]}-\text{groups}\right)}{\text{groups}}\right)
 \end{equation}
 $$
 
@@ -168,10 +168,10 @@ The number of operations performed by a `torch.nn.Conv2d` module can be estimate
 !!! success ""
 
     === "If `bias=True`"
-        $\large{\text{Conv2d}_{ops}=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times H_{\text{out}}\times W_\text{out}\times\left(2\times\text{kernel\_size[0]}\times\text{kernel\_size[1]}+1\right)}{\text{groups}}\right)}$
+        $\large{\text{Conv2d}_{ops}=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times H_{\text{out}}\times W_\text{out}\times2\times\text{kernel\_size[0]}\times\text{kernel\_size[1]}}{\text{groups}}\right)}$
 
     === "If `bias=False`"
-        $\large{\text{Conv2d}_{ops}=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times H_{\text{out}}\times W_\text{out}\times\left(2\times\text{kernel\_size[0]}\times\text{kernel\_size[1]}-\text{groups}\right)}{\text{groups}}\right)}$
+        $\large{\text{Conv2d}_{ops}=N\times\left(\frac{C_{\text{out}}\times H_{\text{out}}\times W_\text{out}\times\left(C_{\text{in}}\times 2\times\text{kernel\_size[0]}\times\text{kernel\_size[1]}-\text{groups}\right)}{\text{groups}}\right)}$
 
 Where
 

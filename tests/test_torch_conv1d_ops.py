@@ -4,22 +4,24 @@ import torch.nn as nn
 
 
 @pytest.mark.parametrize(
-        "batch_size, in_channels, out_channels, kernel_size, groups, bias", [
+        "batch_size, in_features, in_channels, out_channels, kernel_size, "
+        "groups, bias", [
             # batch_size=1
-            (1, 1, 1, 3, 1, False),
-            (1, 1, 1, 3, 1, True),
+            (1, 8, 1, 1, 3, 1, False),
+            (1, 9, 1, 1, 3, 1, True),
 
             # batch_size=8
-            (8, 2, 4, 2, 1, False),
-            (8, 2, 4, 2, 1, True),
+            (8, 8, 2, 4, 2, 1, False),
+            (8, 9, 2, 4, 2, 1, True),
 
             # batch_size=8 and groups=2
-            (8, 2, 4, 2, 2, False),
-            (8, 2, 4, 2, 2, True)
+            (8, 8, 2, 4, 2, 2, False),
+            (8, 9, 2, 4, 2, 2, True)
         ]
 )
 def test_conv1d_simplified_output_formula(
     batch_size: int,
+    in_features: int,
     in_channels: int,
     out_channels: int,
     kernel_size: int,
@@ -27,7 +29,7 @@ def test_conv1d_simplified_output_formula(
     bias: bool
 ) -> None:
     # Sample input tensor
-    x = torch.rand((batch_size, in_channels, 16))
+    x = torch.rand((batch_size, in_channels, in_features))
     
     # Built-in module
     net = nn.Conv1d(
