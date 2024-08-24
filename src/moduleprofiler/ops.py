@@ -60,21 +60,19 @@ def _conv1d_ops_fn(
     # Compute output length
     y0_len = output.size(-1)
 
-    # Compute number of filters
-    num_filters = ((module.in_channels * module.out_channels) / module.groups)
-
-    # Compute operations per filter
-    ops_per_filter = y0_len * (2 * kernel_size - 1)
-
-    # Compute number of aggregation operations
-    aggr_ops_bias = (0 if module.bias is not None else 1)
-    aggr_ops = (
-        y0_len
-        * module.out_channels
-        * ((module.in_channels / module.groups) - aggr_ops_bias)
-    )
-
-    total_ops = batch_size * (num_filters * ops_per_filter + aggr_ops)
+    if module.bias is not None:
+        numerator = (
+            module.out_channels * y0_len
+            * module.in_channels* 2 * kernel_size
+        )
+    
+    else:
+        numerator = (
+            module.out_channels * y0_len
+            * (module.in_channels * 2 * kernel_size - module.groups)
+        )
+    
+    total_ops = batch_size * (numerator / module.groups)
 
     return int(total_ops)
 

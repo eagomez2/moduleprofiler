@@ -6,7 +6,7 @@ import torch.nn.functional as F
 
 @pytest.mark.parametrize(
         "batch_size, input_size, hidden_size", [
-            # batch_size=1, bias=False
+            # batch_size=1
             (1, 2, 2),
             (1, 3, 6),
             (1, 4, 8),
@@ -20,7 +20,7 @@ import torch.nn.functional as F
 def test_grucell_output_match_no_bias(
     batch_size: int,
     input_size: int,
-    hidden_size: int,
+    hidden_size: int
 ) -> None:
     # Sample input and hidden state tensors
     x = torch.rand((batch_size, input_size), dtype=torch.float32)
@@ -42,7 +42,7 @@ def test_grucell_output_match_no_bias(
     weight_ih_z = net.weight_ih[hidden_size:(2 * hidden_size), ...]
     weight_ih_n = net.weight_ih[(2 * hidden_size):(3 * hidden_size), ...]
 
-    # Weight order hr, hz, hn)
+    # Weight order hr, hz, hn
     # (hidden_size, hidden_size)
     weight_hh_r = net.weight_hh[0:hidden_size, ...]
     weight_hh_z = net.weight_hh[hidden_size:(2 * hidden_size), ...]
