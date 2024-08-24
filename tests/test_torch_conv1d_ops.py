@@ -53,13 +53,14 @@ def test_conv1d_simplified_output_formula(
     # Simplified formula
     if bias:
         simplified_ops_num = (
-            in_channels * out_channels * y.size(-1) * 2 * kernel_size
+            out_channels * y.size(-1)
+            * in_channels * 2 * kernel_size
         )
 
     else:
         simplified_ops_num = (
-            out_channels
-            * y.size(-1) * (in_channels * 2 * kernel_size - groups)
+            out_channels * y.size(-1)
+            * (in_channels * 2 * kernel_size - groups)
         )
     
     simplified_total_ops = int(batch_size * (simplified_ops_num / groups))

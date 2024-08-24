@@ -54,22 +54,17 @@ def _conv1d_ops_fn(
     # Get batch size
     batch_size = 1 if x0.ndim == 2 else x0.size(0)
 
-    # Avoid invalid operations caused by incompatible types
-    kernel_size = module.kernel_size[0]
-
-    # Compute output length
-    y0_len = output.size(-1)
-
+    # NOTE: kernel_size[0] is used to avoid issues with invalid data types
     if module.bias is not None:
         numerator = (
-            module.out_channels * y0_len
-            * module.in_channels* 2 * kernel_size
+            module.out_channels * output.size(-1)
+            * module.in_channels * 2 * module.kernel_size[0]
         )
     
     else:
         numerator = (
-            module.out_channels * y0_len
-            * (module.in_channels * 2 * kernel_size - module.groups)
+            module.out_channels * output.size(-1)
+            * (module.in_channels * 2 * module.kernel_size[0] - module.groups)
         )
     
     total_ops = batch_size * (numerator / module.groups)
