@@ -32,13 +32,15 @@ Once you installed `moduleprofiler` you can start using it immediately. The clas
 from moduleprofiler import ModuleProfiler
 ```
 
+# Documentation
+
+# Running tests
+
 # Supported modules
 
 # Adding custom modules
 
 # Cite
-
-# Acknowledgements
 
 # License
 For further details about the license of this package, please see [LICENSE](LICENSE).
