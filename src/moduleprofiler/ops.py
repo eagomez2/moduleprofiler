@@ -111,25 +111,19 @@ def _grucell_ops_fn(
         input: Tuple[torch.Tensor],
         output: torch.Tensor
 ) -> int:
-    # Get params
     batch_size = 1 if len(input[0].size()) == 1 else input[0].size(0)
-    h_out = module.hidden_size
-    h_in = module.input_size
-
+    
     if module.bias is not None:
-        r_ops = 2 * batch_size * h_out * (h_in + h_out + 2)
-        z_ops = r_ops
-        n_ops = batch_size * h_out * (9 + 2 * (h_in + h_out))
+        total_ops = (
+            6 * batch_size * output.size(-1)
+            * (input[0].size(-1) + output.size(-1) + 3.5)
+        )
     
     else:
-        r_ops = 2 * batch_size * h_out * (h_in + h_out + 1)
-        z_ops = r_ops
-        n_ops = batch_size * h_out * (9 + 2 * (h_in + h_out - 1))
-
-    # Same regardless of bias
-    h_prime_ops = 4 * batch_size * h_out
-
-    total_ops = r_ops + z_ops + n_ops + h_prime_ops
+        total_ops = (
+            6 * batch_size * output.size(-1)
+            * (input[0].size(-1) + output.size(-1) + 2.5)
+        )
 
     return total_ops
 
@@ -181,26 +175,19 @@ def _lstmcell_ops_fn(
         input: Tuple[torch.Tensor],
         output: torch.Tensor
 ) -> int:
-    # Get params
     batch_size = 1 if len(input[0].size()) == 1 else input[0].size(0)
-    h_out = module.hidden_size
-    h_in = module.input_size
-
+    
     if module.bias is not None:
-        i_ops = 2 * batch_size * h_out * (2 + h_in + h_out)
-        g_ops = 2 * batch_size * h_out * (4 + h_in + h_out)
+        total_ops = (
+            8 * batch_size * output.size(-1)
+            * (input[0].size(-1) + output.size(-1) + 3.875)
+        )
     
     else:
-        i_ops = 2 * batch_size * h_out * (1 + h_in + h_out)
-        g_ops = 2 * batch_size * h_out * (3 + h_in + h_out)
-    
-    # Other gate ops
-    f_ops = i_ops
-    g_ops = i_ops
-    c_prime_ops = 3 * batch_size * h_out
-    h_prime_ops = 8 * batch_size * h_out
-
-    total_ops = i_ops + g_ops + f_ops + c_prime_ops + h_prime_ops
+        total_ops = (
+            8 * batch_size * output.size(-1)
+            * (input[0].size(-1) + output.size(-1) + 2.875)
+        )
 
     return total_ops
 
