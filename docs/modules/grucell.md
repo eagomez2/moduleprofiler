@@ -68,7 +68,7 @@ $$
     r_{1_{ops}} &=\left(W_{hr}x^T+b_{hr}\right)_{ops} = 2\times N\times H_{out}^2 \\
     \left(r_0+r_1\right)_{ops} &= N\times H_{out} \\
     \sigma_{ops} &= 3\times N\times H_{out} \\
-    r_{ops} &= 2\times N\times H_{out}\left(2+H_{in}+ H_{out}\right)
+    r_{ops} &= 2\times N\times H_{out}\times\left(2+H_{in}+ H_{out}\right)
 \end{align}
 $$
 
@@ -136,7 +136,7 @@ n_{1_{ops}} &= \left(W_{hn}x^T+b_{hn}\right)_{ops} = 2\times N\times H_{out}^2 \
 \left(r\odot n_1\right)_{ops} &= N\times H_{out} \\
 \left(n_0+r\odot n_1\right)_{ops} &= N\times H_{out} \\
 \text{tanh}_{ops} &= 7\times N\times H_{out} \\ 
-n_{ops} &= N\times H_{out}\left(9+2\left(H_{in}+H_{out}\right)\right)
+n_{ops} &= N\times H_{out}\times\left(9+2\times\left(H_{in}+H_{out}\right)\right)
 \end{align}
 $$
 
@@ -149,7 +149,7 @@ n_{1_{ops}} &= \left(W_{hn}x^T\right)_{ops} = N\times H_{out}\times \left(2\time
 \left(r\odot n_1\right)_{ops} &= N\times H_{out} \\
 \left(n_0+r\odot n_1\right)_{ops} &= N\times H_{out} \\
 \text{tanh}_{ops} &= 7\times N\times H_{out} \\ 
-n_{ops} &= N\times H_{out}\left(9+2\left(H_{in}+H_{out}-1\right)\right) 
+n_{ops} &= N\times H_{out}\times\left(9+2\times\left(H_{in}+H_{out}-1\right)\right) 
 \end{align}
 $$
 
@@ -190,7 +190,7 @@ $$
     \nonumber \\
     &\quad + \underbrace{4\times N\times H_{out}}_{h\prime_{ops}}
     \nonumber \\
-    \text{GRUCell}_{ops}&= 6\times N \times H_{out} \left(H_{in}+H_{out}+3.5\right)
+    \text{GRUCell}_{ops}&= 6\times N \times H_{out}\times\left(H_{in}+H_{out}+3.5\right)
 \end{align}
 $$
 
@@ -203,7 +203,7 @@ $$
     \nonumber \\
     &\quad + \underbrace{4\times N\times H_{out}}_{h\prime_{ops}}
     \nonumber \\
-    \text{GRUCell}_{ops}&= 6\times N \times H_{out} \left(H_{in}+H_{out}+2.5\right)
+    \text{GRUCell}_{ops}&= 6\times N \times H_{out}\times\left(H_{in}+H_{out}+2.5\right)
 \end{align}
 $$
 
@@ -212,10 +212,10 @@ The number of operations $\phi$ operformed by a `torch.nn.GRUCell` module can be
 
 !!! success ""
     === "If `bias=True`"
-        $\text{GRUCell}_{ops} = 6\times N \times H_{out} \left(H_{in}+H_{out}+3.5\right)$
+        $\text{GRUCell}_{ops} = 6\times N \times H_{out}\times\left(H_{in}+H_{out}+3.5\right)$
 
     === "If `bias=False`"
-        $\text{GRUCell}_{ops} = 6\times N \times H_{out} \left(H_{in}+H_{out}+2.5\right)$
+        $\text{GRUCell}_{ops} = 6\times N \times H_{out}\times\left(H_{in}+H_{out}+2.5\right)$
 
 Where
 

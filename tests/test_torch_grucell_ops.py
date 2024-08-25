@@ -2,6 +2,7 @@ import pytest
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from typing import Tuple
 
 
 @pytest.mark.parametrize(
@@ -127,3 +128,62 @@ def test_grucell_output_match_bias(
     # NOTE: Computing all with pytorch function may differ from the underlying
     # optimized module implementation so small differences are expected
     assert torch.allclose(h_prime_torch, h_prime_mp, atol=1e-5)
+
+
+@pytest.mark.parametrize(
+        "x, hidden_size, bias", [
+            # 1-dim input
+            (torch.rand((8,)), 16, False),
+            (torch.rand((8,)), 16, True),
+            
+            # 2-dim input
+            (torch.rand((8, 16)), 16, False),
+            (torch.rand((8, 16)), 16, True)
+        ]
+)
+def test_grucell_simplified_output_formula(
+        x: torch.Tensor,
+        hidden_size: int,
+        bias: bool
+) -> None:
+    # Get batch size
+    batch_size = 1 if x.ndim == 1 else x.size(0)
+
+    # Built-in module
+    net = nn.GRUCell(
+        input_size=x.size(-1),
+        hidden_size=hidden_size,
+        bias=bias
+    )
+
+    # Automatic calculation
+    y = net(x)
+
+    # Step by step formula
+    if bias:
+        r_ops = 2 * batch_size * y.size(-1) * (2 + x.size(-1) + y.size(-1)) 
+        n_ops = batch_size * y.size(-1) * (9 + 2 * (x.size(-1) + y.size(-1)))
+    
+    else:
+        r_ops = 2 * batch_size * y.size(-1) * (1 + x.size(-1) + y.size(-1)) 
+        n_ops = (
+            batch_size * y.size(-1) * (9 + 2 * (x.size(-1) + y.size(-1) - 1))
+        )
+
+    z_ops = r_ops
+    h_prime_ops = 4 * batch_size * y.size(-1)
+
+    total_ops = r_ops + z_ops + n_ops + h_prime_ops
+
+    # Simplified formula
+    if bias:
+        simplified_total_ops = (
+            6 * batch_size * y.size(-1) * (x.size(-1) + y.size(-1) + 3.5)
+        )
+    
+    else:
+        simplified_total_ops = (
+            6 * batch_size * y.size(-1) * (x.size(-1) + y.size(-1) + 2.5)
+        )
+
+    assert total_ops == simplified_total_ops

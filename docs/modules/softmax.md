@@ -16,7 +16,7 @@ Where $x$ is the input tensor of any size because $\text{Softmax}$ is an element
 
 ## Complexity
 
-The denominator of the computation $\sum_je^{x_j}$ needs to be calculated only once per row along `dim`. This calculation involves as many exponential functions as elements along dim and then a sum. If we assume that `dim` as $N$ elements, then the number of operations is
+The denominator of the computation $\sum_je^{x_j}$ needs to be calculated only once per row along `dim`. This calculation involves as many exponential functions as elements along `dim` and then a sum. If we assume that `dim` as $N$ elements, then the number of operations is
 
 $$
 \begin{equation}
