@@ -70,7 +70,7 @@ $$
     i_{1_{ops}} &=\left(W_{hi}x^T+b_{hi}\right)_{ops} = 2\times N\times H_{out}^2 \\
     \left(i_0+i_1\right)_{ops} &= N\times H_{out} \\
     \sigma_{ops} &= 3\times N\times H_{out} \\
-    i_{ops} &= 2\times N\times H_{out}\left(2+H_{in}+ H_{out}\right)
+    i_{ops} &= 2\times N\times H_{out}\times\left(2+H_{in}+ H_{out}\right)
 \end{align}
 $$
 

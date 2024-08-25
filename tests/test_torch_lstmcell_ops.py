@@ -146,3 +146,62 @@ def test_lstmcell_output_match_bias(
         torch.allclose(h_prime_torch, h_prime_mp, atol=1e-5)
         and torch.allclose(c_prime_torch, c_prime_mp, atol=1e-5)
     )
+
+
+@pytest.mark.parametrize(
+        "x, hidden_size, bias", [
+            # 1-dim input
+            (torch.rand((8,)), 16, False),
+            (torch.rand((8,)), 16, True),
+            
+            # 2-dim input
+            (torch.rand((8, 16)), 16, False),
+            (torch.rand((8, 16)), 16, True)
+        ]
+)
+def test_lstmcell_simplified_output_formula(
+        x: torch.Tensor,
+        hidden_size: int,
+        bias: bool
+) -> None:
+    # Get batch size
+    batch_size = 1 if x.ndim == 1 else x.size(0)
+
+    # Built-in module
+    net = nn.LSTMCell(
+        input_size=x.size(-1),
+        hidden_size=hidden_size,
+        bias=bias
+    )
+
+    # Automatic calculation
+    y, _ = net(x)
+
+    # Step by step formula
+    if bias:
+        i_ops = 2 * batch_size * y.size(-1) * (2 + x.size(-1) + y.size(-1))
+        g_ops = 2 * batch_size * y.size(-1) * (4 + x.size(-1) + y.size(-1))
+    
+    else:
+        i_ops = 2 * batch_size * y.size(-1) * (1 + x.size(-1) + y.size(-1))
+        g_ops = 2 * batch_size * y.size(-1) * (3 + x.size(-1) + y.size(-1))
+    
+    f_ops = i_ops
+    o_ops = i_ops
+    c_prime_ops = 3 * batch_size * y.size(-1)
+    h_prime_ops = 8 * batch_size * y.size(-1)
+
+    total_ops = i_ops + g_ops + f_ops + o_ops + c_prime_ops + h_prime_ops
+
+    # Simplified formula
+    if bias:
+        simplified_total_ops =(
+            8 * batch_size * y.size(-1) * (x.size(-1) + y.size(-1) + 3.875)
+        )
+    
+    else:
+        simplified_total_ops =(
+            8 * batch_size * y.size(-1) * (x.size(-1) + y.size(-1) + 2.875)
+        )
+    
+    assert total_ops == simplified_total_ops
