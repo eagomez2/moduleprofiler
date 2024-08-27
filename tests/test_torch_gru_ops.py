@@ -180,10 +180,16 @@ def test_gru_output_match_no_bias_one_layer_two_steps_bidirectional(
     h_s2_l0b = ((1.0 - z_s1_l0b) * n_s1_l0b + z_s1_l0b * h_s1_l0b.T).T
 
     # Concat forward output
-    ...
+    y_mp_forward = torch.cat((h_s1_l0f, h_s2_l0f), dim=0)
 
     # Concat backward output
-    ...
+    y_mp_backward = torch.cat((h_s1_l0b, h_s2_l0b), dim=0).flip(dims=(0,))
 
     # Concat both outputs
-    ...
+    y_mp = torch.cat((y_mp_forward, y_mp_backward), dim=1)
+    h_mp = torch.cat((h_s2_l0f, h_s2_l0b), dim=0)
+
+    assert (
+        torch.allclose(y_torch, y_mp, atol=1e-5)
+        and torch.allclose(h_torch, h_mp, atol=1e-5)
+    )
