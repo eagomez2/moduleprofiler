@@ -101,15 +101,15 @@ def test_gru_output_match_no_bias_one_layer_two_steps_bidirectional(
 
     # Manual calculation (weight order ir, iz, in)
     # (hidden_size, d * input_size)
-    weight_ih_r_l0f = net.weight_ih_l0[0:hidden_size, 0:1]
-    weight_ih_z_l0f = net.weight_ih_l0[hidden_size:(2 * hidden_size), 0:1]
+    weight_ih_r_l0f = net.weight_ih_l0[0:hidden_size, ...]
+    weight_ih_z_l0f = net.weight_ih_l0[hidden_size:(2 * hidden_size), ...]
     weight_ih_n_l0f = net.weight_ih_l0[
-        (2 * hidden_size):(3 * hidden_size), 0:1
+        (2 * hidden_size):(3 * hidden_size), ...
     ]
-    weight_hh_r_l0f = net.weight_hh_l0[0:hidden_size, 0:1]
-    weight_hh_z_l0f = net.weight_hh_l0[hidden_size:(2 * hidden_size), 0:1]
+    weight_hh_r_l0f = net.weight_hh_l0[0:hidden_size, ...]
+    weight_hh_z_l0f = net.weight_hh_l0[hidden_size:(2 * hidden_size), ...]
     weight_hh_n_l0f = net.weight_hh_l0[
-        (2 * hidden_size):(3 * hidden_size), 0:1
+        (2 * hidden_size):(3 * hidden_size), ...
     ]
     
     # First step forward
@@ -139,19 +139,19 @@ def test_gru_output_match_no_bias_one_layer_two_steps_bidirectional(
 
     # Backward weights (these are currently not documented in PyTorch docs)
     # (hidden_size, d * input_size)
-    weight_ih_r_l0b = net.weight_ih_l0_reverse[0:hidden_size, 0:1]
+    weight_ih_r_l0b = net.weight_ih_l0_reverse[0:hidden_size, ...]
     weight_ih_z_l0b = net.weight_ih_l0_reverse[
-        hidden_size:(2 * hidden_size), 0:1
+        hidden_size:(2 * hidden_size), ...
     ]
     weight_ih_n_l0b = net.weight_ih_l0_reverse[
-        (2 * hidden_size):(3 * hidden_size), 0:1
+        (2 * hidden_size):(3 * hidden_size), ...
     ]
-    weight_hh_r_l0b = net.weight_hh_l0_reverse[0:hidden_size, 0:1]
+    weight_hh_r_l0b = net.weight_hh_l0_reverse[0:hidden_size, ...]
     weight_hh_z_l0b = net.weight_hh_l0_reverse[
-        hidden_size:(2 * hidden_size), 0:1
+        hidden_size:(2 * hidden_size), ...
     ]
     weight_hh_n_l0b = net.weight_hh_l0_reverse[
-        (2 * hidden_size):(3 * hidden_size), 0:1
+        (2 * hidden_size):(3 * hidden_size), ...
     ]
 
     # First step backward
