@@ -101,6 +101,7 @@ def test_gru_output_match_no_bias_one_layer_two_steps_bidirectional(
 
     # Manual calculation (weight order ir, iz, in)
     # (hidden_size, d * input_size)
+    # l0f = layer 0, forward
     weight_ih_r_l0f = net.weight_ih_l0[0:hidden_size, ...]
     weight_ih_z_l0f = net.weight_ih_l0[hidden_size:(2 * hidden_size), ...]
     weight_ih_n_l0f = net.weight_ih_l0[
@@ -113,6 +114,7 @@ def test_gru_output_match_no_bias_one_layer_two_steps_bidirectional(
     ]
     
     # First step forward
+    # s0f = step 0, forward
     x_s0f = torch.narrow(x, dim=0, start=0, length=1)
     hx_f = torch.narrow(hx, dim=0, start=0, length=1)
 
@@ -139,6 +141,7 @@ def test_gru_output_match_no_bias_one_layer_two_steps_bidirectional(
 
     # Backward weights (these are currently not documented in PyTorch docs)
     # (hidden_size, d * input_size)
+    # l0b = layer 0, backward
     weight_ih_r_l0b = net.weight_ih_l0_reverse[0:hidden_size, ...]
     weight_ih_z_l0b = net.weight_ih_l0_reverse[
         hidden_size:(2 * hidden_size), ...
@@ -155,6 +158,7 @@ def test_gru_output_match_no_bias_one_layer_two_steps_bidirectional(
     ]
 
     # First step backward
+    # s0b = step 0, backward
     x_s0b = torch.narrow(x.flip(dims=(0,)), dim=0, start=0, length=1)
     hx_b = torch.narrow(hx.flip(dims=(0,)), dim=0, start=0, length=1)
 
@@ -165,7 +169,7 @@ def test_gru_output_match_no_bias_one_layer_two_steps_bidirectional(
     )
     h_s1_l0b = ((1.0 - z_s0_l0b) * n_s0_l0b + z_s0_l0b * hx_b.T).T
 
-    # # Second step backward
+    # Second step backward
     x_s1b = torch.narrow(x.flip(dims=(0,)), dim=0, start=1, length=1)
 
     r_s1_l0b = F.sigmoid(
