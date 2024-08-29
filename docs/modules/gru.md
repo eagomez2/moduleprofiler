@@ -23,11 +23,85 @@ Where
 * $b_{ir}$, $b_{iz}$, $b_{in}$, $b_{hr}$, $b_{hz}$ and $b_{hn}$ are bias tensors of size $\left(H_{out}\right)$.
 
 !!! note
-    Please note that some weight tensor shapes may differ from <a href="https://pytorch.org/docs/stable/generated/torch.nn.GRU.html" target="_blank">Pytorch `torch.nn.GRU`'s documentation</a> due to the fact that some tensors are stacked. For instance, $W_{ir}$, $W_{iz}$ and $W_{in}$ tensors of each layer are implemented as a single tensor of size $\left(3\times H_{out}, H_{in}\right)$ for the first layer, and $\left(3\times H_{out}, D\times H_{out}\right)$ for subsequent layers. Similarly $W_{hr}$, $W_{hz}$ and $W_{hn}$ are implemented as a single tensor of size $\left(3\times H_{out}, H_{out}\right)$. The tensors of all layers are then stored as a `list` of `torch.Tensor` objects. The number of layers is controlled by the `num_layers` parameter, and the number of directions $D$ is controlled by the `birectional` parameter.
+    Please note that some weight tensor shapes may differ from <a href="https://pytorch.org/docs/stable/generated/torch.nn.GRU.html" target="_blank">Pytorch `torch.nn.GRU`'s documentation</a> due to the fact that some tensors are stacked. For instance, $W_{ir}$, $W_{iz}$ and $W_{in}$ tensors of each layer are implemented as a single tensor of size $\left(3\times H_{out}, H_{in}\right)$ for the first layer, and $\left(3\times H_{out}, D\times H_{out}\right)$ for subsequent layers. Similarly $W_{hr}$, $W_{hz}$ and $W_{hn}$ are implemented as a single tensor of size $\left(3\times H_{out}, H_{out}\right)$. The number of layers is controlled by the `num_layers` parameter, and the number of directions $D$ is controlled by the `birectional` parameter.
 
 !!! note
     The complexity of the `dropout` parameter is not considered in the following calculations, since it is usually temporarily used during training and then disabled during inference.
 
 ## Complexity
+It is possible to reuse the calculation for `torch.nn.GRUCell` to estimate the complexity of `torch.nn.GRU`. However, there are a couple of additional considerations. First, when `num_layers > 1`, the second layer takes the output(s) of the first layer as input. This means that $W_{ir}$, $W_{iz}$ and $W_{in}$ will have size $\left(H_\text{out}, H_\text{out}\right)$ if `bidirectional=False` and size $\left(H_\text{out}, 2\times H_\text{out}\right)$ if `bidirectional=True`.
+
+!!! warning
+    Please review the [`torch.nn.GRUCell` complexity documentation](./grucell.md) before continuing, as the subsequent sections will reference formulas from that layer without re-deriving them.
+
+### Unidirectional
+The complexity of the first layer is the same as as `torch.nn.GRUCell` that if `bias=True`can be simplified to
+
+$$
+\begin{align}
+    \text{GRU}_{ops}|_{\text{layer}=0} = 6\times N \times H_{out}\times\left(H_{in}+H_{out}+3.5\right)
+\end{align}
+$$
+
+and when `bias=False`
+
+$$
+\begin{align}
+    \text{GRU}_{ops}|_{\text{layer}=0} = 6\times N \times H_{out}\times\left(H_{in}+H_{out}+2.5\right)
+\end{align}
+$$
+
+For subsequent layers it is necessary to replace $H_{in}$ by $H_{out}$, then when `bias=True`
+
+$$
+\begin{align}
+    \text{GRU}_{ops}|_{\text{layer}\geq 1} = 6\times N \times H_{out}\times\left(2\times H_{out}+3.5\right)
+\end{align}
+$$
+
+and when `bias=False`
+
+$$
+\begin{align}
+    \text{GRU}_{ops}|_{\text{layer}\geq 1} = 6\times N \times H_{out}\times\left(2\times H_{out}+2.5\right)
+\end{align}
+$$
+
+
+#### Total complexity
+The total complexity for `bidirectional=False` is
+
+$$
+\begin{align}
+    \text{GRU}_{ops} &= \text{GRU}_{ops}|_{\text{layer}=0} + \left(\text{num\_layers} - 1 \right)\times \text{GRU}_{ops}|_{\text{layer}\geq 1}
+\end{align}
+$$
+
+When `bias=True` this expression becomes
+
+$$
+\begin{align}
+    \text{GRU}_{ops} &= \underbrace{6\times N \times H_{out}\times\left(H_{in}+H_{out}+3.5\right)}_{\text{GRU}_{ops}|_{\text{layer}=0}} \nonumber \\
+    &\quad + \left(\text{num\_layers} - 1 \right)\times \underbrace{\left(6\times N \times H_{out}\times\left(2\times H_{out}+3.5\right)\right)}_{\text{GRU}_{ops}|_{\text{layer}\geq 1}} \nonumber \\
+    \text{GRU}_{ops} &= 6\times N \times H_{out}\times \left(H_{in}+\left(2\times\text{num\_layers}-1\right)\times H_{out}+3.5\times\text{num\_layers}\right)
+\end{align}
+$$
+
+and when `bias=Fase`
+
+$$
+\begin{align}
+    \text{GRU}_{ops} &= \underbrace{6\times N \times H_{out}\times\left(H_{in}+H_{out}+2.5\right)}_{\text{GRU}_{ops}|_{\text{layer}=0}} \nonumber \\
+    &\quad + \left(\text{num\_layers} - 1 \right)\times \underbrace{\left(6\times N \times H_{out}\times\left(2\times H_{out}+2.5\right)\right)}_{\text{GRU}_{ops}|_{\text{layer}\geq 1}} \nonumber \\
+    \text{GRU}_{ops} &= 6\times N \times H_{out}\times \left(H_{in}+\left(2\times\text{num\_layers}-1\right)\times H_{out}+2.5\times\text{num\_layers}\right)
+\end{align}
+$$
+
+### Bidirectional
+
+
+#### Total complexity
+The total complexity for `bidirectional=True` is
+
 
 ## Summary

@@ -23,7 +23,7 @@ Where
 * $b_{ir}$, $b_{iz}$, $b_{in}$, $b_{hr}$, $b_{hz}$ and $b_{hn}$ are bias tensors of size $\left(H_{out}\right)$.
 
 ## Complexity
-In order to compute the complexity of a single nn.GRUCell, we just need to estimate the number of operations of all four aforementioned equations. For the sake of simplicity, for operations involving sigmoid and hyperbolic tangent, the listed equations will be used and exponentials will be counted as a single operation.
+In order to compute the complexity of a single `torch.nn.GRUCell`, it is necessary to estimate the number of operations of all four aforementioned equations. For the sake of simplicity, for operations involving sigmoid and hyperbolic tangent, the listed equations will be used and exponentials will be counted as a single operation.
 
 !!! note
     During the following operations, some tensors have to be transposed in order to have compatible dimensions to perform matrix multiplication, even thought this is not explicitly mentioned in <a href="https://pytorch.org/docs/stable/generated/torch.nn.GRUCell.html", target="_blank">PyTorch `torch.nn.GRUCel`’s documentation</a>. Additionally, some weight tensors are stacked. For instance, $W_{ir}$, $W_{iz}$ and $W_{in}$ are implemented as a single tensor of size $\left(3\times H_{out}, H_{in}\right)$, and $W_{hr}$, $W_{hz}$ and $W_{hn}$ are implemented as a single tensor of size $\left(3\times H_{out}, H_{out}\right)$, possibly due to efficiency reasons.
@@ -76,9 +76,9 @@ and when `bias=False`
 
 $$
 \begin{align}
-    r_{0_{ops}} &=\left(W_{ir}x^T+b_{iri}\right)_{ops} = N\times H_{out}\times \left(2\times H_{in}-1\right) \\
-    i_{1_{ops}}
-    &=\left(W_{hr}x^T+b_{hr}\right)_{ops}=N\times H_{out}\times\left(2\times H_{out}-1\right) \\
+    r_{0_{ops}} &=\left(W_{ir}x^T\right)_{ops} = N\times H_{out}\times \left(2\times H_{in}-1\right) \\
+    r_{1_{ops}}
+    &=\left(W_{hr}x^T\right)_{ops}=N\times H_{out}\times\left(2\times H_{out}-1\right) \\
     \left(r_0+r_1\right)_{ops} &= N\times H_{out} \\
     \sigma_{ops} &= 3\times N\times H_{out}\\
     r_{ops} &= 2\times N\times H_{out}\times\left(1+H_{in}+ H_{out}\right)
