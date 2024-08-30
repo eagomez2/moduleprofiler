@@ -98,10 +98,67 @@ $$
 $$
 
 ### Bidirectional
+For the case of `bidirectional=True` the same considerations explained [at the beginning of this section](#complexity) should be taken into account. Additionally, each cell will approximately duplicate its calculations because one subset of the output is calculated using the forward direction of the input sequence $x$, and the remaining one uses the reverse input sequence $x$. Please note that each direction of the input sequence will have its own set of weights, even though <a href="https://github.com/pytorch/pytorch/issues/59332" target="blank">this is not documented at the moment of writing this documentation</a>. Finally, both outputs will be concatenated to produce a tensor of size $\left(L, N, D\times H_{out}\right)$ with $D=2$ in this case. When `num_layers > 1`, this is also the shape of the input size for layers after the first one.
 
+The complexity of the first layer when `bidirectional=True` and `bias=True` is
+
+$$
+\begin{align}
+    \text{GRU}_{ops}|_{\text{layer}=0} = 12\times N \times H_{out}\times\left(H_{in}+H_{out}+3.5\right)
+\end{align}
+$$
+
+and when `bias=False`
+
+$$
+\begin{align}
+    \text{GRU}_{ops}|_{\text{layer}=0} = 12\times N \times H_{out}\times\left(H_{in}+H_{out}+2.5\right)
+\end{align}
+$$
+
+For subsequent layers it is necessary to replace $H_{in}$ by $2\times H_{out}$. Then when `bias=True`
+
+$$
+\begin{align}
+    \text{GRU}_{ops}|_{\text{layer}\geq 1} = 12\times N \times H_{out}\times\left(3\times H_{out}+3.5\right)
+\end{align}
+$$
+
+and when `bias=False`
+
+$$
+\begin{align}
+    \text{GRU}_{ops}|_{\text{layer}\geq 1} = 12\times N \times H_{out}\times\left(3\times H_{out}+2.5\right)
+\end{align}
+$$
 
 #### Total complexity
 The total complexity for `bidirectional=True` is
 
+$$
+\begin{align}
+    \text{GRU}_{ops} &= \text{GRU}_{ops}|_{\text{layer}=0} + \left(\text{num\_layers} - 1 \right)\times \text{GRU}_{ops}|_{\text{layer}\geq 1}
+\end{align}
+$$
+
+When `bias=True` this expression becomes
+
+$$
+\begin{align}
+    \text{GRU}_{ops} &= \underbrace{12\times N \times H_{out}\times\left(H_{in}+H_{out}+3.5\right)}_{\text{GRU}_{ops}|_{\text{layer}=0}} \nonumber \\
+    &\quad + \left(\text{num\_layers} - 1 \right)\times \underbrace{\left(12\times N \times H_{out}\times\left(3\times H_{out}+3.5\right)\right)}_{\text{GRU}_{ops}|_{\text{layer}\geq 1}} \nonumber \\
+    \text{GRU}_{ops} &= 12\times N \times H_{out}\times \left(H_{in}+\left(3\times\text{num\_layers}-2\right)\times H_{out}+3.5\times\text{num\_layers}\right)
+\end{align}
+$$
+
+and when `bias=False`
+
+$$
+\begin{align}
+    \text{GRU}_{ops} &= \underbrace{12\times N \times H_{out}\times\left(H_{in}+H_{out}+2.5\right)}_{\text{GRU}_{ops}|_{\text{layer}=0}} \nonumber \\
+    &\quad + \left(\text{num\_layers} - 1 \right)\times \underbrace{\left(12\times N \times H_{out}\times\left(3\times H_{out}+2.5\right)\right)}_{\text{GRU}_{ops}|_{\text{layer}\geq 1}} \nonumber \\
+    \text{GRU}_{ops} &= 12\times N \times H_{out}\times \left(H_{in}+\left(3\times\text{num\_layers}-2\right)\times H_{out}+2.5\times\text{num\_layers}\right)
+\end{align}
+$$
 
 ## Summary
