@@ -134,40 +134,61 @@ def _gru_ops_fn(
         output: torch.Tensor
 ) -> int:
     # Get params
-    if len(input[0].size()) == 2:
+    if input[0].ndim == 2:
         batch_size = 1
-        num_steps = input[0].size(0)
     
-    elif input[0].size() == 3:
+    elif input[0].ndim == 3:
         batch_size = (
             input[0].size(0) if module.batch_first else input[0].size(1)
         )
-        num_steps = (
-            input[0].size(1) if module.batch_first else input[0].size(0)
-        )
     
+    input_size = module.input_size
+    hidden_size = module.hidden_size
     num_layers = module.num_layers
-    num_directions = 2 if module.bidirectional else 1
-    h_out = module.hidden_size
-    h_in = module.input_size
 
-    if module.bias is not None:
-        r_ops = 2 * batch_size * h_out * (h_in + h_out + 2)
-        z_ops = r_ops
-        n_ops = batch_size * h_out * (9 + 2 * (h_in + h_out))
+    if module.bias:
+        if module.bidirectional:
+            total_ops = (
+                12 * batch_size * hidden_size
+                * (
+                    input_size
+                    + (3 * num_layers - 2) * hidden_size
+                    + 3.5 * num_layers
+                )
+            )
+        
+        else:
+            total_ops = (
+                6 * batch_size * hidden_size
+                * (
+                    input_size
+                    + (2 * num_layers - 1) * hidden_size
+                    + 3.5 * num_layers
+                )
+            )
     
     else:
-        r_ops = 2 * batch_size * h_out * (h_in + h_out + 1)
-        z_ops = r_ops
-        n_ops = batch_size * h_out * (9 + 2 * (h_in + h_out - 1))
+        if module.bidirectional:
+            total_ops = (
+                12 * batch_size * hidden_size
+                * (
+                    input_size
+                    + (3 * num_layers - 2) * hidden_size
+                    + 2.5 * num_layers
+                )
+            )
+        
+        else:
+            total_ops = (
+                6 * batch_size * hidden_size
+                * (
+                    input_size
+                    + (2 * num_layers - 1) * hidden_size
+                    + 2.5 * num_layers
+                )
+            )
 
-    # Same regardless of bias
-    h_prime_ops = 4 * batch_size * h_out
-
-    grucell_ops = r_ops + z_ops + n_ops + h_prime_ops
-    total_ops = num_directions * num_steps * num_layers * grucell_ops
-
-    return total_ops
+    return int(total_ops)
 
 
 def _lstmcell_ops_fn(
@@ -189,7 +210,7 @@ def _lstmcell_ops_fn(
             * (input[0].size(-1) + output.size(-1) + 2.875)
         )
 
-    return total_ops
+    return int(total_ops)
 
 
 def _lstm_ops_fn(
