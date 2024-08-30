@@ -131,12 +131,12 @@ Then, when `bias=True`
 
 $$
 \begin{align}
-n_{0_{ops}} &= \left(W_{in}x^T+b_{in}\right)_{ops} = 2\times N\times H_{out}\times H_{in} \\
-n_{1_{ops}} &= \left(W_{hn}x^T+b_{hn}\right)_{ops} = 2\times N\times H_{out}^2 \\
-\left(r\odot n_1\right)_{ops} &= N\times H_{out} \\
-\left(n_0+r\odot n_1\right)_{ops} &= N\times H_{out} \\
-\text{tanh}_{ops} &= 7\times N\times H_{out} \\ 
-n_{ops} &= N\times H_{out}\times\left(9+2\times\left(H_{in}+H_{out}\right)\right)
+    n_{0_{ops}} &= \left(W_{in}x^T+b_{in}\right)_{ops} = 2\times N\times H_{out}\times H_{in} \\
+    n_{1_{ops}} &= \left(W_{hn}x^T+b_{hn}\right)_{ops} = 2\times N\times H_{out}^2 \\
+    \left(r\odot n_1\right)_{ops} &= N\times H_{out} \\
+    \left(n_0+r\odot n_1\right)_{ops} &= N\times H_{out} \\
+    \text{tanh}_{ops} &= 7\times N\times H_{out} \\ 
+    n_{ops} &= N\times H_{out}\times\left(9+2\times\left(H_{in}+H_{out}\right)\right)
 \end{align}
 $$
 
@@ -144,12 +144,12 @@ and when `bias=False`
 
 $$
 \begin{align}
-n_{0_{ops}} &= \left(W_{in}x^T\right)_{ops} = N\times H_{out}\times \left(2\times H_{in}-1\right) \\
-n_{1_{ops}} &= \left(W_{hn}x^T\right)_{ops} = N\times H_{out}\times \left(2\times H_{out}-1\right) \\
-\left(r\odot n_1\right)_{ops} &= N\times H_{out} \\
-\left(n_0+r\odot n_1\right)_{ops} &= N\times H_{out} \\
-\text{tanh}_{ops} &= 7\times N\times H_{out} \\ 
-n_{ops} &= N\times H_{out}\times\left(9+2\times\left(H_{in}+H_{out}-1\right)\right) 
+    n_{0_{ops}} &= \left(W_{in}x^T\right)_{ops} = N\times H_{out}\times \left(2\times H_{in}-1\right) \\
+    n_{1_{ops}} &= \left(W_{hn}x^T\right)_{ops} = N\times H_{out}\times \left(2\times H_{out}-1\right) \\
+    \left(r\odot n_1\right)_{ops} &= N\times H_{out} \\
+    \left(n_0+r\odot n_1\right)_{ops} &= N\times H_{out} \\
+    \text{tanh}_{ops} &= 7\times N\times H_{out} \\ 
+    n_{ops} &= N\times H_{out}\times\left(9+2\times\left(H_{in}+H_{out}-1\right)\right) 
 \end{align}
 $$
 
@@ -208,7 +208,7 @@ $$
 $$
 
 ## Summary
-The number of operations $\phi$ operformed by a `torch.nn.GRUCell` module can be estimated as
+The number of operations $\phi$ performed by a `torch.nn.GRUCell` module can be estimated as
 
 !!! success ""
     === "If `bias=True`"

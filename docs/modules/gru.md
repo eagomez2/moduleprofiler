@@ -87,7 +87,7 @@ $$
 \end{align}
 $$
 
-and when `bias=Fase`
+and when `bias=False`
 
 $$
 \begin{align}
@@ -162,3 +162,24 @@ $$
 $$
 
 ## Summary
+The number of operations performed by a `torch.nn.GRU` module can be estimated as
+
+!!! success ""
+    === "If `bias=True` and `bidirectional=False`"
+        $\text{GRU}_{ops} = 6\times N \times H_{out}\times \left(H_{in}+\left(2\times\text{num\_layers}-1\right)\times H_{out}+3.5\times\text{num\_layers}\right)$
+    
+    === "If `bias=False` and `bidirectional=False`"
+        $\text{GRU}_{ops} = 6\times N \times H_{out}\times \left(H_{in}+\left(2\times\text{num\_layers}-1\right)\times H_{out}+2.5\times\text{num\_layers}\right)$
+    
+    === "If `bias=True` and `bidirectional=True`" 
+        $\text{GRU}_{ops} = 12\times N \times H_{out}\times \left(H_{in}+\left(3\times\text{num\_layers}-2\right)\times H_{out}+3.5\times\text{num\_layers}\right)$
+
+    === "If `bias=False` and `bidirectional=True`"
+        $\text{GRU}_{ops} = 12\times N \times H_{out}\times \left(H_{in}+\left(3\times\text{num\_layers}-2\right)\times H_{out}+2.5\times\text{num\_layers}\right)$
+    
+Where
+
+* $N$ is the batch size.
+* $H_\text{in}$ is the number of input features.
+* $H_\text{out}$ is the number of output features.
+* $\text{num\_layers}$ is the number of layers. When `num_layers > 1`, the output of the first layer is fed into the second one.
