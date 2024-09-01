@@ -136,10 +136,14 @@ def _gru_ops_fn(
     # Get params
     if input[0].ndim == 2:
         batch_size = 1
+        seq_len = input[0].size(0)
     
     elif input[0].ndim == 3:
         batch_size = (
             input[0].size(0) if module.batch_first else input[0].size(1)
+        )
+        seq_len = (
+            input[0].size(1) if module.batch_first else input[0].size(0)
         )
     
     input_size = module.input_size
@@ -149,7 +153,7 @@ def _gru_ops_fn(
     if module.bias:
         if module.bidirectional:
             total_ops = (
-                12 * batch_size * hidden_size
+                12 * seq_len * batch_size * hidden_size
                 * (
                     input_size
                     + (3 * num_layers - 2) * hidden_size
@@ -159,7 +163,7 @@ def _gru_ops_fn(
         
         else:
             total_ops = (
-                6 * batch_size * hidden_size
+                6 * seq_len * batch_size * hidden_size
                 * (
                     input_size
                     + (2 * num_layers - 1) * hidden_size
@@ -170,7 +174,7 @@ def _gru_ops_fn(
     else:
         if module.bidirectional:
             total_ops = (
-                12 * batch_size * hidden_size
+                12 * seq_len * batch_size * hidden_size
                 * (
                     input_size
                     + (3 * num_layers - 2) * hidden_size
@@ -180,7 +184,7 @@ def _gru_ops_fn(
         
         else:
             total_ops = (
-                6 * batch_size * hidden_size
+                6 * seq_len * batch_size * hidden_size
                 * (
                     input_size
                     + (2 * num_layers - 1) * hidden_size
