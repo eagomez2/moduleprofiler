@@ -29,7 +29,7 @@ Where
     The complexity of the `dropout` parameter is not considered in the following calculations, since it is usually temporarily used during training and then disabled during inference.
 
 ## Complexity
-It is possible to reuse the calculation for `torch.nn.GRUCell` to estimate the complexity of `torch.nn.GRU`. However, there are a couple of additional considerations. First, when `num_layers > 1`, the second layer takes the output(s) of the first layer as input. This means that $W_{ir}$, $W_{iz}$ and $W_{in}$ will have size $\left(H_\text{out}, H_\text{out}\right)$ if `bidirectional=False` and size $\left(H_\text{out}, 2\times H_\text{out}\right)$ if `bidirectional=True`.
+It is possible to reuse the calculation for `torch.nn.GRUCell` to estimate the complexity of `torch.nn.GRU`. However, there are a couple of additional considerations. First, when `num_layers > 1`, the second layer takes the output(s) of the first layer as input. This means that $W_{ir}$, $W_{iz}$ and $W_{in}$ will have size $\left(H_\text{out}, H_\text{out}\right)$ if `bidirectional=False` and size $\left(H_\text{out}, 2\times H_\text{out}\right)$ if `bidirectional=True`. Secondly and differently from `torch.nn.GRUCell`, `torch.nn.GRU` can process an input containing bigger sequence lenghts, therefore the same estimated calculations will repeat $L$ times where $L$ sequence length.
 
 !!! warning
     Please review the [`torch.nn.GRUCell` complexity documentation](./grucell.md) before continuing, as the subsequent sections will reference formulas from that layer without re-deriving them.
@@ -69,11 +69,11 @@ $$
 
 
 #### Total complexity
-The total complexity for `bidirectional=False` is
+Now it is necessary to include the sequence length $L$ in the input tensor $x$ to obtain the total complexity, since the previous calculation will be repeatead $L$ times. The total complexity for `bidirectional=False` is
 
 $$
 \begin{align}
-    \text{GRU}_{ops} &= \text{GRU}_{ops}|_{\text{layer}=0} + \left(\text{num\_layers} - 1 \right)\times \text{GRU}_{ops}|_{\text{layer}\geq 1}
+    \text{GRU}_{ops} &= L\times \text{GRU}_{ops}|_{\text{layer}=0} + \left(\text{num\_layers} - 1 \right)\times \text{GRU}_{ops}|_{\text{layer}\geq 1}
 \end{align}
 $$
 
@@ -81,9 +81,9 @@ When `bias=True` this expression becomes
 
 $$
 \begin{align}
-    \text{GRU}_{ops} &= \underbrace{6\times N \times H_{out}\times\left(H_{in}+H_{out}+3.5\right)}_{\text{GRU}_{ops}|_{\text{layer}=0}} \nonumber \\
-    &\quad + \left(\text{num\_layers} - 1 \right)\times \underbrace{\left(6\times N \times H_{out}\times\left(2\times H_{out}+3.5\right)\right)}_{\text{GRU}_{ops}|_{\text{layer}\geq 1}} \nonumber \\
-    \text{GRU}_{ops} &= 6\times N \times H_{out}\times \left(H_{in}+\left(2\times\text{num\_layers}-1\right)\times H_{out}+3.5\times\text{num\_layers}\right)
+    \text{GRU}_{ops} &= L\times \underbrace{6\times N \times H_{out}\times\left(H_{in}+H_{out}+3.5\right)}_{\text{GRU}_{ops}|_{\text{layer}=0}} \nonumber \\
+    &\quad + L\times \left(\text{num\_layers} - 1 \right)\times \underbrace{\left(6\times N \times H_{out}\times\left(2\times H_{out}+3.5\right)\right)}_{\text{GRU}_{ops}|_{\text{layer}\geq 1}} \nonumber \\
+    \text{GRU}_{ops} &= 6\times L \times N \times H_{out}\times \left(H_{in}+\left(2\times\text{num\_layers}-1\right)\times H_{out}+3.5\times\text{num\_layers}\right)
 \end{align}
 $$
 
@@ -91,9 +91,9 @@ and when `bias=False`
 
 $$
 \begin{align}
-    \text{GRU}_{ops} &= \underbrace{6\times N \times H_{out}\times\left(H_{in}+H_{out}+2.5\right)}_{\text{GRU}_{ops}|_{\text{layer}=0}} \nonumber \\
-    &\quad + \left(\text{num\_layers} - 1 \right)\times \underbrace{\left(6\times N \times H_{out}\times\left(2\times H_{out}+2.5\right)\right)}_{\text{GRU}_{ops}|_{\text{layer}\geq 1}} \nonumber \\
-    \text{GRU}_{ops} &= 6\times N \times H_{out}\times \left(H_{in}+\left(2\times\text{num\_layers}-1\right)\times H_{out}+2.5\times\text{num\_layers}\right)
+    \text{GRU}_{ops} &= L\times \underbrace{6\times N \times H_{out}\times\left(H_{in}+H_{out}+2.5\right)}_{\text{GRU}_{ops}|_{\text{layer}=0}} \nonumber \\
+    &\quad + L\times \left(\text{num\_layers} - 1 \right)\times \underbrace{\left(6\times N \times H_{out}\times\left(2\times H_{out}+2.5\right)\right)}_{\text{GRU}_{ops}|_{\text{layer}\geq 1}} \nonumber \\
+    \text{GRU}_{ops} &= 6\times L \times N \times H_{out}\times \left(H_{in}+\left(2\times\text{num\_layers}-1\right)\times H_{out}+2.5\times\text{num\_layers}\right)
 \end{align}
 $$
 
@@ -133,11 +133,11 @@ $$
 $$
 
 #### Total complexity
-The total complexity for `bidirectional=True` is
+Now it is necessary to include the sequence length $L$ in the input tensor $x$ to obtain the total complexity, since the previous calculation will be repeatead $L$ times. The total complexity for `bidirectional=True` is
 
 $$
 \begin{align}
-    \text{GRU}_{ops} &= \text{GRU}_{ops}|_{\text{layer}=0} + \left(\text{num\_layers} - 1 \right)\times \text{GRU}_{ops}|_{\text{layer}\geq 1}
+    \text{GRU}_{ops} &= L\times \left(\text{GRU}_{ops}|_{\text{layer}=0} + \left(\text{num\_layers} - 1 \right)\times \text{GRU}_{ops}|_{\text{layer}\geq 1}\right)
 \end{align}
 $$
 
@@ -145,9 +145,9 @@ When `bias=True` this expression becomes
 
 $$
 \begin{align}
-    \text{GRU}_{ops} &= \underbrace{12\times N \times H_{out}\times\left(H_{in}+H_{out}+3.5\right)}_{\text{GRU}_{ops}|_{\text{layer}=0}} \nonumber \\
-    &\quad + \left(\text{num\_layers} - 1 \right)\times \underbrace{\left(12\times N \times H_{out}\times\left(3\times H_{out}+3.5\right)\right)}_{\text{GRU}_{ops}|_{\text{layer}\geq 1}} \nonumber \\
-    \text{GRU}_{ops} &= 12\times N \times H_{out}\times \left(H_{in}+\left(3\times\text{num\_layers}-2\right)\times H_{out}+3.5\times\text{num\_layers}\right)
+    \text{GRU}_{ops} &= L\times\underbrace{12\times N \times H_{out}\times\left(H_{in}+H_{out}+3.5\right)}_{\text{GRU}_{ops}|_{\text{layer}=0}} \nonumber \\
+    &\quad + L\times\left(\text{num\_layers} - 1 \right)\times \underbrace{\left(12\times N \times H_{out}\times\left(3\times H_{out}+3.5\right)\right)}_{\text{GRU}_{ops}|_{\text{layer}\geq 1}} \nonumber \\
+    \text{GRU}_{ops} &= 12\times L\times N \times H_{out}\times \left(H_{in}+\left(3\times\text{num\_layers}-2\right)\times H_{out}+3.5\times\text{num\_layers}\right)
 \end{align}
 $$
 
@@ -155,9 +155,9 @@ and when `bias=False`
 
 $$
 \begin{align}
-    \text{GRU}_{ops} &= \underbrace{12\times N \times H_{out}\times\left(H_{in}+H_{out}+2.5\right)}_{\text{GRU}_{ops}|_{\text{layer}=0}} \nonumber \\
-    &\quad + \left(\text{num\_layers} - 1 \right)\times \underbrace{\left(12\times N \times H_{out}\times\left(3\times H_{out}+2.5\right)\right)}_{\text{GRU}_{ops}|_{\text{layer}\geq 1}} \nonumber \\
-    \text{GRU}_{ops} &= 12\times N \times H_{out}\times \left(H_{in}+\left(3\times\text{num\_layers}-2\right)\times H_{out}+2.5\times\text{num\_layers}\right)
+    \text{GRU}_{ops} &= L\times\underbrace{12\times N \times H_{out}\times\left(H_{in}+H_{out}+2.5\right)}_{\text{GRU}_{ops}|_{\text{layer}=0}} \nonumber \\
+    &\quad + L\times\left(\text{num\_layers} - 1 \right)\times \underbrace{\left(12\times N \times H_{out}\times\left(3\times H_{out}+2.5\right)\right)}_{\text{GRU}_{ops}|_{\text{layer}\geq 1}} \nonumber \\
+    \text{GRU}_{ops} &= 12\times L\times N \times H_{out}\times \left(H_{in}+\left(3\times\text{num\_layers}-2\right)\times H_{out}+2.5\times\text{num\_layers}\right)
 \end{align}
 $$
 
@@ -166,20 +166,21 @@ The number of operations performed by a `torch.nn.GRU` module can be estimated a
 
 !!! success ""
     === "If `bias=True` and `bidirectional=False`"
-        $\text{GRU}_{ops} = 6\times N \times H_{out}\times \left(H_{in}+\left(2\times\text{num\_layers}-1\right)\times H_{out}+3.5\times\text{num\_layers}\right)$
+        $\text{GRU}_{ops} = 6\times L\times N \times H_{out}\times \left(H_{in}+\left(2\times\text{num\_layers}-1\right)\times H_{out}+3.5\times\text{num\_layers}\right)$
     
     === "If `bias=False` and `bidirectional=False`"
-        $\text{GRU}_{ops} = 6\times N \times H_{out}\times \left(H_{in}+\left(2\times\text{num\_layers}-1\right)\times H_{out}+2.5\times\text{num\_layers}\right)$
+        $\text{GRU}_{ops} = 6\times L\times N \times H_{out}\times \left(H_{in}+\left(2\times\text{num\_layers}-1\right)\times H_{out}+2.5\times\text{num\_layers}\right)$
     
     === "If `bias=True` and `bidirectional=True`" 
-        $\text{GRU}_{ops} = 12\times N \times H_{out}\times \left(H_{in}+\left(3\times\text{num\_layers}-2\right)\times H_{out}+3.5\times\text{num\_layers}\right)$
+        $\text{GRU}_{ops} = 12\times L\times N \times H_{out}\times \left(H_{in}+\left(3\times\text{num\_layers}-2\right)\times H_{out}+3.5\times\text{num\_layers}\right)$
 
     === "If `bias=False` and `bidirectional=True`"
-        $\text{GRU}_{ops} = 12\times N \times H_{out}\times \left(H_{in}+\left(3\times\text{num\_layers}-2\right)\times H_{out}+2.5\times\text{num\_layers}\right)$
+        $\text{GRU}_{ops} = 12\times L\times N \times H_{out}\times \left(H_{in}+\left(3\times\text{num\_layers}-2\right)\times H_{out}+2.5\times\text{num\_layers}\right)$
     
 Where
 
 * $N$ is the batch size.
 * $H_\text{in}$ is the number of input features.
 * $H_\text{out}$ is the number of output features.
+* $L$ is the sequence length.
 * $\text{num\_layers}$ is the number of layers. When `num_layers > 1`, the output of the first layer is fed into the second one.
