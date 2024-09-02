@@ -223,44 +223,69 @@ def _lstm_ops_fn(
         output: torch.Tensor
 ) -> int:
     # NOTE: Not currently implemented!
-    assert module.proj_size == 0
-
-    # Get params
-    if len(input[0].size()) == 2:
-        batch_size = 1
-        num_steps = input[0].size(0)
+    if module.proj_size != 0:
+        raise NotImplementedError("proj_size != 0 is not currently supported")
     
-    elif input[0].size() == 3:
+    # Get params
+    if input[0].ndim == 2:
+        batch_size = 1
+        seq_len = input[0].size(0)
+    
+    elif input[0].ndim == 3:
         batch_size = (
             input[0].size(0) if module.batch_first else input[0].size(1)
         )
-        num_steps = (
+        seq_len = (
             input[0].size(1) if module.batch_first else input[0].size(0)
         )
     
+    input_size = module.input_size
+    hidden_size = module.hidden_size
     num_layers = module.num_layers
-    num_directions = 2 if module.bidirectional else 1
-    h_out = module.hidden_size
-    h_in = module.input_size
 
-    if module.bias is not None:
-        i_ops = 2 * batch_size * h_out * (2 + h_in + h_out)
-        g_ops = 2 * batch_size * h_out * (4 + h_in + h_out)
+    if module.bias:
+        if module.bidirectional:
+            total_ops = (
+                16 * seq_len * batch_size * hidden_size
+                * (
+                    input_size
+                    + (3 * num_layers - 2) * hidden_size
+                    + 3.875 * num_layers
+                )
+            )
+        
+        else:
+            total_ops = (
+                8 * seq_len * batch_size * hidden_size
+                * (
+                    input_size
+                    + (2 * num_layers - 1) * hidden_size
+                    + 3.875 * num_layers
+                )
+            )
     
     else:
-        i_ops = 2 * batch_size * h_out * (1 + h_in + h_out)
-        g_ops = 2 * batch_size * h_out * (3 + h_in + h_out)
-    
-    # Other gate ops
-    f_ops = i_ops
-    g_ops = i_ops
-    c_prime_ops = 3 * batch_size * h_out
-    h_prime_ops = 8 * batch_size * h_out
+        if module.bidirectional:
+            total_ops = (
+                16 * seq_len * batch_size * hidden_size
+                * (
+                    input_size
+                    + (3 * num_layers - 2) * hidden_size
+                    + 2.875 * num_layers
+                )
+            )
+        
+        else:
+            total_ops = (
+                8 * seq_len * batch_size * hidden_size
+                * (
+                    input_size
+                    + (2 * num_layers - 1) * hidden_size
+                    + 2.875 * num_layers
+                )
+            )
 
-    lstmcell_ops = i_ops + g_ops + f_ops + c_prime_ops + h_prime_ops
-    total_ops = num_directions * num_steps * num_layers * lstmcell_ops
-
-    return total_ops
+    return int(total_ops)
 
 
 def _relu_ops_fn(
