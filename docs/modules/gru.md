@@ -1,5 +1,5 @@
 # GRU (`torch.nn.GRU`)
-A `torch.nn.GRU` corresponds to a Gated Recurrent Unit. That is - in essence - an arrangement or `torch.nn.GRUCell` that can process an input tensor containing several steps and can use cell arrangements of configurable depth. The equations that rule a `torch.nn.GRU` are the same as `torch.nn.GRUCell`, except for the time steps and the number of layers. Differently from a single `torch.nn.GRUCell`, a `torch.nn.GRU` has a **hidden state** per time step ($h_t$), a **reset gate** per time step ($r_t$) and an **update gate** per time step ($z_t$), thus, there is also a $n$ tensor per time step ($n_t$). Please note that the current step **hidden state** $h_t$ depends on the previous step hidden state $h_{t-1}$.
+A `torch.nn.GRU` corresponds to a Gated Recurrent Unit. That is - in essence - an arrangement or `torch.nn.GRUCell` that can process an input tensor containing a sequence of step and can use cell arrangements of configurable depth. The equations that rule a `torch.nn.GRU` are the same as `torch.nn.GRUCell`, except for the sequence length and the number of layers. Differently from a single `torch.nn.GRUCell`, a `torch.nn.GRU` has a **hidden state** per sequence step ($h_t$), a **reset gate** per time step ($r_t$) and an **update gate** per time step ($z_t$), thus, there is also a $n$ tensor per time step ($n_t$). Please note that the current step **hidden state** $h_t$ depends on the previous step hidden state $h_{t-1}$.
 
 $$
 \begin{align}
@@ -12,8 +12,11 @@ $$
 
 Where
 
-* $x$ is the input tensor of size $\left(L, H_{in}\right)$, $\left(L, N, H_{in}\right)$ when `batch_first=False` or $\left(N, L, H_{in}\right)$ when `batch_first=True`.
-* $h_t$ is the hidden state tensor at time step $t$ of size $\left(N, H_{out}\right)$ or $\left(H_{out}\right)$.
+* $x$ is the input tensor of size $\left(L, H_{in}\right)$ or $\left(L, N, H_{in}\right)$ when `batch_first=False`, or $\left(N, L, H_{in}\right)$ when `batch_first=True`.
+* $h_t$ is the hidden state tensor at sequence step $t$ of size $\left(N, H_{out}\right)$ or $\left(H_{out}\right)$.
+* $H_{in}$ and $H_{out}$ are the number of input and output features, respectively.
+* $L$ is the sequence length.
+* $N$ is the batch size.
 * $W_{ir}$, $W_{iz}$ and $W_{in}$ are weight tensors of size $\left(H_{out}, H_{in}\right)$ in the first layer and $\left(H_{out}, D\times H_{out}\right)$ in subsequent layers.
 * $W_{hr}$, $W_{hz}$ and $W_{hn}$ are weight tensors of size $\left(H_{out}, H_{out}\right)$ 
 * $D$ is $2$ if `bidirectional=True` and $1$ if `bidirectional=False`.
@@ -23,13 +26,13 @@ Where
 * $b_{ir}$, $b_{iz}$, $b_{in}$, $b_{hr}$, $b_{hz}$ and $b_{hn}$ are bias tensors of size $\left(H_{out}\right)$.
 
 !!! note
-    Please note that some weight tensor shapes may differ from <a href="https://pytorch.org/docs/stable/generated/torch.nn.GRU.html" target="_blank">Pytorch `torch.nn.GRU`'s documentation</a> due to the fact that some tensors are stacked. For instance, $W_{ir}$, $W_{iz}$ and $W_{in}$ tensors of each layer are implemented as a single tensor of size $\left(3\times H_{out}, H_{in}\right)$ for the first layer, and $\left(3\times H_{out}, D\times H_{out}\right)$ for subsequent layers. Similarly $W_{hr}$, $W_{hz}$ and $W_{hn}$ are implemented as a single tensor of size $\left(3\times H_{out}, H_{out}\right)$. The number of layers is controlled by the `num_layers` parameter, and the number of directions $D$ is controlled by the `birectional` parameter.
+    Please note that some weight tensor sizes may differ from <a href="https://pytorch.org/docs/stable/generated/torch.nn.GRU.html" target="_blank">Pytorch `torch.nn.GRU`'s documentation</a> due to the fact that some tensors are stacked. For instance, $W_{ir}$, $W_{iz}$ and $W_{in}$ tensors of each layer are implemented as a single tensor of size $\left(3\times H_{out}, H_{in}\right)$ for the first layer, and $\left(3\times H_{out}, D\times H_{out}\right)$ for subsequent layers. Similarly $W_{hr}$, $W_{hz}$ and $W_{hn}$ are implemented as a single tensor of size $\left(3\times H_{out}, H_{out}\right)$. The number of layers is controlled by the `num_layers` parameter, and the number of directions $D$ is controlled by the `birectional` parameter.
 
 !!! note
     The complexity of the `dropout` parameter is not considered in the following calculations, since it is usually temporarily used during training and then disabled during inference.
 
 ## Complexity
-It is possible to reuse the calculation for `torch.nn.GRUCell` to estimate the complexity of `torch.nn.GRU`. However, there are a couple of additional considerations. First, when `num_layers > 1`, the second layer takes the output(s) of the first layer as input. This means that $W_{ir}$, $W_{iz}$ and $W_{in}$ will have size $\left(H_\text{out}, H_\text{out}\right)$ if `bidirectional=False` and size $\left(H_\text{out}, 2\times H_\text{out}\right)$ if `bidirectional=True`. Secondly and differently from `torch.nn.GRUCell`, `torch.nn.GRU` can process an input containing bigger sequence lenghts, therefore the same estimated calculations will repeat $L$ times where $L$ sequence length.
+It is possible to reuse the calculation for `torch.nn.GRUCell` to estimate the complexity of `torch.nn.GRU`. However, there are a couple of additional considerations. First, when `num_layers > 1`, the second layer takes the output(s) of the first layer as input. This means that $W_{ir}$, $W_{iz}$ and $W_{in}$ will have size $\left(H_{out}, H_{out}\right)$ if `bidirectional=False` and size $\left(H_{out}, 2\times H_{out}\right)$ if `bidirectional=True`. Secondly and differently from `torch.nn.GRUCell`, `torch.nn.GRU` can process an input containing bigger sequence lenghts, therefore the same calculations estimated before will repeat $L$ times where $L$ sequence length.
 
 !!! warning
     Please review the [`torch.nn.GRUCell` complexity documentation](./grucell.md) before continuing, as the subsequent sections will reference formulas from that layer without re-deriving them.
@@ -73,7 +76,7 @@ Now it is necessary to include the sequence length $L$ in the input tensor $x$ t
 
 $$
 \begin{align}
-    \text{GRU}_{ops} &= L\times \text{GRU}_{ops}|_{\text{layer}=0} + \left(\text{num\_layers} - 1 \right)\times \text{GRU}_{ops}|_{\text{layer}\geq 1}
+    \text{GRU}_{ops} &= L\times \left(\text{GRU}_{ops}|_{\text{layer}=0} + \left(\text{num\_layers} - 1 \right)\times \text{GRU}_{ops}|_{\text{layer}\geq 1}\right)
 \end{align}
 $$
 
@@ -98,7 +101,7 @@ $$
 $$
 
 ### Bidirectional
-For the case of `bidirectional=True` the same considerations explained [at the beginning of this section](#complexity) should be taken into account. Additionally, each cell will approximately duplicate its calculations because one subset of the output is calculated using the forward direction of the input sequence $x$, and the remaining one uses the reverse input sequence $x$. Please note that each direction of the input sequence will have its own set of weights, even though <a href="https://github.com/pytorch/pytorch/issues/59332" target="blank">this is not documented at the moment of writing this documentation</a>. Finally, both outputs will be concatenated to produce a tensor of size $\left(L, N, D\times H_{out}\right)$ with $D=2$ in this case. When `num_layers > 1`, this is also the shape of the input size for layers after the first one.
+For the case of `bidirectional=True` the same considerations explained [at the beginning of this section](#complexity) should be taken into account. Additionally, each cell will approximately duplicate its calculations because one subset of the output is calculated using the forward direction of the input sequence $x$, and the remaining one uses the reverse input sequence $x$. Please note that each direction of the input sequence will have its own set of weights, even though <a href="https://github.com/pytorch/pytorch/issues/59332" target="blank">this is not documented at the moment of writing this documentation</a>. Finally, both outputs will be concatenated to produce a tensor of size $\left(L, N, D\times H_{out}\right)$ with $D=2$ in this case. When `num_layers > 1`, this is also the size of the input size for layers after the first one.
 
 The complexity of the first layer when `bidirectional=True` and `bias=True` is
 

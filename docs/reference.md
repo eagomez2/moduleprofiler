@@ -12,5 +12,6 @@ This package currently supports the following modules:
 - [GRU (`torch.nn.GRU`)](modules/gru.md)
 - [Linear (`torch.nn.Linear`)](modules/linear.md)
 - [LSTMCell (`torch.nn.LSTMCell`)](modules/lstmcell.md)
+- [LSTM (`torch.nn.LSTM`)](modules/lstm.md)
 - [ReLU (`torch.nn.ReLU`)](modules/relu.md)
 - [Softmax (`torch.nn.Softmax`)](modules/softmax.md)

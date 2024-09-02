@@ -15,6 +15,8 @@ Where
 
 * $x$ is the input tensor of size $\left(N, H_{in}\right)$ or $\left(H_{in}\right)$.
 * $h$ is the hidden state tensor of size $\left(N, H_{out}\right)$ or $\left(H_{out}\right)$.
+* $H_{in}$ and $H_{out}$ are the number of input and output features, respectively.
+* $N$ is the batch size.
 * $W_{ir}$, $W_{iz}$ and $W_{in}$ are weight tensors of size $\left(H_{out}, H_{in}\right)$. 
 * $W_{hr}$, $W_{hz}$ and $W_{hn}$ are weight tensors of size $\left(H_{out}, H_{out}\right)$. 
 * $\sigma$ is the sigmoid function and can be defined as $\sigma\left(x\right)=\frac{1}{1+e^{-x}}$.

@@ -1,5 +1,5 @@
 # LSTMCell (`torch.nn.LSTMCell`)
-A `torch.nn.LSTMCell` correspond to a single cell of a Long Short-Term Memory Layer (`torch.nn.LSTM`). A `torch.nn.LSTMCell` takes in an **input** $x$, a **hidden state** $h$ and a **cell state** $c$ . Internally, it has an **input gate** $i$, a **forget gate** $f$, a **cell gate** $g$ and an **output gate** $o$ that help to propagate information between time steps. These are combined to generate the `torch.nn.LSTMCell` outputs. The relationship between these tensors is defined as
+A `torch.nn.LSTMCell` correspond to a single cell of a Long Short-Term Memory Layer (`torch.nn.LSTM`). A `torch.nn.LSTMCell` takes in an **input** $x$, a **hidden state** $h$ and a **cell state** $c$ . Internally, it has an **input gate** $i$, a **forget gate** $f$, a **cell gate** $g$ and an **output gate** $o$ that help to propagate information between sequence steps. These are combined to generate the `torch.nn.LSTMCell` outputs. The relationship between these tensors is defined as
 
 $$
 \begin{align}
@@ -15,7 +15,7 @@ $$
 Where
 
 * $x$ is the input tensor of size $\left(N, H_{in}\right)$ or $\left(H_{in}\right)$.
-* $h$ is the hidden tensor of size $\left(N, H_{out}\right)$ or $\left(H_{out}\right)$.
+* $h$ is the hidden state tensor of size $\left(N, H_{out}\right)$ or $\left(H_{out}\right)$.
 * $c$ is the cell state tensor of size $\left(N, H_{out}\right)$ or $\left(H_{out}\right)$.
 * $W_{ii}$, $W_{if}$, $W_{ig}$ and $W_{io}$ are weight tensors of size $\left(H_{out}, H_{in}\right)$. 
 * $W_{hi}$, $W_{hf}$, $W_{hg}$ and $W_{ho}$ are weight tensors of size $\left(H_{out}, H_{out}\right)$.

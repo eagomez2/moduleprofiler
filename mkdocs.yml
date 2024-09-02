@@ -12,6 +12,7 @@ nav:
       - modules/gru.md
       - modules/linear.md
       - modules/lstmcell.md
+      - modules/lstm.md
       - modules/relu.md
       - modules/softmax.md
   - License: license.md
