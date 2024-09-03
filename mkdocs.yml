@@ -8,6 +8,7 @@ nav:
     - "Modules":
       - modules/conv1d.md
       - modules/conv2d.md
+      - modules/convtranspose1d.md
       - modules/grucell.md
       - modules/gru.md
       - modules/linear.md

@@ -1,5 +1,4 @@
 # Conv1d (`torch.nn.Conv1d`)
-
 A `torch.nn.Conv1d` module applies the cross-correlation operation along a given dimension of a tensor. This may seem contradictory at first, because the module's name implies that the underlying operation should be convolution, yet both operations are similar.
 
 !!! note
@@ -13,7 +12,7 @@ A `torch.nn.Conv1d` module expects an input of size $\left(N,C_{\text{in}}, L_{\
 
 $$
 \begin{equation}
-\text{out}\left(N_i, C_{\text{out}_j}\right) = \text{bias}\left(C_{\text{out}_j}\right) + \sum\limits_{k=0}^{C_{\text{in}}-1}\text{weight}\left(C_{\text{out}_j}, k\right) \star \text{input}\left(N_i, k\right)
+    \text{out}\left(N_i, C_{\text{out}_j}\right) = \text{bias}\left(C_{\text{out}_j}\right) + \sum\limits_{k=0}^{C_{\text{in}}-1}\text{weight}\left(C_{\text{out}_j}, k\right) \star \text{input}\left(N_i, k\right)
 \end{equation}
 $$
 
@@ -38,7 +37,6 @@ $$
 ## Complexity
 
 ### Number of filters
-
 In order to calculate the number of operations performed this module, it is necessary to understand the impact of the `groups` parameter on the overall complexity, and the number of filters $\psi$ a network instance will have based on this. According to <a href="https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html" target="_blank">the official `torch.nn.Conv1d` documentation</a>
 
 > `groups` controls the connections between inputs and outputs. `in_channels` and `out_channels` must both be divisible by `groups`.
@@ -60,9 +58,7 @@ $$
 \end{equation}
 $$
 
-
 ### Operations per filter
-
 Now the [number of filters](#number-of-filters) $\psi$ are known, it is necessary to compute how many operations each filter performs. As shown in [Figure 1](#conv1d-kernel-diagram), for each kernel position there will be $\text{kernel\_size}$ multiplications (i.e. each kernel element multiplied by a slice of the input tensor of the same size) and $\text{kernel\_size}-1$ additions to aggregate the result and obtain one element of the output.
 
 <figure markdown="span" id="conv1d-kernel-diagram">
@@ -84,7 +80,6 @@ $$
 
 
 ### Filter aggregation
-
 Now that the [number of filters](#number-of-filters) and the number of [operations per filter](#operations-per-filter) are known, it is necessary compute the operations needed to aggregate each group of filters $\gamma$ to produce each output channel $C_\text{out}$. These operations correspond to simple element-wise additions and can be expressed as
 
 $$
@@ -109,7 +104,6 @@ $$
 
 
 ### Total operations 
-
 Now putting together all different factors that contribute to the total number of operations as well as including the batch size $N$
 
 $$
@@ -137,7 +131,7 @@ Rearranging terms it can be simplified to
 
 $$
 \begin{equation}
-\text{Conv1d}_{ops}=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times L_{\text{out}}\times2\times\text{kernel\_size}}{\text{groups}}\right)
+    \text{Conv1d}_{ops}=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times L_{\text{out}}\times2\times\text{kernel\_size}}{\text{groups}}\right)
 \end{equation}
 $$
 
@@ -152,7 +146,6 @@ $$
 
 
 ## Summary
-
 The number of operations performed by a `torch.nn.Conv1d` module can be estimated as
 
 !!! success ""
@@ -164,7 +157,6 @@ The number of operations performed by a `torch.nn.Conv1d` module can be estimate
         $\large{\text{Conv1d}_{ops}=N\times\left(\frac{C_{\text{out}}\times L_{\text{out}}\times\left( C_\text{in}\times2\times\text{kernel\_size} - \text{groups}\right)}{\text{groups}}\right)}$
 
 Where
-
 
 * $N$ is the batch size.
 * $C_{\text{in}}$ is the number of input channels.
