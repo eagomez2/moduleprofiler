@@ -15,3 +15,4 @@ This package currently supports the following modules:
 - [LSTM (`torch.nn.LSTM`)](modules/lstm.md)
 - [ReLU (`torch.nn.ReLU`)](modules/relu.md)
 - [Softmax (`torch.nn.Softmax`)](modules/softmax.md)
+- [Tanh (`torch.nn.Tanh`)](modules/tanh.md)

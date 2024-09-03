@@ -15,6 +15,7 @@ nav:
       - modules/lstm.md
       - modules/relu.md
       - modules/softmax.md
+      - modules/tanh.md
   - License: license.md
 copyright: |
   &copy; 2024 <a href="https://www.estebangomez.me" target="_blank">Esteban Gómez</a>
