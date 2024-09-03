@@ -14,5 +14,6 @@ This package currently supports the following modules:
 - [LSTMCell (`torch.nn.LSTMCell`)](modules/lstmcell.md)
 - [LSTM (`torch.nn.LSTM`)](modules/lstm.md)
 - [ReLU (`torch.nn.ReLU`)](modules/relu.md)
+- [Sigmoid (`torch.nn.Sigmoid`)](modules/sigmoid.md)
 - [Softmax (`torch.nn.Softmax`)](modules/softmax.md)
 - [Tanh (`torch.nn.Tanh`)](modules/tanh.md)

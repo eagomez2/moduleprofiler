@@ -14,6 +14,7 @@ nav:
       - modules/lstmcell.md
       - modules/lstm.md
       - modules/relu.md
+      - modules/sigmoid.md
       - modules/softmax.md
       - modules/tanh.md
   - License: license.md
