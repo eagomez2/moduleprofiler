@@ -158,3 +158,4 @@ Where
 * $L_{\text{out}}$ is the length of the output tensor (i.e. `y.size(-1)` assuming an output tensor `y`).
 * $\text{kernel\_size}$ is the length of the kernel.
 * $\text{groups}$ is the number of groups.
+* $\text{additions\_per\_filter}$ is the result of the function to calculate the number of addition operations per filter described in [Operations per filter](#operations-per-filter).
