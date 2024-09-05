@@ -72,7 +72,6 @@ $$
 
 
 ### Operations per filter
-
 Now the [number of filters](#number-of-filters) $\psi$ are known, it is necessary to compute how many operations each filter performs. As shown in [Figure 1](#conv2d-kernel-diagram), for each kernel position there will be $\text{kernel\_size}$ multiplications (i.e. each kernel element multiplied by a slice of the input tensor of the same size) and $\text{kernel\_size}-1$ additions to aggregate the result and obtain one element of the output.
 
 <figure markdown="span" id="conv2d-kernel-diagram">
@@ -96,7 +95,6 @@ Because the kernel is a 2-dimensional tensor of dimensions $\left(\text{kernel\_
 
 
 ### Filter aggregation
-
 Now that the [number of filters](#number-of-filters) and the number of [operations per filter](#operations-per-filter) are known, it is necessary compute the operations needed to aggregate each group of filters $\gamma$ to produce each output channel $C_\text{out}$. These operations correspond to simple element-wise additions and can be expressed as
 
 $$
@@ -117,11 +115,10 @@ $$
 $$
 
 !!! note
-    Please note that the bias term $b$ was not included in  [Operations per filter](#operations-per-filter) and is added here instead. Even though according to <a href="https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html" target="_blank">PyTorch ``torch.nn.Conv1d`` documentation</a> $b$ has shape $\left(C_\text{out}\right)$, in practice this tensor is implicitly broadcasted following <a href="https://pytorch.org/docs/stable/notes/broadcasting.html" target="_blank">PyTorch broadcasting semantics</a> in such a way that each tensor value will be added with its corresponding channel bias.
+    Please note that the bias term $b$ was not included in  [Operations per filter](#operations-per-filter) and is added here instead. Even though according to <a href="https://pytorch.org/docs/stable/generated/torch.nn.Conv2d.html" target="_blank">PyTorch `torch.nn.Conv2d` documentation</a> $b$ has shape $\left(C_\text{out}\right)$, in practice this tensor is implicitly broadcasted following <a href="https://pytorch.org/docs/stable/notes/broadcasting.html" target="_blank">PyTorch broadcasting semantics</a> in such a way that each tensor value will be added with its corresponding channel bias.
 
 
 ### Total operations
-
 Now putting together all different factors that contribute to the total number of operations as well as including the batch size $N$
 
 $$
@@ -162,7 +159,6 @@ $$
 $$
 
 ## Summary
-
 The number of operations performed by a `torch.nn.Conv2d` module can be estimated as
 
 !!! success ""
