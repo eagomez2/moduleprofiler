@@ -9,6 +9,7 @@ This package currently supports the following modules:
 - [Conv1d (`torch.nn.Conv1d`)](modules/conv1d.md)
 - [Conv2d (`torch.nn.Conv2d`)](modules/conv2d.md)
 - [ConvTranspose1d (`torch.nn.ConvTranspose1d`)](modules/convtranspose1d.md)
+- [ConvTranspose2d (`torch.nn.ConvTranspose2d`)](modules/convtranspose2d.md)
 - [GRUCell (`torch.nn.GRUCell`)](modules/grucell.md)
 - [GRU (`torch.nn.GRU`)](modules/gru.md)
 - [Linear (`torch.nn.Linear`)](modules/linear.md)
