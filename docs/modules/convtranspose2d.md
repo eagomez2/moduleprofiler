@@ -24,10 +24,10 @@ Where
 * $N$ is the batch size.
 * $C_{in}$ is the number of input channels.
 * $C_{out}$ is the number of output channels.
-* $H_{\text{in}}$ is the height of the input tensor (i.e. `x.size(-2)` assuming an input tensor `x`)
-* $W_{\text{in}}$ is the width of the input tensor (i.e. `x.size(-1)` assuming an input tensor `x`)
-* $H_{\text{out}}$ is the height of the output tensor (i.e. `y.size(-2)` assuming an output tensor `y`)
-* $W_{\text{out}}$ is the width of the output tensor (i.e. `y.size(-1)` assuming an output tensor `y`)
+* $H_{in}$ is the height of the input tensor (i.e. `x.size(-2)` assuming an input tensor `x`)
+* $W_{in}$ is the width of the input tensor (i.e. `x.size(-1)` assuming an input tensor `x`)
+* $H_{out}$ is the height of the output tensor (i.e. `y.size(-2)` assuming an output tensor `y`)
+* $W_{out}$ is the width of the output tensor (i.e. `y.size(-1)` assuming an output tensor `y`)
 
 The remaining parameters are assumed to be known by the reader and can be found in the <a href="https://pytorch.org/docs/stable/generated/torch.nn.ConvTranspose2d.html" target="_blank">torch.nn.ConvTranspose2d documentation</a>.
 
