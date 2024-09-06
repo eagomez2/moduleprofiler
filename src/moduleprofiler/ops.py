@@ -106,6 +106,55 @@ def _conv2d_ops_fn(
     return int(total_ops)
 
 
+def _convtranspose1d_filter_additions_ops(
+        module: nn.ConvTranspose1d,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    # Get input filled with ones
+    x_ones = torch.ones_like(input[0])
+
+    # Get copy of input modules but with weight filled with ones
+    convtranspose1d_ones = torch.nn.ConvTranspose1d(
+        in_channels=module.in_channels,
+        out_channels=module.out_channels,
+        kernel_size=module.kernel_size,
+        stride=module.stride,
+        padding=module.padding,
+        padding_mode=module.padding_mode,
+        dilation=module.dilation,
+        groups=module.groups,
+        bias=False
+    )
+    torch.nn.init.ones_(convtranspose1d_ones.weight)
+
+    # Compute additions pattern
+    total_additions = convtranspose1d_ones(x_ones) - 1.0
+    total_additions = torch.sum(total_additions)
+
+    return int(total_additions)
+
+
+def _convtranspose1d_ops_fn(
+        module: nn.ConvTranspose1d,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor        
+) -> int:
+    # Get iput
+    x0 = input[0]
+
+    # Get batch size
+    batch_size = 1 if x0.ndim == 1 else x0.size(0)
+
+    # NOTE: kernel_size[0] is used to avoid issued with invalid data types
+    if module.bias is not None:
+        ...
+    
+    total_ops = ...
+
+    return int(total_ops)
+
+
 def _grucell_ops_fn(
         module: nn.GRUCell,
         input: Tuple[torch.Tensor],
