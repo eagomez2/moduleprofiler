@@ -106,7 +106,7 @@ def _conv2d_ops_fn(
     return int(total_ops)
 
 
-def _convtranspose1d_filter_additions_ops(
+def _convtranspose1d_filter_addition_ops(
         module: nn.ConvTranspose1d,
         input: Tuple[torch.Tensor],
         output: torch.Tensor
@@ -147,19 +147,22 @@ def _convtranspose1d_ops_fn(
     batch_size = 1 if x0.ndim == 1 else x0.size(0)
 
     # Get addition ops
-    total_addition_ops = _convtranspose1d_filter_additions_ops(
+    total_addition_ops = _convtranspose1d_filter_addition_ops(
         module,
         input,
         output
     )
-    import pdb;pdb.set_trace()
 
-    # NOTE: kernel_size[0] is used to avoid issued with invalid data types
-    if module.bias is not None:
-        ...
+    total_ops = (
+        batch_size
+        * ((module.in_channels * module.out_channels) / module.groups)
+        * (output.size(-1) * (module.kernel_size[0] + 1) + total_addition_ops)
+    )
+
+    # Add bias correction
+    if module.bias is None:
+        total_ops -= batch_size * module.out_channels * output.size(-1)
     
-    total_ops = ...
-
     return int(total_ops)
 
 
@@ -422,6 +425,7 @@ def _get_default_ops_map() -> dict:
         nn.Linear: _linear_ops_fn,
         nn.Conv1d: _conv1d_ops_fn,
         nn.Conv2d: _conv2d_ops_fn,
+        nn.ConvTranspose1d: _convtranspose1d_ops_fn,
         nn.GRUCell: _grucell_ops_fn,
         nn.GRU: _gru_ops_fn,
         nn.LSTMCell: _lstmcell_ops_fn,
