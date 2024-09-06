@@ -129,10 +129,10 @@ def _convtranspose1d_filter_additions_ops(
     torch.nn.init.ones_(convtranspose1d_ones.weight)
 
     # Compute additions pattern
-    total_additions = convtranspose1d_ones(x_ones) - 1.0
-    total_additions = torch.sum(total_additions)
+    total_addition_ops = convtranspose1d_ones(x_ones) - 1.0
+    total_addition_ops = torch.sum(total_addition_ops)
 
-    return int(total_additions)
+    return int(total_addition_ops)
 
 
 def _convtranspose1d_ops_fn(
@@ -145,6 +145,14 @@ def _convtranspose1d_ops_fn(
 
     # Get batch size
     batch_size = 1 if x0.ndim == 1 else x0.size(0)
+
+    # Get addition ops
+    total_addition_ops = _convtranspose1d_filter_additions_ops(
+        module,
+        input,
+        output
+    )
+    import pdb;pdb.set_trace()
 
     # NOTE: kernel_size[0] is used to avoid issued with invalid data types
     if module.bias is not None:
