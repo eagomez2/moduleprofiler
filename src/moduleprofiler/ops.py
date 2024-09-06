@@ -3,7 +3,8 @@ import math
 import torch.nn as nn
 from typing import (
     Any,
-    Tuple
+    Tuple,
+    Union
 )
 
 
@@ -106,7 +107,7 @@ def _conv2d_ops_fn(
     return int(total_ops)
 
 
-def _convtranspose1d_filter_addition_ops(
+def _convtransposend_filter_addition_ops(
         module: nn.ConvTranspose1d,
         input: Tuple[torch.Tensor],
         output: torch.Tensor
@@ -115,7 +116,7 @@ def _convtranspose1d_filter_addition_ops(
     x_ones = torch.ones_like(input[0])
 
     # Get copy of input modules but with weight filled with ones
-    convtranspose1d_ones = torch.nn.ConvTranspose1d(
+    convtranspose1d_ones = type(module)(
         in_channels=module.in_channels,
         out_channels=module.out_channels,
         kernel_size=module.kernel_size,
@@ -147,7 +148,7 @@ def _convtranspose1d_ops_fn(
     batch_size = 1 if x0.ndim == 1 else x0.size(0)
 
     # Get addition ops
-    total_addition_ops = _convtranspose1d_filter_addition_ops(
+    total_addition_ops = _convtransposend_filter_addition_ops(
         module,
         input,
         output
@@ -162,6 +163,44 @@ def _convtranspose1d_ops_fn(
     # Add bias correction
     if module.bias is None:
         total_ops -= batch_size * module.out_channels * output.size(-1)
+    
+    return int(total_ops)
+
+
+def _convtranspose2d_ops_fn(
+        module: nn.ConvTranspose2d,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor        
+) -> int:
+    # Get iput
+    x0 = input[0]
+
+    # Get batch size
+    batch_size = 1 if x0.ndim == 2 else x0.size(0)
+
+    # Get addition ops
+    total_addition_ops = _convtransposend_filter_addition_ops(
+        module,
+        input,
+        output
+    )
+
+    total_ops = (
+        batch_size
+        * ((module.in_channels * module.out_channels) / module.groups)
+        * (
+            output.size(-1) * output.size(-2)
+            * (module.kernel_size[0] * module.kernel_size[1] + 1)
+            + total_addition_ops
+        )
+    )
+
+    # Add bias correction
+    if module.bias is None:
+        total_ops -= (
+            batch_size
+            * module.out_channels * output.size(-1) * output.size(-2)
+        )
     
     return int(total_ops)
 
@@ -426,6 +465,7 @@ def _get_default_ops_map() -> dict:
         nn.Conv1d: _conv1d_ops_fn,
         nn.Conv2d: _conv2d_ops_fn,
         nn.ConvTranspose1d: _convtranspose1d_ops_fn,
+        nn.ConvTranspose2d: _convtranspose2d_ops_fn,
         nn.GRUCell: _grucell_ops_fn,
         nn.GRU: _gru_ops_fn,
         nn.LSTMCell: _lstmcell_ops_fn,
