@@ -89,3 +89,25 @@ If you have any feedback or suggestions, feel free to open an issue in GitHub or
 ```
 
 ## Supported modules
+By default, all methods support all modules as long as these are instances of `torch.nn.Module`. The only functionality where some modules might be missing is in the [`estimate_ops`](documentation.md#moduleprofiler.profiler.ModuleProfiler.estimate_ops) method that used to estimate the operations performed by a certain module. Modules that are not supported will result in `None` as returned value. However, it is possible to add both missing and custom modules as described in [Tutorial](tutorial.md#extending-ops-estimation).
+
+
+| Module                       | Supported (ops)                    | Version |
+| ---------------------------- | ---------------------------------- | ------- |
+| `torch.nn.Identity`          | :material-check:                   | 0.0.1   |
+| `torch.nn.Linear`            | :material-check:                   | 0.0.1   |
+| `torch.nn.Conv1d`            | :material-check:                   | 0.0.1   |
+| `torch.nn.Conv2d`            | :material-check:                   | 0.0.1   |
+| `torch.nn.ConvTranspose1d`   | :material-check:                   | 0.0.1   |
+| `torch.nn.ConvTranspose2d`   | :material-check:                   | 0.0.1   |
+| `torch.nn.GRUCell`           | :material-check:                   | 0.0.1   |
+| `torch.nn.GRU`               | :material-check:                   | 0.0.1   |
+| `torch.nn.LSTMCell`          | :material-check:                   | 0.0.1   |
+| `torch.nn.LSTM`              | :material-check:                   | 0.0.1   |
+| `torch.nn.MultiheadAttention`| :material-close:                   |         |
+| `torch.nn.ReLU`              | :material-check:                   | 0.0.1   |
+| `torch.nn.ELU`               | :material-check:                   | 0.0.1   |
+| `torch.nn.PReLU`             | :material-check:                   | 0.0.1   |
+| `torch.nn.Sigmoid`           | :material-check:                   | 0.0.1   |
+| `torch.nn.Softmax`           | :material-check:                   | 0.0.1   |
+| `torch.nn.Tanh`              | :material-check:                   | 0.0.1   |

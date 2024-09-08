@@ -397,3 +397,6 @@ ops_df = profiler.estimate_ops_df(module=net, input=x)
 0  __root__  PlusOne    8
 """
 ```
+
+## Conclusion
+Congratulations! / ¡Felicidades! / Felicitats! / Onnittelut! Now that you have completed this tutorial, you should be ready to take advantage of `moduleprofiler` in your own projects.
