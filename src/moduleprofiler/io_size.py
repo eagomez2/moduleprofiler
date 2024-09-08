@@ -59,7 +59,7 @@ def _lstm_io_size_fn(
     )
 
 
-def _get_default_io_size_map() -> dict:
+def get_default_io_size_map() -> dict:
     return {
         nn.GRUCell: _gru_io_size_fn,
         nn.GRU: _gru_io_size_fn,

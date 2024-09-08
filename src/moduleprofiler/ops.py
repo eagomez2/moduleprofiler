@@ -3,8 +3,7 @@ import math
 import torch.nn as nn
 from typing import (
     Any,
-    Tuple,
-    Union
+    Tuple
 )
 
 
@@ -454,7 +453,7 @@ def _tanh_ops_fn(
     return input[0].numel() * 7
 
 
-def _get_default_ops_map() -> dict:
+def get_default_ops_map() -> dict:
     return {
         # Default method
         "default": _default_ops_fn,

@@ -18,8 +18,8 @@ from .utils import (
     get_hardware_specs
 )
 from .logger import Logger
-from .io_size import _get_default_io_size_map
-from .ops import _get_default_ops_map
+from .io_size import get_default_io_size_map
+from .ops import get_default_ops_map
 
 
 class ModuleProfiler:
@@ -54,8 +54,8 @@ class ModuleProfiler:
             ops_attr: str = "__ops__",
             inference_start_attr: str = "__inference_start__",
             inference_end_attr: str = "__inference_end__",
-            io_size_fn_map: dict = _get_default_io_size_map(),
-            ops_fn_map: dict = _get_default_ops_map(),
+            io_size_fn_map: dict = get_default_io_size_map(),
+            ops_fn_map: dict = get_default_ops_map(),
             ts_fmt: str = "%Y-%m-%d %H:%M:%S",
             verbose: bool = True
     ) -> None:
@@ -833,7 +833,7 @@ class ModuleProfiler:
             module (nn.Module): Input module.
             input (Union[torch.Tensor, Tuple[torch.Tensor]): Model input.
             pred_fn (Optional[Callable]): Optional prediction function that
-                replaced the forward call if the module requires additional
+                replaces the forward call if the module requires additional
                 steps.
             eval (bool): If ``True``, the module is set to eval mode before
                 computing the inference time.
@@ -970,7 +970,7 @@ class ModuleProfiler:
             module (nn.Module): Input module.
             input (Union[torch.Tensor, Tuple[torch.Tensor]]): Model input.
             pred_fn (Optional[Callable]): Optional prediction function that
-                replaced the forward call if the module requires additional
+                replaces the forward call if the module requires additional
                 steps.
             eval (bool): If ``True``, the module is set to eval mode before
                 computing the inference time.

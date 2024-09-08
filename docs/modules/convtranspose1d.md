@@ -89,7 +89,7 @@ Now that the [number of filters](#number-of-filters) and the number of [operatio
 
 $$
 \begin{equation}
-\gamma=C_{out}\times L_\text{out}\times\left(\left(\frac{C_{in}}{\text{groups}}-1\right)+1\right)
+    \gamma=C_{out}\times L_\text{out}\times\left(\left(\frac{C_{in}}{\text{groups}}-1\right)+1\right)
 \end{equation}
 $$
 
