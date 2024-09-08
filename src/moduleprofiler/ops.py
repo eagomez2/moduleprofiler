@@ -453,6 +453,22 @@ def _tanh_ops_fn(
     return input[0].numel() * 7
 
 
+def _maxpool1d_ops_fn(
+        module: nn.MaxPool1d,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    return output.size(-1)
+
+
+def _maxpool2d_ops_fn(
+        module: nn.MaxPool2d,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    return output.size(-2) * output.size(-1)
+
+
 def get_default_ops_map() -> dict:
     return {
         # Default method
@@ -473,6 +489,8 @@ def get_default_ops_map() -> dict:
         # Norm
 
         # Pooling
+        nn.MaxPool1d: _maxpool1d_ops_fn,
+        nn.MaxPool2d: _maxpool2d_ops_fn,
 
         # Activations
         nn.ReLU: _relu_ops_fn,
