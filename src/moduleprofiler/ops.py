@@ -489,6 +489,8 @@ def get_default_ops_map() -> dict:
         # Norm
 
         # Pooling
+        nn.AdaptiveMaxPool1d: _maxpool1d_ops_fn,
+        nn.AdaptiveAvgPool2d: _maxpool2d_ops_fn,
         nn.MaxPool1d: _maxpool1d_ops_fn,
         nn.MaxPool2d: _maxpool2d_ops_fn,
 
