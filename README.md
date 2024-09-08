@@ -13,11 +13,6 @@ All results can be obtained in one of the following formats:
 - `html` (to export as webpage)
 - `LaTeX` (to include in your publications)
 
-# Table of contents
-1. [Installation](#installation)
-2. [Quickstart](#quickstart)
-3. [Supported modules](#supported-modules)
-
 # Installation
 `moduleprofiler` can be installed as any regular `python` module within your environment:
 
@@ -25,22 +20,28 @@ All results can be obtained in one of the following formats:
 python -m pip install git+https://github.com/eagomez2/moduleprofiler.git
 ```
 
-# Quickstart
-Once you installed `moduleprofiler` you can start using it immediately. The class that you will use most of the time is the `ModuleProfiler` class:
+# Documentation
+Access the **online documentation of this package here**. There you will find a more in depth introduction to `moduleprofiler`, including tutorials, methods documentation and an extensive reference about the calculations utilized to estimate the operations of different supported `torch.nn.Module` modules.
 
-```python
-from moduleprofiler import ModuleProfiler
+You can also run the documentation locally by going to the root folder of the package and running:
+
+```bash
+mkdocs serve
 ```
 
-# Documentation
-
-# Running tests
-
-# Supported modules
-
-# Adding custom modules
+Before running this, make sure that your python environment is enabled.
 
 # Cite
+If this package contributed to your work, please consider citing it:
+
+```
+@misc{moduleprofiler,
+  author = {Esteban Gómez},
+  title  = {moduleprofiler},
+  year   = 2024,
+  url    = {https://github.com/eagomez2/moduleprofiler}
+}
+```
 
 # License
 For further details about the license of this package, please see [LICENSE](LICENSE).

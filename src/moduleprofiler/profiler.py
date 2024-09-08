@@ -57,7 +57,7 @@ class ModuleProfiler:
             io_size_fn_map: dict = get_default_io_size_map(),
             ops_fn_map: dict = get_default_ops_map(),
             ts_fmt: str = "%Y-%m-%d %H:%M:%S",
-            verbose: bool = True
+            verbose: bool = False
     ) -> None:
         super().__init__()
 
