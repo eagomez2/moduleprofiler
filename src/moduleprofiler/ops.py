@@ -396,6 +396,14 @@ def _relu_ops_fn(
     return input[0].numel()
 
 
+def _leakyrelu_ops_fn(
+        module: nn.PReLU,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    return input[0].numel() * 4
+
+
 def _sigmoid_ops_fn(
         module: nn.Sigmoid,
         input: Tuple[torch.Tensor],
@@ -496,6 +504,7 @@ def get_default_ops_map() -> dict:
 
         # Activations
         nn.ReLU: _relu_ops_fn,
+        nn.LeakyReLU: _leakyrelu_ops_fn,
         nn.ELU: _elu_ops_fn,
         nn.PReLU: _prelu_ops_fn,
         nn.Sigmoid: _sigmoid_ops_fn,
