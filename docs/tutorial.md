@@ -397,6 +397,3 @@ ops_df = profiler.estimate_ops_df(module=net, input=x)
 0  __root__  PlusOne    8
 """
 ```
-
-
-### Extending io size tracing
