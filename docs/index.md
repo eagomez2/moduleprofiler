@@ -16,8 +16,14 @@ All results can be obtained in one of the following formats:
 * `LaTeX` (to include in your publications)
 
 ## Installation
-`moduleprofiler` can be installed as any regular `python` module within your environment:
+`moduleprofiler` can be installed as any regular `python` module within your environment.
 
+Install from PyPI:
+```bash
+python -m pip install moduleprofiler
+```
+
+Install from this repository:
 ```bash
 python -m pip install git+https://github.com/eagomez2/moduleprofiler.git
 ```
