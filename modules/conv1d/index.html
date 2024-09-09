@@ -1,0 +1,1141 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../../reference/">
+      
+      
+        <link rel="next" href="../conv2d/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.34">
+    
+    
+      
+        <title>Conv1d (torch.nn.Conv1d) - moduleprofiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.35f28582.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#conv1d-torchnnconv1d" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="moduleprofiler" class="md-header__button md-logo" aria-label="moduleprofiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            moduleprofiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Conv1d (torch.nn.Conv1d)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="lime"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../documentation/" class="md-tabs__link">
+        
+  
+    
+  
+  Documentation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tutorial/" class="md-tabs__link">
+        
+  
+    
+  
+  Tutorial
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../reference/" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../license/" class="md-tabs__link">
+        
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="moduleprofiler" class="md-nav__button md-logo" aria-label="moduleprofiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    moduleprofiler
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorial
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Modules
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Modules
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Conv1d (torch.nn.Conv1d)
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Conv1d (torch.nn.Conv1d)
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#complexity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Complexity
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Complexity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#number-of-filters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Number of filters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operations-per-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operations per filter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filter-aggregation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filter aggregation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#total-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Total operations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../conv2d/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Conv2d (torch.nn.Conv2d)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../convtranspose1d/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ConvTranspose1d (torch.nn.ConvTranspose1d)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../convtranspose2d/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ConvTranspose2d (torch.nn.ConvTranspose2d)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grucell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GRUCell (torch.nn.GRUCell)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gru/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GRU (torch.nn.GRU)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linear/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Linear (torch.nn.Linear)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lstmcell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LSTMCell (torch.nn.LSTMCell)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lstm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LSTM (torch.nn.LSTM)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../relu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ReLU (torch.nn.ReLU)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sigmoid/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sigmoid (torch.nn.Sigmoid)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../softmax/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Softmax (torch.nn.Softmax)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tanh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tanh (torch.nn.Tanh)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="conv1d-torchnnconv1d">Conv1d (<code>torch.nn.Conv1d</code>)</h1>
+<p>A <code>torch.nn.Conv1d</code> module applies the cross-correlation operation along a given dimension of a tensor. This may seem contradictory at first, because the module's name implies that the underlying operation should be convolution, yet both operations are similar.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please note that the cross-correlation operation <span class="arithmatex">\(\star\)</span> is used instead of convolution <span class="arithmatex">\(\ast\)</span> even when the module name suggests the opposite. The main difference between these two operations is the kernel <span class="arithmatex">\(g\)</span> ordering, but the number of computations are equivalent. For this reason, we will use the term cross-correlation and convolution interchangeably hereafter.
+$$
+    \left(f\ast g\right)[n]=\sum\limits_{k=0}^{K-1}f[n]\times g[n-k]\qquad \left(\text{convolution}\right)\\~\\
+    \left(f\star g\right)[n]=\sum\limits_{k=0}^{K-1}f[n]\times g[n+k]\qquad \left(\text{cross-correlation}\right)
+$$</p>
+</div>
+<p>A <code>torch.nn.Conv1d</code> module expects an input of size <span class="arithmatex">\(\left(N,C_{\text{in}}, L_{\text{in}}\right)\)</span> or <span class="arithmatex">\(\left(C_{\text{in}}, L_{\text{in}}\right)\)</span> to produce an output of size <span class="arithmatex">\(\left(N,C_{\text{out}}, L_{\text{out}}\right)\)</span> or <span class="arithmatex">\(\left(C_{\text{out}}, L_{\text{out}}\right)\)</span> performing the following operation</p>
+<div class="arithmatex">\[
+\begin{equation}
+    \text{out}\left(N_i, C_{\text{out}_j}\right) = \text{bias}\left(C_{\text{out}_j}\right) + \sum\limits_{k=0}^{C_{\text{in}}-1}\text{weight}\left(C_{\text{out}_j}, k\right) \star \text{input}\left(N_i, k\right)
+\end{equation}
+\]</div>
+<p>Where</p>
+<ul>
+<li><span class="arithmatex">\(N\)</span> is the batch size.</li>
+<li><span class="arithmatex">\(C_{\text{in}}\)</span> is the number of input channels.</li>
+<li><span class="arithmatex">\(C_{\text{out}}\)</span> is the number of output channels.</li>
+<li><span class="arithmatex">\(L_{\text{in}}\)</span> is the length of the input tensor (i.e. <code>x.size(-1)</code> assuming an input tensor <code>x</code>).</li>
+<li><span class="arithmatex">\(L_{\text{out}}\)</span> is the length of the output tensor (i.e. <code>y.size(-1)</code> assuming an output tensor <code>y</code>).</li>
+<li><span class="arithmatex">\(\star\)</span> is the cross-correlation operator.</li>
+</ul>
+<p>Additionally, <span class="arithmatex">\(L_{\text{out}}\)</span> (<code>y.size(-1)</code>) will depend on <span class="arithmatex">\(L_{\text{in}}\)</span> (<code>x.size(-1)</code>), <code>padding</code>, <code>dilation</code>, <code>kernel_size</code> and <code>stride</code> parameters. The relationship between these can be expressed as</p>
+<div class="arithmatex">\[
+\begin{equation}
+L_\text{out}=\left[\frac{L_{\text{in}}+2\times\text{padding} - \text{dilation}\times\left(\text{kernel\_size} - 1\right) - 1}{\text{stride}}+1\right]
+\end{equation}
+\]</div>
+<h2 id="complexity">Complexity</h2>
+<h3 id="number-of-filters">Number of filters</h3>
+<p>In order to calculate the number of operations performed this module, it is necessary to understand the impact of the <code>groups</code> parameter on the overall complexity, and the number of filters <span class="arithmatex">\(\psi\)</span> a network instance will have based on this. According to <a href="https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html" target="_blank">the official <code>torch.nn.Conv1d</code> documentation</a></p>
+<blockquote>
+<p><code>groups</code> controls the connections between inputs and outputs. <code>in_channels</code> and <code>out_channels</code> must both be divisible by <code>groups</code>.</p>
+<p>For example:
+At <code>groups=1</code>, all inputs are convolved to all outputs.
+At <code>groups=2</code>, the operation becomes equivalent to having two conv layers side by side, each seeing half the input channels and producing half the output channels, and both subsequently concatenated.</p>
+<p>At <code>groups=in_channels</code>, each input channel is convolved with its own set of filters
+(of size <span class="arithmatex">\(\frac{\text{out\_channels}}{\text{in\_channels}}\)</span> )
+</p>
+</blockquote>
+<p>Based on this information, the number of filters <span class="arithmatex">\(\psi\)</span> can be computed as</p>
+<div class="arithmatex">\[
+\begin{equation}
+\psi = \left(\frac{C_{\text{in}}}{\text{groups}}\right)\times\left(\frac{C_{\text{out}}}{\text{groups}}\right)\times{\text{groups}}=\frac{C_{\text{in}}\times C_{\text{out}}}{\text{groups}}
+\end{equation}
+\]</div>
+<h3 id="operations-per-filter">Operations per filter</h3>
+<p>Now the <a href="#number-of-filters">number of filters</a> <span class="arithmatex">\(\psi\)</span> are known, it is necessary to compute how many operations each filter performs. As shown in <a href="#conv1d-kernel-diagram">Figure 1</a>, for each kernel position there will be <span class="arithmatex">\(\text{kernel\_size}\)</span> multiplications (i.e. each kernel element multiplied by a slice of the input tensor of the same size) and <span class="arithmatex">\(\text{kernel\_size}-1\)</span> additions to aggregate the result and obtain one element of the output.</p>
+<figure id="conv1d-kernel-diagram">
+  <img alt="conv1d-kernel-diagram" src="../../figures/conv1d-kernel-diagram-light.svg#only-light" width="600" />
+  <img alt="conv1d-kernel-diagram" src="../../figures/conv1d-kernel-diagram-dark.svg#only-dark" width="600" />
+  <figcaption>Figure 1. Operations per kernel position to obtain the output tensor.</figcaption>
+</figure>
+<p>Since each element in <span class="arithmatex">\(L_\text{out}\)</span> is the result of the operations carried out for a single kernel position, the number of operations per filter <span class="arithmatex">\(\lambda\)</span> can be expressed as</p>
+<div class="arithmatex">\[
+\begin{equation}
+    \lambda=L_{\text{out}}\times\left(\text{kernel\_size}+\left(\text{kernel\_size}-1\right)\right)=L_{\text{out}}\times\left(2\times\text{kernel\_size}-1\right)
+\end{equation}
+\]</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please note that the batch size <span class="arithmatex">\(N\)</span> will be ignored for now, but it will be included later on.</p>
+</div>
+<h3 id="filter-aggregation">Filter aggregation</h3>
+<p>Now that the <a href="#number-of-filters">number of filters</a> and the number of <a href="#operations-per-filter">operations per filter</a> are known, it is necessary compute the operations needed to aggregate each group of filters <span class="arithmatex">\(\gamma\)</span> to produce each output channel <span class="arithmatex">\(C_\text{out}\)</span>. These operations correspond to simple element-wise additions and can be expressed as</p>
+<div class="arithmatex">\[
+\begin{equation}
+\gamma=C_{\text{out}}\times L_\text{out}\times\left(\left(\frac{C_{\text{in}}}{\text{groups}}-1\right)+1\right)
+\end{equation}
+\]</div>
+<p>Where the term <span class="arithmatex">\(\left(\frac{C_{\text{in}}}{\text{groups}}-1\right)\)</span> corresponds to the number of grouped connections between input and outputs channels <span class="arithmatex">\(\frac{C_{\text{in}}}{\text{groups}}\)</span>, subtracted by <span class="arithmatex">\(1\)</span> because the operation is an addition. The <span class="arithmatex">\(L_\text{out}\)</span> factor accounts for the number of elements per filters, and <span class="arithmatex">\(C_{\text{out}}\)</span> expands this calculation to all output channels. Finally, the remaining <span class="arithmatex">\(+1\)</span> corresponds to the bias term <span class="arithmatex">\(b\)</span> that was not included so far, and that is added to each resulting output channel element. Note that this last term is only added if the module is instantiated using <code>bias=True</code>.</p>
+<div class="arithmatex">\[
+\begin{equation}
+\gamma=\begin{cases}
+    C_{\text{out}}\times L_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}\right), &amp; \text{if}\ \text{bias}=\text{True} \\
+    C_{\text{out}}\times L_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}-1\right), &amp; \text{if}\ \text{bias}=\text{False}
+\end{cases}
+\end{equation}
+\]</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please note that the bias term <span class="arithmatex">\(b\)</span> was not included in  <a href="#operations-per-filter">Operations per filter</a> and is added here instead. Even though according to <a href="https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html" target="_blank">PyTorch <code>torch.nn.Conv1d</code> documentation</a> <span class="arithmatex">\(b\)</span> has shape <span class="arithmatex">\(\left(C_\text{out}\right)\)</span>, in practice this tensor is implicitly broadcasted following <a href="https://pytorch.org/docs/stable/notes/broadcasting.html" target="_blank">PyTorch broadcasting semantics</a> in such a way that each tensor value will be added with its corresponding channel bias.</p>
+</div>
+<h3 id="total-operations">Total operations</h3>
+<p>Now putting together all different factors that contribute to the total number of operations as well as including the batch size <span class="arithmatex">\(N\)</span></p>
+<div class="arithmatex">\[
+\begin{equation}
+    \text{Conv1d}_{ops}=N\times\left(\psi\times\lambda+\gamma\right)
+\end{equation}
+\]</div>
+<p>Where</p>
+<ul>
+<li><span class="arithmatex">\(N\)</span> is the batch size.</li>
+<li><span class="arithmatex">\(\psi\)</span> is the <a href="#number-of-filters">number of filters</a>.</li>
+<li><span class="arithmatex">\(\lambda\)</span> is the number of <a href="#operations-per-filter">operations per filter</a>.</li>
+<li><span class="arithmatex">\(\gamma\)</span> is the number of <a href="#filter-aggregation">filter aggregation</a> operations.</li>
+</ul>
+<p>For the case of <code>bias=True</code> this can be expanded to</p>
+<div class="arithmatex">\[
+\begin{equation}
+    \small{\text{Conv1d}_{ops}=N\times\left(\left(\frac{C_{\text{in}}\times C_{\text{out}}}{\text{groups}}\right)\times\left(L_{\text{out}}\times\left(2\times\text{kernel\_size}-1\right)\right)+C_{\text{out}}\times L_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}\right)\right)}
+\end{equation}
+\]</div>
+<p>Rearranging terms it can be simplified to</p>
+<div class="arithmatex">\[
+\begin{equation}
+    \text{Conv1d}_{ops}=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times L_{\text{out}}\times2\times\text{kernel\_size}}{\text{groups}}\right)
+\end{equation}
+\]</div>
+<p>For the case of <code>bias=False</code> <span class="arithmatex">\(\gamma=C_{\text{out}}\times L_\text{out}\times\left(\frac{C_{\text{in}}}{\text{groups}}-1\right)\)</span>  and the whole expression can be simplified to</p>
+<div class="arithmatex">\[
+\begin{equation}
+\text{Conv1d}_{ops}=N\times\left(\frac{C_{\text{out}}\times L_{\text{out}}\times\left( C_\text{in}\times2\times\text{kernel\_size}-\text{groups}\right)}{\text{groups}}\right)
+\end{equation}
+\]</div>
+<h2 id="summary">Summary</h2>
+<p>The number of operations performed by a <code>torch.nn.Conv1d</code> module can be estimated as</p>
+<div class="admonition success">
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">If <code>bias=True</code></label><label for="__tabbed_1_2">If <code>bias=False</code></label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><span class="arithmatex">\(\large{\text{Conv1d}_{ops}=N\times\left(\frac{C_{\text{in}}\times C_{\text{out}}\times L_{\text{out}}\times2\times\text{kernel\_size}}{\text{groups}}\right)}\)</span></p>
+</div>
+<div class="tabbed-block">
+<p><span class="arithmatex">\(\large{\text{Conv1d}_{ops}=N\times\left(\frac{C_{\text{out}}\times L_{\text{out}}\times\left( C_\text{in}\times2\times\text{kernel\_size} - \text{groups}\right)}{\text{groups}}\right)}\)</span></p>
+</div>
+</div>
+</div>
+</div>
+<p>Where</p>
+<ul>
+<li><span class="arithmatex">\(N\)</span> is the batch size.</li>
+<li><span class="arithmatex">\(C_{\text{in}}\)</span> is the number of input channels.</li>
+<li><span class="arithmatex">\(C_{\text{out}}\)</span> is the number of output channels.</li>
+<li><span class="arithmatex">\(L_{\text{out}}\)</span> is the length of the output tensor (i.e. <code>y.size(-1)</code> assuming an output tensor <code>y</code>).</li>
+<li><span class="arithmatex">\(\text{kernel\_size}\)</span> is the length of the kernel.</li>
+<li><span class="arithmatex">\(\text{groups}\)</span> is the number of groups.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2024 <a href="https://www.estebangomez.me" target="_blank">Esteban Gómez</a>
+
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.07f07601.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.56dfad97.min.js"></script>
+      
+        <script src="../../js/katex.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/contrib/auto-render.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+      
+        <script src="../../js/tablesort.js"></script>
+      
+    
+  </body>
+</html>

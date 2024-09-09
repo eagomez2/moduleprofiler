@@ -1,0 +1,1209 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../convtranspose2d/">
+      
+      
+        <link rel="next" href="../gru/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.34">
+    
+    
+      
+        <title>GRUCell (torch.nn.GRUCell) - moduleprofiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.35f28582.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#grucell-torchnngrucell" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="moduleprofiler" class="md-header__button md-logo" aria-label="moduleprofiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            moduleprofiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              GRUCell (torch.nn.GRUCell)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="lime"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../documentation/" class="md-tabs__link">
+        
+  
+    
+  
+  Documentation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tutorial/" class="md-tabs__link">
+        
+  
+    
+  
+  Tutorial
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../reference/" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../license/" class="md-tabs__link">
+        
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="moduleprofiler" class="md-nav__button md-logo" aria-label="moduleprofiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    moduleprofiler
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorial
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Modules
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Modules
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../conv1d/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Conv1d (torch.nn.Conv1d)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../conv2d/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Conv2d (torch.nn.Conv2d)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../convtranspose1d/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ConvTranspose1d (torch.nn.ConvTranspose1d)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../convtranspose2d/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ConvTranspose2d (torch.nn.ConvTranspose2d)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    GRUCell (torch.nn.GRUCell)
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    GRUCell (torch.nn.GRUCell)
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#complexity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Complexity
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Complexity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reset-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reset gate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Update gate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#n" class="md-nav__link">
+    <span class="md-ellipsis">
+      \(n\)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hprime" class="md-nav__link">
+    <span class="md-ellipsis">
+      \(h\prime\)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#total-complexity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Total complexity
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gru/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GRU (torch.nn.GRU)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linear/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Linear (torch.nn.Linear)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lstmcell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LSTMCell (torch.nn.LSTMCell)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lstm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LSTM (torch.nn.LSTM)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../relu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ReLU (torch.nn.ReLU)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sigmoid/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sigmoid (torch.nn.Sigmoid)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../softmax/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Softmax (torch.nn.Softmax)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tanh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tanh (torch.nn.Tanh)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="grucell-torchnngrucell">GRUCell (<code>torch.nn.GRUCell</code>)</h1>
+<p>A <code>torch.nn.GRUCell</code> corresponds to a single cell of a Grated Recurrent Unit (<code>torch.nn.GRU</code>). A <code>torch.nn.GRUCell</code> takes an <strong>input</strong> <span class="arithmatex">\(x\)</span>, a <strong>hidden state</strong> <span class="arithmatex">\(h\)</span>. Internally, it
+has a <strong>reset gate</strong> <span class="arithmatex">\(r\)</span> and an <strong>update gate</strong> <span class="arithmatex">\(z\)</span> that help to propagate information between time steps. These are combined to generate <span class="arithmatex">\(n\)</span>, that is then used to create a new hidden state <span class="arithmatex">\(h\prime\)</span>. The relationship between these tensors is defines as</p>
+<div class="arithmatex">\[
+\begin{align}
+    r &amp;= \sigma\left(W_{ir}x+b_{ir}+W_{hr}h+b_{hr}\right) \\
+    z &amp;= \sigma\left(W_{iz}x+b_{iz}+W_{hz}h+b_{hz}\right) \\
+    n &amp;= \text{tanh}\left(W_{in}x+b_{in}+r\odot\left(W_{hn}h+b_{hn}\right)\right) \\
+    h' &amp;= (1-z)\odot n+z\odot h
+\end{align}
+\]</div>
+<p>Where</p>
+<ul>
+<li><span class="arithmatex">\(x\)</span> is the input tensor of size <span class="arithmatex">\(\left(N, H_{in}\right)\)</span> or <span class="arithmatex">\(\left(H_{in}\right)\)</span>.</li>
+<li><span class="arithmatex">\(h\)</span> is the hidden state tensor of size <span class="arithmatex">\(\left(N, H_{out}\right)\)</span> or <span class="arithmatex">\(\left(H_{out}\right)\)</span>.</li>
+<li><span class="arithmatex">\(H_{in}\)</span> and <span class="arithmatex">\(H_{out}\)</span> are the number of input and output features, respectively.</li>
+<li><span class="arithmatex">\(N\)</span> is the batch size.</li>
+<li><span class="arithmatex">\(W_{ir}\)</span>, <span class="arithmatex">\(W_{iz}\)</span> and <span class="arithmatex">\(W_{in}\)</span> are weight tensors of size <span class="arithmatex">\(\left(H_{out}, H_{in}\right)\)</span>. </li>
+<li><span class="arithmatex">\(W_{hr}\)</span>, <span class="arithmatex">\(W_{hz}\)</span> and <span class="arithmatex">\(W_{hn}\)</span> are weight tensors of size <span class="arithmatex">\(\left(H_{out}, H_{out}\right)\)</span>. </li>
+<li><span class="arithmatex">\(\sigma\)</span> is the sigmoid function and can be defined as <span class="arithmatex">\(\sigma\left(x\right)=\frac{1}{1+e^{-x}}\)</span>.</li>
+<li><span class="arithmatex">\(\text{tanh}\)</span> is the hyperbolic tangent function and can be defined as <span class="arithmatex">\(\text{tanh}\left(x\right)=\frac{e^x-e^{-x}}{e^x+e^{-x}}\)</span>.</li>
+<li><span class="arithmatex">\(\odot\)</span> is the <a href="https://en.wikipedia.org/wiki/Hadamard_product_(matrices)" target="_blank">Hadamard product</a> or element-wise product.</li>
+<li><span class="arithmatex">\(b_{ir}\)</span>, <span class="arithmatex">\(b_{iz}\)</span>, <span class="arithmatex">\(b_{in}\)</span>, <span class="arithmatex">\(b_{hr}\)</span>, <span class="arithmatex">\(b_{hz}\)</span> and <span class="arithmatex">\(b_{hn}\)</span> are bias tensors of size <span class="arithmatex">\(\left(H_{out}\right)\)</span>.</li>
+</ul>
+<h2 id="complexity">Complexity</h2>
+<p>In order to compute the complexity of a single <code>torch.nn.GRUCell</code>, it is necessary to estimate the number of operations of all four aforementioned equations. For the sake of simplicity, for operations involving sigmoid and hyperbolic tangent, the listed equations will be used and exponentials will be counted as a single operation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>During the following operations, some tensors have to be transposed in order to have compatible dimensions to perform matrix multiplication, even thought this is not explicitly mentioned in <a href="https://pytorch.org/docs/stable/generated/torch.nn.GRUCell.html", target="_blank">PyTorch <code>torch.nn.GRUCel</code>’s documentation</a>. Additionally, some weight tensors are stacked. For instance, <span class="arithmatex">\(W_{ir}\)</span>, <span class="arithmatex">\(W_{iz}\)</span> and <span class="arithmatex">\(W_{in}\)</span> are implemented as a single tensor of size <span class="arithmatex">\(\left(3\times H_{out}, H_{in}\right)\)</span>, and <span class="arithmatex">\(W_{hr}\)</span>, <span class="arithmatex">\(W_{hz}\)</span> and <span class="arithmatex">\(W_{hn}\)</span> are implemented as a single tensor of size <span class="arithmatex">\(\left(3\times H_{out}, H_{out}\right)\)</span>, possibly due to efficiency reasons.</p>
+</div>
+<h3 id="reset-gate">Reset gate</h3>
+<p>The tensor sizes involved in the operations performed to calculate the reset gate <span class="arithmatex">\(r\)</span> are</p>
+<div class="arithmatex">\[
+\begin{align}
+    r = \sigma\Bigg(\underbrace{\left(H_{out}, H_{in}\right) \times \left(N, H_{in}\right)}_{W_{ir}x} + \underbrace{H_{out}}_{b_{ir}} + \underbrace{\left(H_{out}, H_{out}\right) \times \left(N, H_{out}\right)}_{W_{hr}h} + \underbrace{H_{out}}_{b_{hr}}\Bigg)
+\end{align}
+\]</div>
+<p>In this case, <span class="arithmatex">\(x\)</span> (with shape <span class="arithmatex">\(\left(N, H_{in}\right)\)</span>) and <span class="arithmatex">\(h\)</span> (with shape <span class="arithmatex">\(\left(N, H_{out}\right)\)</span>) have to be transposed. Additionally, <span class="arithmatex">\(b_{ir}\)</span> and <span class="arithmatex">\(b_{hr}\)</span> will be implicitly broadcasted to be able to be summed with the tensor multiplication results. Then, the unwrapped and transposed shapes involved in the operations are</p>
+<div class="arithmatex">\[
+\begin{align}
+    r = \sigma\left(\left(H_{out}, H_{in}\right) \times \left(H_{in}, N\right) + \left(H_{out}, N\right) + \left(H_{out}, H_{out}\right) \times \left(H_{out}, N\right) + \left(H_{out}, N\right)\right)
+\end{align}
+\]</div>
+<p>This will result in a tensor of shape <span class="arithmatex">\(\left(H_{out}, N\right)\)</span>. To estimate the complexity of this operation, it is possible to reuse the results from <a href="../linear/"><code>torch.nn.Linear</code></a> for both matrix multiplications and add the sigmoid operations <span class="arithmatex">\(\sigma\)</span>. <span class="arithmatex">\(r_{ops}\)</span> (the operations of the reset gate <span class="arithmatex">\(r\)</span>) can be then broken down into four parts:</p>
+<ol>
+<li>The operations needed to compute <span class="arithmatex">\(W_{ir}x+b_{ir}\)</span>.</li>
+<li>The operations needed to compute <span class="arithmatex">\(W_{hi}h+b_{hi}\)</span>.</li>
+<li>The operations needed to sum both results.</li>
+<li>The operations needed to compute the sigmoid function <span class="arithmatex">\(\sigma\)</span> of this result.</li>
+</ol>
+<p>For simplicity sake, the following definitions will be used:</p>
+<div class="arithmatex">\[
+\begin{align}
+    r = \sigma\left(\underbrace{W_{ir}x^T+b_{ir}}_{r_0}+\underbrace{W_{hr}h^T+b_{hr}}_{r_1}\right)
+\end{align}
+\]</div>
+<p>Then, in terms of operations (<span class="arithmatex">\(ops\)</span>) when <code>bias=True</code></p>
+<div class="arithmatex">\[
+\begin{align}
+    r_{0_{ops}} &amp;=\left(W_{ir}x^T+b_{ir}\right)_{ops} = 2\times N\times H_{out}\times H_{in} \\
+    r_{1_{ops}} &amp;=\left(W_{hr}x^T+b_{hr}\right)_{ops} = 2\times N\times H_{out}^2 \\
+    \left(r_0+r_1\right)_{ops} &amp;= N\times H_{out} \\
+    \sigma_{ops} &amp;= 3\times N\times H_{out} \\
+    r_{ops} &amp;= 2\times N\times H_{out}\times\left(2+H_{in}+ H_{out}\right)
+\end{align}
+\]</div>
+<p>and when <code>bias=False</code></p>
+<div class="arithmatex">\[
+\begin{align}
+    r_{0_{ops}} &amp;=\left(W_{ir}x^T\right)_{ops} = N\times H_{out}\times \left(2\times H_{in}-1\right) \\
+    r_{1_{ops}}
+    &amp;=\left(W_{hr}x^T\right)_{ops}=N\times H_{out}\times\left(2\times H_{out}-1\right) \\
+    \left(r_0+r_1\right)_{ops} &amp;= N\times H_{out} \\
+    \sigma_{ops} &amp;= 3\times N\times H_{out}\\
+    r_{ops} &amp;= 2\times N\times H_{out}\times\left(1+H_{in}+ H_{out}\right)
+\end{align}
+\]</div>
+<h3 id="update-gate">Update gate</h3>
+<p>Since the dimensions of this gate are the same as the reset gate <span class="arithmatex">\(r\)</span>, it is trivial to observe that</p>
+<div class="arithmatex">\[
+\begin{equation}
+    z_{ops}=r_{ops}
+\end{equation}
+\]</div>
+<h3 id="n"><span class="arithmatex">\(n\)</span></h3>
+<p><span class="arithmatex">\(n\)</span> has a slightly different configuration. Besides the matrix multiplications, there is Hadamard product <span class="arithmatex">\(\odot\)</span> and an hyperbolic tangent <span class="arithmatex">\(\text{tanh}\)</span> function. The involved tensor sizes are</p>
+<div class="arithmatex">\[
+\begin{align}
+    n = \text{tanh}\Bigg(\underbrace{\left(H_{out}, H_{in}\right) \times \left(N, H_{in}\right)}_{W_{in}x} + \underbrace{H_{out}}_{b_{in}} + \underbrace{\left(H_{out}, N\right)}_{r}\odot\left(\underbrace{\left(H_{out}, H_{out}\right) \times \left(N, H_{out}\right)}_{W_{hn}h} + \underbrace{H_{out}}_{b_{hn}}\right)\Bigg)
+\end{align}
+\]</div>
+<p>Again, it becomes necessary to broadcast and transpose some tensors to be able to perform all operations, resulting in</p>
+<div class="arithmatex">\[
+\begin{align}
+    n = \text{tanh}\left(\left(H_{out}, H_{in}\right) \times \left(H_{in}, N\right) + \left(H_{out}, N\right) + \left(H_{out}, N\right)\odot\left(\left(H_{out}, H_{out}\right) \times \left(H_{out}, N\right) + \left(H_{out}, N\right)\right)\right)
+\end{align}
+\]</div>
+<p>Now <span class="arithmatex">\(n_{ops}\)</span> (the operations performed by <span class="arithmatex">\(n\)</span>) can be divided into five parts:</p>
+<ol>
+<li>The operations needed to compute <span class="arithmatex">\(W_{in}x+b_{in}\)</span>.</li>
+<li>The operations needed to compute <span class="arithmatex">\(W_{hn}h+b_{hn}\)</span>.</li>
+<li>The operations needed to compute the Hadamard product between <span class="arithmatex">\(r\)</span> and <span class="arithmatex">\(W_{hn}h+b_{hn}\)</span>.</li>
+<li>The operations needed to sum the terms that result into the <span class="arithmatex">\(\text{tanh}\)</span> function argument.</li>
+<li>The operations needed to compute the hyperbolic tangent <span class="arithmatex">\(\text{tanh}\)</span> function of this result.</li>
+</ol>
+<p>Then, the different parts that contribute to <span class="arithmatex">\(n_{ops}\)</span> can be defined as</p>
+<div class="arithmatex">\[
+\begin{align}
+    n = \text{tanh}\left(\underbrace{W_{in}x^T+b_{in}}_{n_0}+r\odot\left(\underbrace{W_{hn}h^T+b_{hn}}_{n_1}\right)\right)
+\end{align}
+\]</div>
+<p>Then, when <code>bias=True</code></p>
+<div class="arithmatex">\[
+\begin{align}
+    n_{0_{ops}} &amp;= \left(W_{in}x^T+b_{in}\right)_{ops} = 2\times N\times H_{out}\times H_{in} \\
+    n_{1_{ops}} &amp;= \left(W_{hn}x^T+b_{hn}\right)_{ops} = 2\times N\times H_{out}^2 \\
+    \left(r\odot n_1\right)_{ops} &amp;= N\times H_{out} \\
+    \left(n_0+r\odot n_1\right)_{ops} &amp;= N\times H_{out} \\
+    \text{tanh}_{ops} &amp;= 7\times N\times H_{out} \\ 
+    n_{ops} &amp;= N\times H_{out}\times\left(9+2\times\left(H_{in}+H_{out}\right)\right)
+\end{align}
+\]</div>
+<p>and when <code>bias=False</code></p>
+<div class="arithmatex">\[
+\begin{align}
+    n_{0_{ops}} &amp;= \left(W_{in}x^T\right)_{ops} = N\times H_{out}\times \left(2\times H_{in}-1\right) \\
+    n_{1_{ops}} &amp;= \left(W_{hn}x^T\right)_{ops} = N\times H_{out}\times \left(2\times H_{out}-1\right) \\
+    \left(r\odot n_1\right)_{ops} &amp;= N\times H_{out} \\
+    \left(n_0+r\odot n_1\right)_{ops} &amp;= N\times H_{out} \\
+    \text{tanh}_{ops} &amp;= 7\times N\times H_{out} \\ 
+    n_{ops} &amp;= N\times H_{out}\times\left(9+2\times\left(H_{in}+H_{out}-1\right)\right) 
+\end{align}
+\]</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please note that there are many possible formulations for the amount of operations carried out by <span class="arithmatex">\(\text{tanh}\)</span>. In this calculation, the formula mentioned at the beginning is what is being used. In such a case, there are 7 operations per element are: x4 exponentials, x1 sum, x1 difference and x1 division. Please also note that we are ignoring sign inversion operations, assuming these will usually have a negligible computational cost. </p>
+</div>
+<h3 id="hprime"><span class="arithmatex">\(h\prime\)</span></h3>
+<p>The operations computed to obtain <span class="arithmatex">\(h\prime\)</span> can be divided into four parts:</p>
+<ol>
+<li>The operations needed to subtract <span class="arithmatex">\(\left(1-z\right)\)</span>.</li>
+<li>The operations needed to compute the Hadamard product between <span class="arithmatex">\(\left(1-z\right)\)</span> and <span class="arithmatex">\(n\)</span>.</li>
+<li>The operations needed to compute the Hadamard product between <span class="arithmatex">\(z\)</span> and <span class="arithmatex">\(h\)</span>.</li>
+<li>The operations needed to sum both Hadamard product results.</li>
+</ol>
+<p>In this case, all operations are element wise operations, therefore it is trivial to see that every part will contribute with <span class="arithmatex">\(N\times H_{out}\)</span> operations, therefore</p>
+<div class="arithmatex">\[
+\begin{align}
+h\prime_{ops} &amp;= 4\times N\times H_{out}
+\end{align}
+\]</div>
+<h3 id="total-complexity">Total complexity</h3>
+<p>Finally, the total complexity is the sum of all individual contributions</p>
+<div class="arithmatex">\[
+\begin{align}
+    \text{GRUCell}_{ops}=r_{ops}+z_{ops}+n_{ops}+h\prime_{ops}
+\end{align}
+\]</div>
+<p>In the case of <code>bias=True</code>, the total number of operations is</p>
+<div class="arithmatex">\[
+\begin{align}
+    \text{GRUCell}_{ops}&amp;= \underbrace{4\times N\times H_{out}\left(2+H_{in}+ H_{out}\right)}_{r_{ops}+z_{ops}} \nonumber \\
+    &amp;\quad + \underbrace{N\times H_{out}\left(9+2\left(H_{in}+H_{out}\right)\right)}_{n_{ops}}
+    \nonumber \\
+    &amp;\quad + \underbrace{4\times N\times H_{out}}_{h\prime_{ops}}
+    \nonumber \\
+    \text{GRUCell}_{ops}&amp;= 6\times N \times H_{out}\times\left(H_{in}+H_{out}+3.5\right)
+\end{align}
+\]</div>
+<p>and for <code>bias=False</code></p>
+<div class="arithmatex">\[
+\begin{align}
+    \text{GRUCell}_{ops}&amp;= \underbrace{4\times N\times H_{out}\left(1+H_{in}+ H_{out}\right)}_{r_{ops}+z_{ops}} \nonumber \\
+    &amp;\quad + \underbrace{N\times H_{out}\left(9+2\left(H_{in}+H_{out}-1\right)\right)}_{n_{ops}}
+    \nonumber \\
+    &amp;\quad + \underbrace{4\times N\times H_{out}}_{h\prime_{ops}}
+    \nonumber \\
+    \text{GRUCell}_{ops}&amp;= 6\times N \times H_{out}\times\left(H_{in}+H_{out}+2.5\right)
+\end{align}
+\]</div>
+<h2 id="summary">Summary</h2>
+<p>The number of operations <span class="arithmatex">\(\phi\)</span> performed by a <code>torch.nn.GRUCell</code> module can be estimated as</p>
+<div class="admonition success">
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">If <code>bias=True</code></label><label for="__tabbed_1_2">If <code>bias=False</code></label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><span class="arithmatex">\(\text{GRUCell}_{ops} = 6\times N \times H_{out}\times\left(H_{in}+H_{out}+3.5\right)\)</span></p>
+</div>
+<div class="tabbed-block">
+<p><span class="arithmatex">\(\text{GRUCell}_{ops} = 6\times N \times H_{out}\times\left(H_{in}+H_{out}+2.5\right)\)</span></p>
+</div>
+</div>
+</div>
+</div>
+<p>Where</p>
+<ul>
+<li><span class="arithmatex">\(N\)</span> is the batch size.</li>
+<li><span class="arithmatex">\(H_\text{in}\)</span> is the number of input features.</li>
+<li><span class="arithmatex">\(H_\text{out}\)</span> is the number of output features.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2024 <a href="https://www.estebangomez.me" target="_blank">Esteban Gómez</a>
+
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.07f07601.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.56dfad97.min.js"></script>
+      
+        <script src="../../js/katex.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/contrib/auto-render.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+      
+        <script src="../../js/tablesort.js"></script>
+      
+    
+  </body>
+</html>
