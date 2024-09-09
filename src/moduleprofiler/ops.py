@@ -485,6 +485,14 @@ def _selu_ops_fn(
     return input[0].numel() * 7
 
 
+def _softplus_ops_fn(
+        module: nn.Softplus,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    return input[0].numel() * 5
+
+
 def get_default_ops_map() -> dict:
     return {
         # Default method
@@ -518,5 +526,6 @@ def get_default_ops_map() -> dict:
         nn.SELU: _selu_ops_fn,
         nn.Sigmoid: _sigmoid_ops_fn,
         nn.Softmax: _softmax_ops_fn,
+        nn.Softplus: _softplus_ops_fn,
         nn.Tanh: _tanh_ops_fn
     }
