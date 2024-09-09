@@ -13,6 +13,12 @@ It comes equipped with all the necessary methods to deal with the most commonly 
 ### Installation
 `moduleprofiler` can be installed as any regular `python` module within your environment:
 
+Install from PyPI:
+```bash
+python -m pip install moduleprofiler
+```
+
+Install from this repository:
 ```bash
 python -m pip install git+https://github.com/eagomez2/moduleprofiler.git
 ```
