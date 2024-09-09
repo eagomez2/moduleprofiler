@@ -466,7 +466,9 @@ def _maxpool1d_ops_fn(
         input: Tuple[torch.Tensor],
         output: torch.Tensor
 ) -> int:
-    return output.size(-1)
+    batch_size = 1 if input[0].ndim == 2 else input[0].size(0)
+    in_channels = input[0].size(-2)
+    return batch_size * in_channels * output.size(-1)
 
 
 def _maxpool2d_ops_fn(
@@ -474,7 +476,9 @@ def _maxpool2d_ops_fn(
         input: Tuple[torch.Tensor],
         output: torch.Tensor
 ) -> int:
-    return output.size(-2) * output.size(-1)
+    batch_size = 1 if input[0].ndim == 3 else input[0].size(0)
+    in_channels = input[0].size(-3)
+    return batch_size * in_channels * output.size(-2) * output.size(-1)
 
 
 def _selu_ops_fn(
@@ -511,8 +515,19 @@ def _layernorm_ops_fn(
         
         else:
             total_ops = 6 * num_elements + 3
+    
+    # Add batch size
+    total_ops *= input[0].size(0)
         
     return total_ops
+
+
+def _avgpool1d_ops_fn(
+        module: nn.LayerNorm,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    ...
 
 
 def get_default_ops_map() -> dict:
