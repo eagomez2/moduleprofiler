@@ -527,7 +527,10 @@ def _avgpool1d_ops_fn(
         input: Tuple[torch.Tensor],
         output: torch.Tensor
 ) -> int:
-    ...
+    batch_size = 1 if input[0].ndim == 2 else input[0].size(0)
+    num_channels = input[0].size(-2)
+
+    return batch_size * num_channels * output.size(-1) * module.kernel_size[0]
 
 
 def get_default_ops_map() -> dict:
@@ -551,6 +554,7 @@ def get_default_ops_map() -> dict:
         nn.LayerNorm: _layernorm_ops_fn,
 
         # Pooling
+        nn.AvgPool1d: _avgpool1d_ops_fn,
         nn.AdaptiveMaxPool1d: _maxpool1d_ops_fn,
         nn.AdaptiveAvgPool2d: _maxpool2d_ops_fn,
         nn.MaxPool1d: _maxpool1d_ops_fn,
