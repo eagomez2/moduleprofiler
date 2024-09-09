@@ -113,6 +113,8 @@ By default, all methods support all modules as long as these are instances of `t
 | `torch.nn.Softmax`           | :material-check:                   | 0.0.1   |
 | `torch.nn.Softplus`          | :material-check:                   | 0.0.1   |
 | `torch.nn.Tanh`              | :material-check:                   | 0.0.1   |
+| `torch.nn.AvgPool1d`         | :material-check:                   | 0.0.1   |
+| `torch.nn.AvgPool2d`         | :material-check:                   | 0.0.1   |
 | `torch.nn.AdaptiveMaxPool1d` | :material-check:                   | 0.0.1   |
 | `torch.nn.AdaptiveMaxPool2d` | :material-check:                   | 0.0.1   |
 | `torch.nn.MaxPool1d`         | :material-check:                   | 0.0.1   |
