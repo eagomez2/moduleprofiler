@@ -493,6 +493,28 @@ def _softplus_ops_fn(
     return input[0].numel() * 5
 
 
+def _layernorm_ops_fn(
+        module: nn.LayerNorm,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    if not module.elementwise_affine:
+        num_elements = (
+            module.normalized_shape if isinstance(module.normalized_shape, int)
+            else math.prod(module.normalized_shape)
+        )
+        total_ops = 5 * num_elements + 3
+    
+    else:
+        if module.bias is not None:
+            total_ops = 7 * num_elements + 3
+        
+        else:
+            total_ops = 6 * num_elements + 3
+        
+    return total_ops
+
+
 def get_default_ops_map() -> dict:
     return {
         # Default method
@@ -511,6 +533,7 @@ def get_default_ops_map() -> dict:
         nn.LSTM: _lstm_ops_fn,
 
         # Norm
+        nn.LayerNorm: _layernorm_ops_fn,
 
         # Pooling
         nn.AdaptiveMaxPool1d: _maxpool1d_ops_fn,
