@@ -7,6 +7,7 @@ name = "moduleprofiler"
 authors = [{name = "Esteban Gómez", email = "esteban.gomezmellado@aalto.fi"}]
 readme = "README.md"
 license = {file = "LICENSE"}
+keywords = ["pytorch", "machine-learning", "neural-network", "profiling", "complexity-analysis"]
 dynamic = ["version", "description"]
 requires-python = ">=3.9"
 dependencies = [
@@ -18,6 +19,8 @@ dependencies = [
 
 [project.urls]
 Home = "https://github.com/eagomez2/moduleprofiler"
+Documentation = "https://eagomez2.github.io/moduleprofiler/"
+Repository = "https://github.com/eagomez2/moduleprofiler"
 
 [project.optional-dependencies]
 docs = [
