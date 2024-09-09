@@ -13,7 +13,7 @@ All results can be obtained in one of the following formats:
 - `html` (to export as webpage)
 - `LaTeX` (to include in your publications)
 
-[[Online documentation](https://eagomez2.github.io/moduleprofiler/) | [Tutorial](https://eagomez2.github.io/moduleprofiler/tutorial/) ]
+[<a href="https://eagomez2.github.io/moduleprofiler/" target="_blank">Online documentation</a> | <a href="https://eagomez2.github.io/moduleprofiler/tutorial/" target="_blank">Tutorial</a> ]
 
 # Installation
 `moduleprofiler` can be installed as any regular `python` module within your environment:
@@ -23,7 +23,7 @@ python -m pip install git+https://github.com/eagomez2/moduleprofiler.git
 ```
 
 # Documentation
-You can access the [online documentation](https://eagomez2.github.io/moduleprofiler/). There you will find a more in depth introduction to `moduleprofiler`, including tutorials, methods documentation and an extensive reference about the calculations utilized to estimate the operations of different supported `torch.nn.Module` modules.
+You can access the <a href="https://eagomez2.github.io/moduleprofiler/" target="blank">online documentation</a>). There you will find a more in depth introduction to `moduleprofiler`, including tutorials, methods documentation and an extensive reference about the calculations utilized to estimate the operations of different supported `torch.nn.Module` modules.
 
 You can also run the documentation locally by going to the root folder of the package and running:
 
