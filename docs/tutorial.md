@@ -98,7 +98,7 @@ io_sizes_df = profiler.trace_io_sizes_df(module=net, input=x)
 """
 
 # Operations
-ops_df = profiler.esimate_ops_df(module=net, input=x)
+ops_df = profiler.estimate_ops_df(module=net, input=x)
 """
      module    type  ops
 0  __root__  Linear  512
@@ -213,7 +213,7 @@ If instead of aggregated statistics you want to obtain the time taken by each mo
 !!! warning
     Please note that the inference of time of your model is hardware-dependent. This means that you may get significantly different values if you run the same model in different devices. Additionally, you may get significantly different numbers depending on the amount of configured intra-op and inter-op threads. To configure these you can use `torch.get_num_threads()`, `torch.set_num_threads()`, `torch.get_num_interop_threads()` and `torch.set_num_interop_threads()`. For further details about these methods, please refer to PyTorch documentation.
 
-In addition to `profiler.estimate_inference_time` or `profiler.estimate_inference_time_df` there is a `profiler.estimate_total_inference_time` and `profiler.estimate_total_inference_time_df` method. This method represents a shortcut to obtaining statistics for the whole model, rather than computing them layer by layer. The method is recommended when you only need to compute the inference time for the whole model rather than layer by layer. Similarly to `profiler.esimate_inference_time`, you can compute individual inferences or aggregated metrics using the `aggr` parameter.
+In addition to `profiler.estimate_inference_time` or `profiler.estimate_inference_time_df` there is a `profiler.estimate_total_inference_time` and `profiler.estimate_total_inference_time_df` method. This method represents a shortcut to obtaining statistics for the whole model, rather than computing them layer by layer. The method is recommended when you only need to compute the inference time for the whole model rather than layer by layer. Similarly to `profiler.estimate_inference_time`, you can compute individual inferences or aggregated metrics using the `aggr` parameter.
 
 ```py
 # Compute inference time (aggregated)
