@@ -3,7 +3,8 @@ import math
 import torch.nn as nn
 from typing import (
     Any,
-    Tuple
+    Tuple,
+    Union
 )
 
 
@@ -107,7 +108,8 @@ def _conv2d_ops_fn(
 
 
 def _convtransposend_filter_addition_ops(
-        module: nn.ConvTranspose1d,
+        batch_size: int,
+        module: Union[nn.ConvTranspose1d, nn.ConvTranspose2d],
         input: Tuple[torch.Tensor],
         output: torch.Tensor
 ) -> int:
@@ -132,6 +134,11 @@ def _convtransposend_filter_addition_ops(
     total_addition_ops = convtransposend_ones(x_ones) - 1.0
     total_addition_ops = torch.sum(total_addition_ops)
 
+    # NOTE: This number is for all filters and for the whole batch so it is
+    # necessary to calculate for a single filter
+    num_filters = (module.in_channels * module.out_channels) / module.groups
+    total_addition_ops = (total_addition_ops / batch_size) / num_filters
+
     return int(total_addition_ops)
 
 
@@ -148,6 +155,7 @@ def _convtranspose1d_ops_fn(
 
     # Get addition ops
     total_addition_ops = _convtransposend_filter_addition_ops(
+        batch_size,
         module,
         input,
         output
@@ -179,6 +187,7 @@ def _convtranspose2d_ops_fn(
 
     # Get addition ops
     total_addition_ops = _convtransposend_filter_addition_ops(
+        batch_size,
         module,
         input,
         output
