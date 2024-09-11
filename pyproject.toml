@@ -18,8 +18,10 @@ dependencies = [
 ]
 
 [project.urls]
-Home = "https://github.com/eagomez2/moduleprofiler"
+"Bug Tracker" = "https://github.com/eagomez2/moduleprofiler/issues"
+Changelog = "https://github.com/eagomez2/moduleprofiler/releases"
 Documentation = "https://eagomez2.github.io/moduleprofiler/"
+Home = "https://github.com/eagomez2/moduleprofiler"
 Repository = "https://github.com/eagomez2/moduleprofiler"
 
 [project.optional-dependencies]
