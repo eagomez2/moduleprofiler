@@ -115,7 +115,7 @@ def _convtransposend_filter_addition_ops(
     x_ones = torch.ones_like(input[0])
 
     # Get copy of input modules but with weight filled with ones
-    convtranspose1d_ones = type(module)(
+    convtransposend_ones = type(module)(
         in_channels=module.in_channels,
         out_channels=module.out_channels,
         kernel_size=module.kernel_size,
@@ -126,10 +126,10 @@ def _convtransposend_filter_addition_ops(
         groups=module.groups,
         bias=False
     )
-    torch.nn.init.ones_(convtranspose1d_ones.weight)
+    torch.nn.init.ones_(convtransposend_ones.weight)
 
     # Compute additions pattern
-    total_addition_ops = convtranspose1d_ones(x_ones) - 1.0
+    total_addition_ops = convtransposend_ones(x_ones) - 1.0
     total_addition_ops = torch.sum(total_addition_ops)
 
     return int(total_addition_ops)
