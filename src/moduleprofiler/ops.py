@@ -107,37 +107,31 @@ def _conv2d_ops_fn(
     return int(total_ops)
 
 
-def _convtransposend_filter_addition_ops(
-        batch_size: int,
-        module: Union[nn.ConvTranspose1d, nn.ConvTranspose2d],
+def _convtranspose1d_filter_addition_ops(
+        module: nn.ConvTranspose1d,
         input: Tuple[torch.Tensor],
-        output: torch.Tensor
+        output: torch.Tensor        
 ) -> int:
-    # Get input filled with ones
-    x_ones = torch.ones_like(input[0])
+    # Get input with same output size but filled with ones
+    x_ones = torch.ones((1, 1, input[0].size(-1)))
 
-    # Get copy of input modules but with weight filled with ones
-    convtransposend_ones = type(module)(
-        in_channels=module.in_channels,
-        out_channels=module.out_channels,
+    # Get copy of input for single I/O channel to compute additions pattern
+    convtranspose1d_ones = nn.ConvTranspose1d(
+        in_channels=1,
+        out_channels=1,
         kernel_size=module.kernel_size,
         stride=module.stride,
         padding=module.padding,
         padding_mode=module.padding_mode,
         dilation=module.dilation,
-        groups=module.groups,
+        groups=1,
         bias=False
     )
-    torch.nn.init.ones_(convtransposend_ones.weight)
+    torch.nn.init.ones_(convtranspose1d_ones.weight)
 
-    # Compute additions pattern
-    total_addition_ops = convtransposend_ones(x_ones) - 1.0
+    # Compute additions pattern for a single filter
+    total_addition_ops = convtranspose1d_ones(x_ones) - 1.0
     total_addition_ops = torch.sum(total_addition_ops)
-
-    # NOTE: This number is for all filters and for the whole batch so it is
-    # necessary to calculate for a single filter
-    num_filters = (module.in_channels * module.out_channels) / module.groups
-    total_addition_ops = (total_addition_ops / batch_size) / num_filters
 
     return int(total_addition_ops)
 
@@ -154,8 +148,7 @@ def _convtranspose1d_ops_fn(
     batch_size = 1 if x0.ndim == 1 else x0.size(0)
 
     # Get addition ops
-    total_addition_ops = _convtransposend_filter_addition_ops(
-        batch_size,
+    adds_per_filter = _convtranspose1d_filter_addition_ops(
         module,
         input,
         output
@@ -164,7 +157,7 @@ def _convtranspose1d_ops_fn(
     total_ops = (
         batch_size
         * ((module.in_channels * module.out_channels) / module.groups)
-        * (output.size(-1) * (module.kernel_size[0] + 1) + total_addition_ops)
+        * (output.size(-1) * (module.kernel_size[0] + 1) + adds_per_filter)
     )
 
     # Add bias correction
@@ -172,6 +165,35 @@ def _convtranspose1d_ops_fn(
         total_ops -= batch_size * module.out_channels * output.size(-1)
     
     return int(total_ops)
+
+
+def _convtranspose2d_filter_addition_ops(
+        module: nn.ConvTranspose1d,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor        
+) -> int:
+    # Get input with same output size but filled with ones
+    x_ones = torch.ones((1, input[0].size(-2), input[0].size(-1)))
+
+    # Get copy of input for single I/O channel to compute additions pattern
+    convtranspose2d_ones = nn.ConvTranspose2d(
+        in_channels=1,
+        out_channels=1,
+        kernel_size=module.kernel_size,
+        stride=module.stride,
+        padding=module.padding,
+        padding_mode=module.padding_mode,
+        dilation=module.dilation,
+        groups=1,
+        bias=False
+    )
+    torch.nn.init.ones_(convtranspose2d_ones.weight)
+
+    # Compute additions pattern for a single filter
+    total_addition_ops = convtranspose2d_ones(x_ones) - 1.0
+    total_addition_ops = torch.sum(total_addition_ops)
+
+    return int(total_addition_ops)
 
 
 def _convtranspose2d_ops_fn(
@@ -186,8 +208,7 @@ def _convtranspose2d_ops_fn(
     batch_size = 1 if x0.ndim == 2 else x0.size(0)
 
     # Get addition ops
-    total_addition_ops = _convtransposend_filter_addition_ops(
-        batch_size,
+    adds_per_filter = _convtranspose2d_filter_addition_ops(
         module,
         input,
         output
@@ -199,7 +220,7 @@ def _convtranspose2d_ops_fn(
         * (
             output.size(-1) * output.size(-2)
             * (module.kernel_size[0] * module.kernel_size[1] + 1)
-            + total_addition_ops
+            + adds_per_filter
         )
     )
 
