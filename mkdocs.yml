@@ -19,6 +19,7 @@ nav:
       - modules/sigmoid.md
       - modules/softmax.md
       - modules/tanh.md
+  - Changelog: https://github.com/eagomez2/moduleprofiler/releases
   - License: license.md
 copyright: |
   &copy; 2024 <a href="https://www.estebangomez.me" target="_blank">Esteban Gómez</a>, <a href="https://www.aalto.fi/en/department-of-information-and-communications-engineering/speech-interaction-technology" target="_blank">Speech Interaction Technology, Aalto University</a>
