@@ -22,7 +22,31 @@ Where
 ## Complexity
 The complexity of a `torch.nn.LayerNorm` layer can be divided into two parts: The aggregated statistics calculation (i.e. mean and standard deviation) and the affine transformation applied by $\gamma$ and $\beta$ if `elementwise_affine=True`.
 
-## Aggregaed statistics
+## Aggregated statistics
+The complexity of the mean corresponds to the sum of all elements in the last $D$ dimensions of the input tensor $x$ and the division of that number by the total number of elements. As an example, if `normalized_shape=(3, 5)` then there are 14 additions and 1 division. This also corresponds to the product of the dimensions involved in `normalized_shape`.
+
+$$
+\begin{equation}
+    \left(\text{E}\left[x\right]\right)_{ops} = \prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]
+\end{equation}
+$$
+
+Once $\text{E}\left[x\right]$ is obtained, it can be reused to obtain the variance that for `correction=0` reduces to
+
+$$
+\begin{equation}
+    \text{Var}\left[x\right] = \frac{1}{N}\sum_{i=0}^{N-1}\left(x_i-\text{E}\left[x\right]\right)
+\end{equation}
+$$
+
+This step involves an element-wise subtraction, $N-1$ additions and a single division. then
+
+$$
+\begin{equation}
+    \left(\text{Var}\left[x\right]\right)_{ops} = 2\times\prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]
+\end{equation}
+$$
+
 
 
 ## Elementwise affine
