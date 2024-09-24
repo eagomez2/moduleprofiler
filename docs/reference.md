@@ -12,6 +12,7 @@ List of reference pages:
 - [ConvTranspose2d (`torch.nn.ConvTranspose2d`)](modules/convtranspose2d.md)
 - [GRUCell (`torch.nn.GRUCell`)](modules/grucell.md)
 - [GRU (`torch.nn.GRU`)](modules/gru.md)
+- [LayerNorm (`torch.nn.LayerNorm`)](modules/layernorm.md)
 - [Linear (`torch.nn.Linear`)](modules/linear.md)
 - [LSTMCell (`torch.nn.LSTMCell`)](modules/lstmcell.md)
 - [LSTM (`torch.nn.LSTM`)](modules/lstm.md)
