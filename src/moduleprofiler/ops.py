@@ -531,11 +531,18 @@ def _layernorm_ops_fn(
         input: Tuple[torch.Tensor],
         output: torch.Tensor
 ) -> int:
-    if not module.elementwise_affine:
-        num_elements = (
-            module.normalized_shape if isinstance(module.normalized_shape, int)
-            else math.prod(module.normalized_shape)
+    num_elements = math.prod(module.normalized_shape)
+
+    if len(module.normalized_shape) == input[0].ndim:
+        batch_size = 1
+    
+    else:
+        batch_size_end_dim = input[0].ndim - len(module.normalized_shape) - 1
+        batch_size = math.prod(
+            [input[0].size(n) for n in range(batch_size_end_dim + 1)]
         )
+    
+    if not module.elementwise_affine:
         total_ops = 5 * num_elements + 4
     
     else:
@@ -546,7 +553,7 @@ def _layernorm_ops_fn(
             total_ops = 6 * num_elements + 4
     
     # Add batch size
-    total_ops *= input[0].size(0)
+    total_ops *= batch_size
         
     return total_ops
 
