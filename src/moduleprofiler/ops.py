@@ -15,6 +15,14 @@ def _default_ops_fn(
     return None
 
 
+def _excluded_ops_fn(
+        module: nn.Module,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> Any:
+    return None
+
+
 def _identity_ops_fn(
         module: nn.Identity,
         input: Tuple[torch.Tensor],
@@ -634,6 +642,9 @@ def get_default_ops_map() -> dict:
     return {
         # Default method
         "default": _default_ops_fn,
+
+        # Excluded module method
+        "excluded": _excluded_ops_fn,
 
         # Layers
         nn.Identity: _identity_ops_fn,
