@@ -12,6 +12,7 @@ nav:
       - modules/convtranspose2d.md
       - modules/grucell.md
       - modules/gru.md
+      - modules/layernorm.md
       - modules/linear.md
       - modules/lstmcell.md
       - modules/lstm.md
