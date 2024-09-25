@@ -602,11 +602,7 @@ def _batchnorm1d_ops_fn(
         total_ops = 5 * num_elements + 4
     
     else:
-        if module.bias is not None:
-            total_ops = 7 * num_elements + 4
-        
-        else:
-            total_ops = 6 * num_elements + 4
+        total_ops = 7 * num_elements + 4
     
     # Add num_features C
     total_ops *= module.num_features
@@ -625,11 +621,7 @@ def _batchnorm2d_ops_fn(
         total_ops = 5 * num_elements + 4
     
     else:
-        if module.bias is not None:
-            total_ops = 7 * num_elements + 4
-        
-        else:
-            total_ops = 6 * num_elements + 4
+        total_ops = 7 * num_elements + 4
     
     # Add num_features C
     total_ops *= module.num_features
