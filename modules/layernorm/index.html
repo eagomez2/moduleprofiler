@@ -700,9 +700,10 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="Complexity">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#aggregated-statistics" class="md-nav__link">
     <span class="md-ellipsis">
       Aggregated statistics
@@ -710,8 +711,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#elementwise-affine" class="md-nav__link">
     <span class="md-ellipsis">
       Elementwise affine
@@ -719,8 +720,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#batch-size" class="md-nav__link">
     <span class="md-ellipsis">
       Batch size
@@ -728,13 +729,18 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#total-complexity" class="md-nav__link">
     <span class="md-ellipsis">
       Total complexity
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -994,7 +1000,7 @@
 </div>
 <h2 id="complexity">Complexity</h2>
 <p>The complexity of a <code>torch.nn.LayerNorm</code> layer can be divided into two parts: The aggregated statistics calculation (i.e. mean and standard deviation) and the affine transformation applied by <span class="arithmatex">\(\gamma\)</span> and <span class="arithmatex">\(\beta\)</span> if <code>elementwise_affine=True</code>.</p>
-<h2 id="aggregated-statistics">Aggregated statistics</h2>
+<h3 id="aggregated-statistics">Aggregated statistics</h3>
 <p>The complexity of the mean corresponds to the sum of all elements in the last <span class="arithmatex">\(D\)</span> dimensions of the input tensor <span class="arithmatex">\(x\)</span> and the division of that number by the total number of elements. As an example, if <code>normalized_shape=(3, 5)</code> then there are 14 additions and 1 division. This also corresponds to the product of the dimensions involved in <code>normalized_shape</code>.</p>
 <div class="arithmatex">\[
 \begin{equation}
@@ -1025,7 +1031,7 @@
     \left(\frac{x-\text{E}\left[x\right]}{\sqrt{\text{Var}\left[x\right]+\epsilon}}\right)_{ops} = 4+5\times\prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]
 \end{equation}
 \]</div>
-<h2 id="elementwise-affine">Elementwise affine</h2>
+<h3 id="elementwise-affine">Elementwise affine</h3>
 <p>If <code>elementwise_affine=True</code>, there is an element-wise multiplication by <span class="arithmatex">\(\gamma\)</span>. If <code>bias=True</code>, there is also an element-wise addition by <span class="arithmatex">\(\beta\)</span>. Therefore the whole complexity of affine transformations is</p>
 <div class="arithmatex">\[
 \begin{equation}
@@ -1039,14 +1045,14 @@
 \end{equation}
 \]</div>
 <p>when <code>bias=True</code>.</p>
-<h2 id="batch-size">Batch size</h2>
+<h3 id="batch-size">Batch size</h3>
 <p>So far we have not included the batch size <span class="arithmatex">\(N\)</span>, which in this case could be defined as all other dimensions that are not <span class="arithmatex">\(D\)</span>. This means, those that are not included in <code>normalized_shape</code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Please note that <span class="arithmatex">\(N\)</span> here corresponds to all dimensions not included in <code>normalized_shape</code>, which is different from the definition ot <span class="arithmatex">\(N\)</span> in <code>torch.var</code> which corresponds to the number of elements in the input tensor of that function.  </p>
 </div>
 <p>The batch size <span class="arithmatex">\(N\)</span> multiplies all previously calculated operations by a factor <span class="arithmatex">\(\eta\)</span> corresponding to the multiplication of the remaining dimensions. For example, if the input tensor has size <code>(2, 3, 5)</code> and <code>normalized_shape=(3, 5)</code>, then <span class="arithmatex">\(\eta\)</span> is <span class="arithmatex">\(2\)</span>.</p>
-<h2 id="total-complexity">Total complexity</h2>
+<h3 id="total-complexity">Total complexity</h3>
 <p>Including all previously calculated factor, the total complexity can be summarized as</p>
 <div class="arithmatex">\[
 \begin{equation}
