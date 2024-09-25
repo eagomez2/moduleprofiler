@@ -380,7 +380,11 @@ class ModuleProfiler:
             data[n] = {
                 "type": m.__class__.__name__,
                 "trainable_params": 0,
-                "nontrainable_params": 0
+                "trainable_params_dtype": None,
+                "trainable_params_size_bits": 0,
+                "nontrainable_params": 0,
+                "nontrainable_params_dtype": None,
+                "nontrainable_params_size_bits": 0
             }
 
             for p in m.parameters():
