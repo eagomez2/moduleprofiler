@@ -45,7 +45,7 @@ class ModuleProfiler:
         ops_fn_map (dict): Dictionary containing a map between modules and
             their corresponding function to estimate the number of operations.
         exclude_from_ops (Optional[List[nn.Module]]): Modules to exclude from
-            ops calculations.
+            ops estimations.
         ts_fmt (str): Timestamp format used to print messages if
             `verbose=True`.
         verbose (bool): If ``True``, enabled verbose output mode.
