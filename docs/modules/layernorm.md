@@ -22,7 +22,7 @@ Where
 ## Complexity
 The complexity of a `torch.nn.LayerNorm` layer can be divided into two parts: The aggregated statistics calculation (i.e. mean and standard deviation) and the affine transformation applied by $\gamma$ and $\beta$ if `elementwise_affine=True`.
 
-## Aggregated statistics
+### Aggregated statistics
 The complexity of the mean corresponds to the sum of all elements in the last $D$ dimensions of the input tensor $x$ and the division of that number by the total number of elements. As an example, if `normalized_shape=(3, 5)` then there are 14 additions and 1 division. This also corresponds to the product of the dimensions involved in `normalized_shape`.
 
 $$
@@ -63,7 +63,7 @@ $$
 \end{equation}
 $$
 
-## Elementwise affine
+### Elementwise affine
 If `elementwise_affine=True`, there is an element-wise multiplication by $\gamma$. If `bias=True`, there is also an element-wise addition by $\beta$. Therefore the whole complexity of affine transformations is
 
 $$
@@ -82,7 +82,7 @@ $$
 
 when `bias=True`.
 
-## Batch size
+### Batch size
 So far we have not included the batch size $N$, which in this case could be defined as all other dimensions that are not $D$. This means, those that are not included in `normalized_shape`.
 
 !!! note
@@ -90,7 +90,7 @@ So far we have not included the batch size $N$, which in this case could be defi
 
 The batch size $N$ multiplies all previously calculated operations by a factor $\eta$ corresponding to the multiplication of the remaining dimensions. For example, if the input tensor has size `(2, 3, 5)` and `normalized_shape=(3, 5)`, then $\eta$ is $2$.
 
-## Total complexity
+### Total complexity
 Including all previously calculated factor, the total complexity can be summarized as
 
 $$
