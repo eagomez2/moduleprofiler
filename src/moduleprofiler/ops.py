@@ -15,6 +15,14 @@ def _default_ops_fn(
     return None
 
 
+def _excluded_ops_fn(
+        module: nn.Module,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> Any:
+    return None
+
+
 def _identity_ops_fn(
         module: nn.Identity,
         input: Tuple[torch.Tensor],
@@ -584,10 +592,59 @@ def _avgpool2d_ops_fn(
     )
 
 
+def _batchnorm1d_ops_fn(
+        module: nn.BatchNorm1d,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    if input[0].ndim == 2:
+        num_elements = input[0].size(0)
+    
+    elif input[0].ndim == 3:
+        num_elements = input[0].size(0) * input[0].size(-1)
+    
+    else:
+        raise AssertionError
+    
+    if not module.affine:
+        total_ops = 5 * num_elements + 4
+    
+    else:
+        total_ops = 7 * num_elements + 4
+    
+    # Add num_features C
+    total_ops *= module.num_features
+
+    return total_ops
+
+
+def _batchnorm2d_ops_fn(
+        module: nn.BatchNorm2d,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    num_elements = input[0].size(0) * input[0].size(-1) * input[0].size(-2)
+
+    if not module.affine:
+        total_ops = 5 * num_elements + 4
+    
+    else:
+        total_ops = 7 * num_elements + 4
+    
+    # Add num_features C
+    total_ops *= module.num_features
+
+    return total_ops
+
+
+
 def get_default_ops_map() -> dict:
     return {
         # Default method
         "default": _default_ops_fn,
+
+        # Excluded module method
+        "excluded": _excluded_ops_fn,
 
         # Layers
         nn.Identity: _identity_ops_fn,
@@ -602,6 +659,8 @@ def get_default_ops_map() -> dict:
         nn.LSTM: _lstm_ops_fn,
 
         # Norm
+        nn.BatchNorm1d: _batchnorm1d_ops_fn,
+        nn.BatchNorm2d: _batchnorm2d_ops_fn,
         nn.LayerNorm: _layernorm_ops_fn,
 
         # Pooling

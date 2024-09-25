@@ -6,6 +6,7 @@ from typing import (
     Any,
     Callable,
     Dict,
+    List,
     Optional,
     Tuple, 
     Union
@@ -43,6 +44,8 @@ class ModuleProfiler:
             their corresponding functions useed to trace the its size.
         ops_fn_map (dict): Dictionary containing a map between modules and
             their corresponding function to estimate the number of operations.
+        exclude_from_ops (Optional[List[nn.Module]]): Modules to exclude from
+            ops estimations.
         ts_fmt (str): Timestamp format used to print messages if
             `verbose=True`.
         verbose (bool): If ``True``, enabled verbose output mode.
@@ -56,6 +59,7 @@ class ModuleProfiler:
             inference_end_attr: str = "__inference_end__",
             io_size_fn_map: dict = get_default_io_size_map(),
             ops_fn_map: dict = get_default_ops_map(),
+            exclude_from_ops: Optional[List[nn.Module]] = None,
             ts_fmt: str = "%Y-%m-%d %H:%M:%S",
             verbose: bool = False
     ) -> None:
@@ -69,6 +73,7 @@ class ModuleProfiler:
         self.inference_end_attr = inference_end_attr
         self.io_size_fn_map = io_size_fn_map
         self.ops_fn_map = ops_fn_map
+        self.exclude_from_ops = exclude_from_ops
         self.verbose = verbose
         self._logger = Logger(ts_fmt=ts_fmt)
         self._hook_handles = []
@@ -312,7 +317,14 @@ class ModuleProfiler:
         """
         # Obtain method to estimate ops
         if module.__class__ in self.ops_fn_map:
-            ops_fn = self.ops_fn_map[type(module)]
+            if (
+                self.exclude_from_ops is not None
+                and module.__class__ in self.exclude_from_ops
+            ):
+                ops_fn = self.ops_fn_map["excluded"]
+            
+            else:
+                ops_fn = self.ops_fn_map[type(module)]
 
         else:
             ops_fn = self.ops_fn_map["default"]
@@ -368,7 +380,11 @@ class ModuleProfiler:
             data[n] = {
                 "type": m.__class__.__name__,
                 "trainable_params": 0,
-                "nontrainable_params": 0
+                "trainable_params_dtype": None,
+                "trainable_params_size_bits": 0,
+                "nontrainable_params": 0,
+                "nontrainable_params_dtype": None,
+                "nontrainable_params_size_bits": 0
             }
 
             for p in m.parameters():
