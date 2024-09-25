@@ -536,14 +536,14 @@ def _layernorm_ops_fn(
             module.normalized_shape if isinstance(module.normalized_shape, int)
             else math.prod(module.normalized_shape)
         )
-        total_ops = 5 * num_elements + 3
+        total_ops = 5 * num_elements + 4
     
     else:
         if module.bias is not None:
-            total_ops = 7 * num_elements + 3
+            total_ops = 7 * num_elements + 4
         
         else:
-            total_ops = 6 * num_elements + 3
+            total_ops = 6 * num_elements + 4
     
     # Add batch size
     total_ops *= input[0].size(0)
