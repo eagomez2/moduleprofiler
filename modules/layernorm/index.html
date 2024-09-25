@@ -9,25 +9,25 @@
       
       
       
-        <link rel="prev" href="../tutorial/">
+        <link rel="prev" href="../gru/">
       
       
-        <link rel="next" href="../modules/conv1d/">
+        <link rel="next" href="../linear/">
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.31">
     
     
       
-        <title>Introduction - moduleprofiler</title>
+        <title>LayerNorm (torch.nn.LayerNorm) - moduleprofiler</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.3cba04c6.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.3cba04c6.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -46,13 +46,13 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
       <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
     
-      <link rel="stylesheet" href="../stylesheets/extra.css">
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#reference" class="md-skip">
+        <a href="#layernorm-torchnnlayernorm" class="md-skip">
           Skip to content
         </a>
       
@@ -92,7 +92,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="moduleprofiler" class="md-header__button md-logo" aria-label="moduleprofiler" data-md-component="logo">
+    <a href="../.." title="moduleprofiler" class="md-header__button md-logo" aria-label="moduleprofiler" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Introduction
+              LayerNorm (torch.nn.LayerNorm)
             
           </span>
         </div>
@@ -209,7 +209,7 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
     
@@ -226,7 +226,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../documentation/" class="md-tabs__link">
+      <a href="../../documentation/" class="md-tabs__link">
         
   
     
@@ -243,7 +243,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../tutorial/" class="md-tabs__link">
+      <a href="../../tutorial/" class="md-tabs__link">
         
   
     
@@ -264,7 +264,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+        <a href="../../reference/" class="md-tabs__link">
           
   
   Reference
@@ -297,7 +297,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../license/" class="md-tabs__link">
+      <a href="../../license/" class="md-tabs__link">
         
   
     
@@ -333,7 +333,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="moduleprofiler" class="md-nav__button md-logo" aria-label="moduleprofiler" data-md-component="logo">
+    <a href="../.." title="moduleprofiler" class="md-nav__button md-logo" aria-label="moduleprofiler" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -351,7 +351,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -371,7 +371,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../documentation/" class="md-nav__link">
+      <a href="../../documentation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -391,7 +391,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorial/" class="md-nav__link">
+      <a href="../../tutorial/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -453,19 +453,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -474,7 +465,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -484,6 +474,8 @@
                 
   
   
+    
+  
   
   
     
@@ -498,11 +490,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" checked>
         
           
           <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="">
@@ -516,7 +508,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4_2">
             <span class="md-nav__icon md-icon"></span>
             Modules
@@ -530,7 +522,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/conv1d/" class="md-nav__link">
+      <a href="../conv1d/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -551,7 +543,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/conv2d/" class="md-nav__link">
+      <a href="../conv2d/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -572,7 +564,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/convtranspose1d/" class="md-nav__link">
+      <a href="../convtranspose1d/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -593,7 +585,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/convtranspose2d/" class="md-nav__link">
+      <a href="../convtranspose2d/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -614,7 +606,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/grucell/" class="md-nav__link">
+      <a href="../grucell/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -635,7 +627,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/gru/" class="md-nav__link">
+      <a href="../gru/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -653,10 +645,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../modules/layernorm/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    LayerNorm (torch.nn.LayerNorm)
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -665,6 +677,80 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#complexity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Complexity
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aggregated-statistics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Aggregated statistics
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#elementwise-affine" class="md-nav__link">
+    <span class="md-ellipsis">
+      Elementwise affine
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#batch-size" class="md-nav__link">
+    <span class="md-ellipsis">
+      Batch size
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#total-complexity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Total complexity
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -677,7 +763,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/linear/" class="md-nav__link">
+      <a href="../linear/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -698,7 +784,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/lstmcell/" class="md-nav__link">
+      <a href="../lstmcell/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -719,7 +805,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/lstm/" class="md-nav__link">
+      <a href="../lstm/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -740,7 +826,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/relu/" class="md-nav__link">
+      <a href="../relu/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -761,7 +847,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/sigmoid/" class="md-nav__link">
+      <a href="../sigmoid/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -782,7 +868,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/softmax/" class="md-nav__link">
+      <a href="../softmax/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -803,7 +889,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/tanh/" class="md-nav__link">
+      <a href="../tanh/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -859,7 +945,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../license/" class="md-nav__link">
+      <a href="../../license/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -887,29 +973,122 @@
                   
 
 
-<h1 id="reference">Reference</h1>
-<p>This complementary section explains the derivation of the formulas used by <code>moduleprofiler</code> to estimate the complexity of some neural network modules. It is intended to be used both as a quick reference and for educational purposes.</p>
+<h1 id="layernorm-torchnnlayernorm">LayerNorm (<code>torch.nn.LayerNorm</code>)</h1>
+<p>A <code>torch.nn.LayerNorm</code> module computes the mean and standard deviation over the last <span class="arithmatex">\(D\)</span> dimensions specified by the <code>normalized_shape</code> parameter. If <code>elementwise_affine=True</code>, then two learnable parameters <span class="arithmatex">\(\gamma\)</span> and <span class="arithmatex">\(\beta\)</span> apply also an element-wise affine transformation that can be described as</p>
+<div class="arithmatex">\[
+\begin{equation}
+    y=\frac{x-\text{E}\left[x\right]}{\sqrt{\text{Var}\left[x\right]+\epsilon}}\times \gamma + \beta
+\end{equation}
+\]</div>
+<p>Where</p>
+<ul>
+<li><span class="arithmatex">\(x\)</span> is the input of size <span class="arithmatex">\(\left(N, \ast\right)\)</span></li>
+<li><span class="arithmatex">\(\text{E}\left[x\right]\)</span> is the mean of <span class="arithmatex">\(x\)</span> over the last <span class="arithmatex">\(D\)</span> dimensions.</li>
+<li><span class="arithmatex">\(\text{Var}\left[x\right]\)</span> is the variance of <span class="arithmatex">\(x\)</span> over the last <span class="arithmatex">\(D\)</span> dimensions.</li>
+<li><span class="arithmatex">\(\epsilon\)</span> is the machine epsilon added to avoid dividing by zero.</li>
+<li><span class="arithmatex">\(\gamma\)</span> and <span class="arithmatex">\(\beta\)</span> are learnable parameters that are present if <code>elementwise_affine=True</code>.</li>
+</ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>It is important to consider that all formulas derived in this section are purely based on the mathematical relationship between the input and output of each module. In practice, there could be additional optimizations performed by linear algebra libraries or hardware-specific capabilities that are used to accelerate or minimize the calculations required by a specific module type to compute the corresponding output. For this reason, estimating complexity using <code>moduleprofiler</code> may result in bigger numbers compared to other packages used for similar purposes.</p>
+<p>The standard deviation is calculated using a biased estimator, which is equivalent to <code>torch.var(input, correction=0)</code>.</p>
 </div>
-<p>List of reference pages:</p>
+<h2 id="complexity">Complexity</h2>
+<p>The complexity of a <code>torch.nn.LayerNorm</code> layer can be divided into two parts: The aggregated statistics calculation (i.e. mean and standard deviation) and the affine transformation applied by <span class="arithmatex">\(\gamma\)</span> and <span class="arithmatex">\(\beta\)</span> if <code>elementwise_affine=True</code>.</p>
+<h2 id="aggregated-statistics">Aggregated statistics</h2>
+<p>The complexity of the mean corresponds to the sum of all elements in the last <span class="arithmatex">\(D\)</span> dimensions of the input tensor <span class="arithmatex">\(x\)</span> and the division of that number by the total number of elements. As an example, if <code>normalized_shape=(3, 5)</code> then there are 14 additions and 1 division. This also corresponds to the product of the dimensions involved in <code>normalized_shape</code>.</p>
+<div class="arithmatex">\[
+\begin{equation}
+    \left(\text{E}\left[x\right]\right)_{ops} = \prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]
+\end{equation}
+\]</div>
+<p>Once <span class="arithmatex">\(\text{E}\left[x\right]\)</span> is obtained, it can be reused to obtain the variance using <a href="https://pytorch.org/docs/stable/generated/torch.var.html" target="blank"><code>torch.var</code></a> that is defined as</p>
+<div class="arithmatex">\[
+\begin{equation}
+    \text{Var}\left[x\right] = \frac{1}{\text{max}\left(0, N-\delta N\right)}\sum_{i=0}^{N-1}\left(x_i-\text{E}\left[x\right]\right)
+\end{equation}
+\]</div>
+<p>Where <span class="arithmatex">\(\delta N\)</span> is the correction (0 in this case). This step involves an element-wise subtraction, <span class="arithmatex">\(N-1\)</span> additions to compute the sum. Additionally, a subtraction, a <span class="arithmatex">\(\text{max}\)</span> operation and a division are necessary to resolve the fraction. Then</p>
+<div class="arithmatex">\[
+\begin{equation}
+    \left(\text{Var}\left[x\right]\right)_{ops} = 2+2\times\prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]
+\end{equation}
+\]</div>
+<p>Now, there are 2 additional operations (an addition and a square root) to obtain <span class="arithmatex">\(\sqrt{\text{Var}\left[x\right]+\epsilon}\)</span>, therefore</p>
+<div class="arithmatex">\[
+\begin{equation}
+    \left(\sqrt{\text{Var}\left[x\right]+\epsilon}\right)_{ops} = 4+2\times\prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]
+\end{equation}
+\]</div>
+<p>Finally, to obtain the whole fraction there is an additional element-wise subtraction in the numerator, and an element-wise division to divide the numerator by the denominator, therefore</p>
+<div class="arithmatex">\[
+\begin{equation}
+    \left(\frac{x-\text{E}\left[x\right]}{\sqrt{\text{Var}\left[x\right]+\epsilon}}\right)_{ops} = 4+5\times\prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]
+\end{equation}
+\]</div>
+<h2 id="elementwise-affine">Elementwise affine</h2>
+<p>If <code>elementwise_affine=True</code>, there is an element-wise multiplication by <span class="arithmatex">\(\gamma\)</span>. If <code>bias=True</code>, there is also an element-wise addition by <span class="arithmatex">\(\beta\)</span>. Therefore the whole complexity of affine transformations is</p>
+<div class="arithmatex">\[
+\begin{equation}
+    \gamma_{ops} = \prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]
+\end{equation}
+\]</div>
+<p>when <code>bias=False</code>, and</p>
+<div class="arithmatex">\[
+\begin{equation}
+    \gamma_{ops}+\beta_{ops} = 2\times\prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]
+\end{equation}
+\]</div>
+<p>when <code>bias=True</code>.</p>
+<h2 id="batch-size">Batch size</h2>
+<p>So far we have not included the batch size <span class="arithmatex">\(N\)</span>, which in this case could be defined as all other dimensions that are not <span class="arithmatex">\(D\)</span>. This means, those that are not included in <code>normalized_shape</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please note that <span class="arithmatex">\(N\)</span> here corresponds to all dimensions not included in <code>normalized_shape</code>, which is different from the definition ot <span class="arithmatex">\(N\)</span> in <code>torch.var</code> which corresponds to the number of elements in the input tensor of that function.  </p>
+</div>
+<p>The batch size <span class="arithmatex">\(N\)</span> multiplies all previously calculated operations by a factor <span class="arithmatex">\(\eta\)</span> corresponding to the multiplication of the remaining dimensions. For example, if the input tensor has size <code>(2, 3, 5)</code> and <code>normalized_shape=(3, 5)</code>, then <span class="arithmatex">\(\eta\)</span> is <span class="arithmatex">\(2\)</span>.</p>
+<h2 id="total-complexity">Total complexity</h2>
+<p>Including all previously calculated factor, the total complexity can be summarized as</p>
+<div class="arithmatex">\[
+\begin{equation}
+    \text{LayerNorm}_{ops} = \eta\left(4+5\times\prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]\right)
+\end{equation}
+\]</div>
+<p>if <code>elementwise_affine=False</code> or </p>
+<div class="arithmatex">\[
+\begin{equation}
+    \text{LayerNorm}_{ops} = \eta\left(4+6\times\prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]\right)
+\end{equation}
+\]</div>
+<p>if <code>elementwise_affine=True</code> and <code>bias=False</code>, and</p>
+<div class="arithmatex">\[
+\begin{equation}
+    \text{LayerNorm}_{ops} = \eta\left(4+7\times\prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]\right)
+\end{equation}
+\]</div>
+<p>if <code>elementwise_affine=True</code> and <code>bias=True</code></p>
+<h2 id="summary">Summary</h2>
+<p>The number of operations performed by a <code>torch.nn.LayerNorm</code> module can be estimated as</p>
+<div class="admonition success">
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">If <code>elementwise_affine=False</code></label><label for="__tabbed_1_2">If <code>elementwise_affine=True</code> and <code>bias=False</code></label><label for="__tabbed_1_3">If <code>elementwise_affine=True</code> and <code>bias=True</code></label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><span class="arithmatex">\(\text{LayerNorm}_{ops} = \displaystyle\eta\left(4+5\times\prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]\right)\)</span> </p>
+</div>
+<div class="tabbed-block">
+<p><span class="arithmatex">\(\text{LayerNorm}_{ops} = \displaystyle\eta\left(4+6\times\prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]\right)\)</span></p>
+</div>
+<div class="tabbed-block">
+<p><span class="arithmatex">\(\text{LayerNorm}_{ops} = \displaystyle\eta\left(4+7\times\prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]\right)\)</span></p>
+</div>
+</div>
+</div>
+</div>
+<p>Where</p>
 <ul>
-<li><a href="../modules/conv1d/">Conv1d (<code>torch.nn.Conv1d</code>)</a></li>
-<li><a href="../modules/conv2d/">Conv2d (<code>torch.nn.Conv2d</code>)</a></li>
-<li><a href="../modules/convtranspose1d/">ConvTranspose1d (<code>torch.nn.ConvTranspose1d</code>)</a></li>
-<li><a href="../modules/convtranspose2d/">ConvTranspose2d (<code>torch.nn.ConvTranspose2d</code>)</a></li>
-<li><a href="../modules/grucell/">GRUCell (<code>torch.nn.GRUCell</code>)</a></li>
-<li><a href="../modules/gru/">GRU (<code>torch.nn.GRU</code>)</a></li>
-<li><a href="../modules/layernorm/">LayerNorm (<code>torch.nn.LayerNorm</code>)</a></li>
-<li><a href="../modules/linear/">Linear (<code>torch.nn.Linear</code>)</a></li>
-<li><a href="../modules/lstmcell/">LSTMCell (<code>torch.nn.LSTMCell</code>)</a></li>
-<li><a href="../modules/lstm/">LSTM (<code>torch.nn.LSTM</code>)</a></li>
-<li><a href="../modules/relu/">ReLU (<code>torch.nn.ReLU</code>)</a></li>
-<li><a href="../modules/sigmoid/">Sigmoid (<code>torch.nn.Sigmoid</code>)</a></li>
-<li><a href="../modules/softmax/">Softmax (<code>torch.nn.Softmax</code>)</a></li>
-<li><a href="../modules/tanh/">Tanh (<code>torch.nn.Tanh</code>)</a></li>
+<li><span class="arithmatex">\(\eta\)</span> is the multiplication of all dimensions that are not included in <code>normalized_shape</code>.</li>
+<li><span class="arithmatex">\(D\)</span> is number of the last dimensions included in <code>normalized_shape</code>.</li>
 </ul>
+<p>As an example, if the input tensor has size <code>(2, 3, 5)</code> and <code>normalized_shape=(3, 5)</code>, then <span class="arithmatex">\(D=15\)</span> and <span class="arithmatex">\(\eta=2\)</span>.</p>
 
 
 
@@ -969,12 +1148,12 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
+      <script src="../../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
       
-        <script src="../js/katex.js"></script>
+        <script src="../../js/katex.js"></script>
       
         <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
       
@@ -982,7 +1161,7 @@
       
         <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
       
-        <script src="../js/tablesort.js"></script>
+        <script src="../../js/tablesort.js"></script>
       
     
   </body>
