@@ -172,3 +172,10 @@ The number of operations performed by a `torch.nn.LSTM` module can be estimated 
 
     === "If `bias=False` and `bidirectional=True`"
         $\text{LSTM}_{ops} = 16\times L\times N \times H_{out}\times \left(H_{in}+\left(3\times\text{num\_layers}-2\right)\times H_{out}+2.875\times\text{num\_layers}\right)$
+    
+Where 
+
+* $L$ is the sequence length.
+* $N$ is the batch size.
+* $H_{in}$ and $H_{out}$ are the number of input and output features, respectively.
+* $\text{num\_layers}$ is the number of layers.
