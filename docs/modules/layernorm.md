@@ -31,23 +31,37 @@ $$
 \end{equation}
 $$
 
-Once $\text{E}\left[x\right]$ is obtained, it can be reused to obtain the variance that for `correction=0` reduces to
+Once $\text{E}\left[x\right]$ is obtained, it can be reused to obtain the variance using <a href="https://pytorch.org/docs/stable/generated/torch.var.html" target="blank">`torch.var`</a> that for `correction=0` reduces to
 
 $$
 \begin{equation}
-    \text{Var}\left[x\right] = \frac{1}{N}\sum_{i=0}^{N-1}\left(x_i-\text{E}\left[x\right]\right)
+    \text{Var}\left[x\right] = \frac{1}{\text{max}\left(0, N\right)}\sum_{i=0}^{N-1}\left(x_i-\text{E}\left[x\right]\right)
 \end{equation}
 $$
 
-This step involves an element-wise subtraction, $N-1$ additions and a single division. then
+This step involves an element-wise subtraction, $N-1$ additions, a division and a $\text{max}$ operation. Then
 
 $$
 \begin{equation}
-    \left(\text{Var}\left[x\right]\right)_{ops} = 2\times\prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]
+    \left(\text{Var}\left[x\right]\right)_{ops} = 1+2\times\prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]
 \end{equation}
 $$
 
+Now, there are 2 additional operations (an addition and a square root) to obtain $\sqrt{\text{Var}\left[x\right]+\epsilon}$, therefore
 
+$$
+\begin{equation}
+    \left(\sqrt{\text{Var}\left[x\right]+\epsilon}\right)_{ops} = 2+2\times\prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]
+\end{equation}
+$$
+
+Finally, to obtain the whole fraction there is an additional element-wise subtraction in the numerator, and an element-wise division to divide the numerator by the denominator, therefore
+
+$$
+\begin{equation}
+    \left(\frac{x-\text{E}\left[x\right]}{\sqrt{\text{Var}\left[x\right]+\epsilon}}\right)_{ops} = 3+5\times\prod_{d=0}^{D-1}\text{normalized\_shape}[\text{d}]
+\end{equation}
+$$
 
 ## Elementwise affine
 
