@@ -40,10 +40,12 @@ class ModuleProfiler:
             start times while timing a model.
         inference_end_attr (str): Hidden attribute used to store inference end
             times while timing a model.
-        io_size_fn_map (dict): Dictionary containing a map between modules and   
-            their corresponding functions useed to trace the its size.
-        ops_fn_map (dict): Dictionary containing a map between modules and
-            their corresponding function to estimate the number of operations.
+        io_size_fn_map (Optional[dict]): Dictionary containing a map between
+            modules and their corresponding functions useed to trace the its
+            size.
+        ops_fn_map (Optional[dict]): Dictionary containing a map between
+            modules and their corresponding function to estimate the number of
+            operations.
         exclude_from_ops (Optional[List[nn.Module]]): Modules to exclude from
             ops estimations.
         ts_fmt (str): Timestamp format used to print messages if
@@ -57,8 +59,8 @@ class ModuleProfiler:
             ops_attr: str = "__ops__",
             inference_start_attr: str = "__inference_start__",
             inference_end_attr: str = "__inference_end__",
-            io_size_fn_map: dict = get_default_io_size_map(),
-            ops_fn_map: dict = get_default_ops_map(),
+            io_size_fn_map: Optional[dict] = None,
+            ops_fn_map: Optional[dict] = None,
             exclude_from_ops: Optional[List[nn.Module]] = None,
             ts_fmt: str = "%Y-%m-%d %H:%M:%S",
             verbose: bool = False
@@ -71,8 +73,13 @@ class ModuleProfiler:
         self.ops_attr = ops_attr
         self.inference_start_attr = inference_start_attr
         self.inference_end_attr = inference_end_attr
-        self.io_size_fn_map = io_size_fn_map
-        self.ops_fn_map = ops_fn_map
+        self.io_size_fn_map = (
+            io_size_fn_map if io_size_fn_map is not None
+            else get_default_io_size_map()
+        )
+        self.ops_fn_map = (
+            ops_fn_map if ops_fn_map is not None else get_default_ops_map()
+        )
         self.exclude_from_ops = exclude_from_ops
         self.verbose = verbose
         self._logger = Logger(ts_fmt=ts_fmt)
