@@ -450,6 +450,15 @@ def _sigmoid_ops_fn(
     return input[0].numel() * 3
 
 
+def _silu_ops_fn(
+        module: nn.SiLU,
+        input: Tuple[torch.Tensor],
+        output: torch.Tensor
+) -> int:
+    # NOTE: Exponential is considered as a single op
+    return input[0].numel() * 4
+
+
 def _softmax_ops_fn(
         module: nn.Softmax,
         input: Tuple[torch.Tensor],
@@ -678,6 +687,7 @@ def get_default_ops_map() -> dict:
         nn.PReLU: _prelu_ops_fn,
         nn.SELU: _selu_ops_fn,
         nn.Sigmoid: _sigmoid_ops_fn,
+        nn.SiLU: _silu_ops_fn,
         nn.Softmax: _softmax_ops_fn,
         nn.Softplus: _softplus_ops_fn,
         nn.Tanh: _tanh_ops_fn

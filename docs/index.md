@@ -116,6 +116,7 @@ By default, all methods support all modules as long as these are instances of `t
 | `torch.nn.ELU`               | :material-check:                   | 0.0.1   |
 | `torch.nn.PReLU`             | :material-check:                   | 0.0.1   |
 | `torch.nn.Sigmoid`           | :material-check:                   | 0.0.1   |
+| `torch.nn.SiLU`              | :material-check:                   | 0.0.5   |
 | `torch.nn.Softmax`           | :material-check:                   | 0.0.1   |
 | `torch.nn.Softplus`          | :material-check:                   | 0.0.1   |
 | `torch.nn.Tanh`              | :material-check:                   | 0.0.1   |
