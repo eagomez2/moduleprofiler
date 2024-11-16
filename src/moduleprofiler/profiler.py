@@ -24,7 +24,7 @@ from .ops import get_default_ops_map
 
 
 class ModuleProfiler:
-    """Main class used to profile an arbitraty ``nn.Module`` and describe
+    """Main class used to profile an arbitrary ``nn.Module`` and describe
     different specifications of it such as tracing input and output shapes,
     counting model parameters or estimating the number of operations the model
     peforms:
