@@ -110,7 +110,7 @@ By default, all methods support all modules as long as these are instances of `t
 | `torch.nn.GRU`               | :material-check:                   | 0.0.1   |
 | `torch.nn.LSTMCell`          | :material-check:                   | 0.0.1   |
 | `torch.nn.LSTM`              | :material-check:                   | 0.0.1   |
-| `torch.nn.MultiheadAttention`| :material-close:                   |         |
+| `torch.nn.MultiheadAttention`| :material-check:                   | 0.0.5   |
 | `torch.nn.ReLU`              | :material-check:                   | 0.0.1   |
 | `torch.nn.LeakyReLU`         | :material-check:                   | 0.0.1   |
 | `torch.nn.ELU`               | :material-check:                   | 0.0.1   |

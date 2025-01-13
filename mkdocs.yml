@@ -16,6 +16,7 @@ nav:
       - modules/linear.md
       - modules/lstmcell.md
       - modules/lstm.md
+      - modules/multiheadattention.md
       - modules/relu.md
       - modules/sigmoid.md
       - modules/softmax.md
