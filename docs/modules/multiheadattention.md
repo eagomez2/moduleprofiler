@@ -7,7 +7,7 @@ $$
 \end{align}
 $$
 
-Where each head computed
+Where each head computes
 
 $$
 \begin{align}
@@ -17,13 +17,34 @@ $$
 
 Where
 
-* $Q$ is known ad the query tensor and is used to calculate the attention scores, which determine how much focus should be given to different elements.
+* $Q$ is known as the query tensor and is used to calculate the attention scores, which determine how much focus should be given to different elements.
 * $K$ is the key tensor that is compared with the query to find relevant information.
 * $V$ is the value tensor that contains the actual data that is weighted and used in the output.
 
 !!! note
-    The $Q$, $K$ and $V$ tensors do not have fixed dimensions since they correspond to inputs of the `forward()` method of an `nn.MultiheadAttention` instance. When $Q$, $K$ and $V$ are the same tensors, this layer is also known and **self-attention**. In addition, an **attention mask** can be added to the $\text{softmax}$ argument in such a way that certain elements will be ignored in the attention tensor that is multiplied by $V$. This is typically used to design causal mechanisms in which each element can only pay attention to elements with the same or previous indices in the sequence. 
+    The $Q$, $K$ and $V$ tensors do not have fixed dimensions since they correspondto inputs of the `forward()` method of an `nn.MultiheadAttention` instance. When $Q$, $K$ and $V$ are the same tensors, this layer is also known and **self-attention**. In addition, an **attention mask** can be added to the $\text{softmax}$ argument in such a way that certain elements will be ignored in the attention tensor that is multiplied by $V$. This is typically used to design causal mechanisms in which each element can only pay attention to elements with the same or previous indices in the sequence. 
 
 ## Complexity
+A multihead attention module involves one tensor-tensor multiplication ($QK^T$), an element-wise division by a factor
+of $\sqrt{d_k}$, a softmax operation and a tensor-tensor multiplication where the resulting factor is multiplied by the tensor $V$.
+However, the query $Q$, key $K$ and value $V$ tensors corresponding to weighted versions of the layer inputs by their respective weights $W^Q$, $W^K$ and $W^V$, therefore
+
+$$
+\begin{align}
+Q=Q_{in}W^Q \\
+K=K_{in}W^K \\ 
+V=V_{in}W^V
+\end{align}
+$$
+
+Where
+
+* $Q_{in}$ is a tensor of shape $\left(L, E_{q}\right)$ and $W^Q$ is a tensor of shape $\left(E_{q}, E_{q}\right)$.
+* $K_{in}$ is a tensor of shape $\left(L, E_{k}\right)$ and $W^K$ is a tensor of shape $\left(E_{k}, E_{k}\right)$.
+* $V_{in}$ is a tensor of shape $\left(L, E_{v}\right)$ and $W^V$ is a tensor of shape $\left(E_{v}, E_{v}\right)$.
+* $L$ is the sequence length and $E{q}$, $E_{k}$ and $E_{v}$ are the embedding dimensions.
+
+!!! note
+    Please notice that we are currently ignoring the batch size because it will be added later on in our calculations. Additionally, the specified dimensions assume all tensor-tensor multiplications are compatible.
 
 ## Summary
