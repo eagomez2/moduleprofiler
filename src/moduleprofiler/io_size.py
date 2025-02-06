@@ -8,7 +8,7 @@ def _default_io_size_fn(
         input: Tuple[torch.Tensor],
         output: torch.Tensor
 ) -> Tuple[tuple]:
-    # Get input shape
+    # Get input size
     if input is None:
         input_ = None
     
@@ -18,7 +18,7 @@ def _default_io_size_fn(
     else:
         tuple(tuple(i.size()) for i in input)
 
-    # Gate output shape
+    # Get output size
     if output is None:
         output_ = None
 
