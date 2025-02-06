@@ -8,8 +8,17 @@ def _default_io_size_fn(
         input: Tuple[torch.Tensor],
         output: torch.Tensor
 ) -> Tuple[tuple]:
-    input_ = None if len(input) == 0 else tuple(input[0].size())
+    # Get input shape
+    if input is None:
+        input_ = None
+    
+    elif len(input) == 1:
+        input_ = tuple(input[0].size())
+    
+    else:
+        tuple(tuple(i.size()) for i in input)
 
+    # Gate output shape
     if output is None:
         output_ = None
 
