@@ -47,4 +47,22 @@ Where
 !!! note
     Please notice that we are currently ignoring the batch size because it will be added later on in our calculations. Additionally, the specified dimensions assume all tensor-tensor multiplications are compatible.
 
+In terms of complexity
+
+$$
+\begin{align}
+Q_{ops}=L\times E_{q}\times\left(2\times E_{q}-1\right) \\
+K_{ops}=L\times E_{k}\times\left(2\times E_{k}-1\right) \\ 
+V_{ops}=L\times E_{v}\times\left(2\times E_{v}-1\right)
+\end{align}
+$$
+
+Then 
+
+$$
+\begin{align}
+\left(\frac{QK^T}{\sqrt{d_k}}\right)_{ops} &= L^2\times\left(2\times E_k\right)+L\times E_k
+\end{align}
+$$
+
 ## Summary

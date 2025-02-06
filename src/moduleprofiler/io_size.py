@@ -18,6 +18,9 @@ def _default_io_size_fn(
 
     elif isinstance(output, list):
         output_ = [tuple(o.size()) for o in output]
+    
+    elif isinstance(output, dict):
+        output_ = [f"{k}:{tuple(v.size())}" for k, v in output.items()]
 
     else:
         output_ = tuple(output.size())
