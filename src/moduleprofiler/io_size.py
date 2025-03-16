@@ -1,6 +1,54 @@
 import torch
 import torch.nn as nn
-from typing import Tuple
+from typing import (
+    Any,
+    Tuple
+)
+
+
+def _get_item_repr(item: Any) -> Any:
+    # None
+    if item is None:
+        item_repr = None
+    
+    # Single tensor
+    elif isinstance(item, torch.Tensor):
+        item_repr = tuple(item.size())
+    
+    # List of tensors and possibly some other types
+    elif isinstance(item, list):
+        item_repr = [
+            tuple(i.size()) if isinstance(i, torch.Tensor)
+            else type(i).__name__
+            for i in item
+        ]
+    
+    # Tuple of tensors and possibly some other types
+    elif isinstance(item, tuple):
+        item_repr = [
+            tuple(i.size()) if isinstance(i, torch.Tensor)
+            else type(i).__name__
+            for i in item
+        ]
+        item_repr = tuple(item_repr)
+    
+    # Set of tensors and possibly some other types
+    elif isinstance(item, set):
+        item_repr = [
+            tuple(i.size()) if isinstance(i, torch.Tensor)
+            else type(i).__name__
+            for i in item
+        ]
+        item_repr = set(item_repr) 
+    
+    # Dict of tensors and possibly some other types
+    elif isinstance(item, dict):
+        item_repr = {k: _get_item_repr(v) for k, v in item.items()}
+    
+    else:
+        raise NotImplementedError
+    
+    return item_repr
 
 
 def _default_io_size_fn(
@@ -8,31 +56,38 @@ def _default_io_size_fn(
         input: Tuple[torch.Tensor],
         output: torch.Tensor
 ) -> Tuple[tuple]:
-    # Get input size
+    # input is None
     if input is None:
         input_ = None
-    
-    elif len(input) == 1:
+
+    # input is a single tensor
+    elif len(input) == 1 and isinstance(input[0], torch.Tensor):
         input_ = tuple(input[0].size())
     
     else:
-        tuple(tuple(i.size()) for i in input)
-
+        input_ = tuple(_get_item_repr(i) for i in input)
+    
     # Get output size
     if output is None:
         output_ = None
-
-    elif isinstance(output, tuple):
-        output_ = tuple(tuple(o.size()) for o in output)
-
-    elif isinstance(output, list):
-        output_ = [tuple(o.size()) for o in output]
+    
+    elif isinstance(output, torch.Tensor):
+        output_ = tuple(output.size())
     
     elif isinstance(output, dict):
-        output_ = [f"{k}:{tuple(v.size())}" for k, v in output.items()]
-
+        output_ = _get_item_repr(output)
+    
+    elif isinstance(output, list):
+        output_ = [_get_item_repr(o) for o in output]
+    
+    elif isinstance(output, set):
+        output_ = {_get_item_repr(o) for o in output}
+    
+    elif isinstance(output, tuple):
+        output_ = tuple(_get_item_repr(o) for o in output)
+    
     else:
-        output_ = tuple(output.size())
+        raise NotImplementedError
 
     return input_, output_
 
