@@ -64,25 +64,31 @@ def _default_io_size_fn(
     elif len(input) == 1 and isinstance(input[0], torch.Tensor):
         input_ = tuple(input[0].size())
     
+    # Input is a tuple of tensors and possibly some other types
     else:
         input_ = tuple(_get_item_repr(i) for i in input)
     
-    # Get output size
+    # output is None
     if output is None:
         output_ = None
     
+    # output is a single tensor
     elif isinstance(output, torch.Tensor):
         output_ = tuple(output.size())
     
+    # output is a dict with tensors and possibly some other types
     elif isinstance(output, dict):
         output_ = _get_item_repr(output)
     
+    # output is a list with tensors and possibly some other types
     elif isinstance(output, list):
         output_ = [_get_item_repr(o) for o in output]
     
+    # output is a set with tensors and possibly some other types
     elif isinstance(output, set):
         output_ = {_get_item_repr(o) for o in output}
     
+    # output is a tuple with tensors and possibly some other types
     elif isinstance(output, tuple):
         output_ = tuple(_get_item_repr(o) for o in output)
     
