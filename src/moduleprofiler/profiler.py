@@ -1040,6 +1040,13 @@ class ModuleProfiler:
                 else:
                     module(**input)
             
+            elif isinstance(input, tuple):
+                if pred_fn is not None:
+                    pred_fn(*input)
+                
+                else:
+                    module(*input)
+            
             else:
                 if pred_fn is not None:
                     pred_fn(input)
