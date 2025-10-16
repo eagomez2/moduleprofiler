@@ -690,5 +690,8 @@ def get_default_ops_map() -> dict:
         nn.SiLU: _silu_ops_fn,
         nn.Softmax: _softmax_ops_fn,
         nn.Softplus: _softplus_ops_fn,
-        nn.Tanh: _tanh_ops_fn
+        nn.Tanh: _tanh_ops_fn,
+
+        # Parametrized
+        "ParametrizedConv1d": _conv1d_ops_fn
     }
