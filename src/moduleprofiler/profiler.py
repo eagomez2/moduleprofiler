@@ -1069,9 +1069,16 @@ class ModuleProfiler:
 
             for n, m in module.named_modules():
                 k = "__root__" if n == "" else n
+                method = (
+                    self.ops_fn_map[m.__class__].__name__
+                    if self.ops_fn_map.get(m.__class__) is not None
+                    else None
+                )
+
                 data[k] = {
                     "type": m.__class__.__name__,
-                    "ops": getattr(m, self.ops_attr)
+                    "ops": getattr(m, self.ops_attr),
+                    "method": method
                 }
 
             # Tear down
