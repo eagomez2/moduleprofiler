@@ -470,7 +470,8 @@ class ModuleProfiler:
         input: Union[torch.Tensor, Tuple[torch.Tensor]],
         eval: bool = True,
         num_iters: int = 1000,
-        drop_first: int = 100
+        drop_first: int = 100,
+        remove_weight_and_spectral_norm: bool = False
     ) -> dict:
         """Estimates the time spent on each module during the forward pass of
         a model. The final results are statistical aggregation of ``num_iters``
@@ -485,10 +486,16 @@ class ModuleProfiler:
             num_iters (int): Number of iterations to be performed.
             drop_first (int): Inferences to be dropped before aggregating the
                 results.
+            remove_weight_and_spectral_norm (bool): If ``True``, modules
+                wrapped in ``weight_norm`` or ``spectral_norm`` are unwrapped.
         
         Returns:
             (dict): Measurement results.
         """
+        if remove_weight_and_spectral_norm:
+            module = torch.nn.utils.remove_weight_norm(module)
+            module = torch.nn.utils.remove_spectral_norm(module)
+
         with torch.no_grad():
             # Assertions
             if num_iters <= drop_first:
@@ -643,7 +650,8 @@ class ModuleProfiler:
         input: Union[torch.Tensor, Tuple[torch.Tensor]],
         eval: bool = True,
         num_iters: int = 1000,
-        drop_first: int = 100
+        drop_first: int = 100,
+        remove_weight_and_spectral_norm: bool = False 
     ) -> dict:
         """Estimates the total inference time taken by the model to run an
         inference.
@@ -656,10 +664,16 @@ class ModuleProfiler:
             num_iters (int): Number of iterations to be performed.
             drop_first (int): Inferences to be dropped before aggregating the
                 results.
+            remove_weight_and_spectral_norm (bool): If ``True``, modules
+                wrapped in ``weight_norm`` or ``spectral_norm`` are unwrapped.
 
         Returns:
             (dict): Measurement results.
         """
+        if remove_weight_and_spectral_norm:
+            torch.nn.utils.remove_weight_norm(module)
+            torch.nn.utils.remove_spectral_norm(module)
+
         with torch.no_grad():
             # Assertions
             if num_iters <= drop_first:
@@ -786,7 +800,8 @@ class ModuleProfiler:
             module: nn.Module,
             input: Union[torch.Tensor, Tuple[torch.Tensor]],
             pred_fn: Optional[Callable] = None,
-            eval: bool = False
+            eval: bool = False,
+            remove_weight_and_spectral_norm: bool = False
     ) -> dict:
         """Traces the input and output tensor shapes of a module given a
         sample input.
@@ -798,11 +813,17 @@ class ModuleProfiler:
                 replaces the forward call if the module requires additional
                 steps.
             eval (bool): If ``True``, the module is set to eval mode before
-                computing the inference time.
+                tracing the I/O sizes.
+            remove_weight_and_spectral_norm (bool): If ``True``, modules
+                wrapped in ``weight_norm`` or ``spectral_norm`` are unwrapped.
         
         Returns:
             (dict): Results containing input and output shapes of each module.
         """
+        if remove_weight_and_spectral_norm:
+            torch.nn.utils.remove_weight_norm(module)
+            torch.nn.utils.remove_spectral_norm(module)
+
         with torch.no_grad():
             # Set attrs and hooks
             for m in module.modules():
