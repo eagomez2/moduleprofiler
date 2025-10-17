@@ -18,7 +18,6 @@ from .utils import (
     add_extension,
     get_hardware_specs
 )
-from .logger import Logger
 from .io_size import get_default_io_size_map
 from .ops import get_default_ops_map
 
@@ -48,9 +47,6 @@ class ModuleProfiler:
             operations.
         exclude_from_ops (Optional[List[nn.Module]]): Modules to exclude from
             ops estimations.
-        ts_fmt (str): Timestamp format used to print messages if
-            `verbose=True`.
-        verbose (bool): If ``True``, enabled verbose output mode.
     """
     def __init__(
             self,
@@ -61,9 +57,7 @@ class ModuleProfiler:
             inference_end_attr: str = "__inference_end__",
             io_size_fn_map: Optional[dict] = None,
             ops_fn_map: Optional[dict] = None,
-            exclude_from_ops: Optional[List[nn.Module]] = None,
-            ts_fmt: str = "%Y-%m-%d %H:%M:%S",
-            verbose: bool = False
+            exclude_from_ops: Optional[List[nn.Module]] = None
     ) -> None:
         super().__init__()
 
@@ -81,8 +75,6 @@ class ModuleProfiler:
             ops_fn_map if ops_fn_map is not None else get_default_ops_map()
         )
         self.exclude_from_ops = exclude_from_ops
-        self.verbose = verbose
-        self._logger = Logger(ts_fmt=ts_fmt)
         self._hook_handles = []
 
     def _setattr(
@@ -357,7 +349,8 @@ class ModuleProfiler:
             module: nn.Module,
             param_size: bool = True,
             param_dtype: bool = True,
-            percent: bool = True
+            percent: bool = True,
+            remove_weight_and_spectral_norm: bool = False
     ) -> dict:
         """Counts the number of parameters in a model.
 
@@ -370,6 +363,8 @@ class ModuleProfiler:
             percent (bool): If ``True``, the percentage each parameter
                 represents with respect to the total amount of parameters of
                 the model will be reported.
+            remove_weight_and_spectral_norm (bool): If ``True``, modules
+                wrapped in ``weight_norm`` or ``spectral_norm`` are unwrapped.
 
         Returns:
             (dict): Analysis results containing the measured module names and
@@ -377,19 +372,11 @@ class ModuleProfiler:
         """
         data = {}
 
-        if self.verbose:
-            self._logger.log(
-                "Counting parameters of "
-                f"<b><magenta>{module.__class__.__name__}</magenta></b>"
-            )
+        if remove_weight_and_spectral_norm:
+            module = torch.nn.utils.remove_weight_norm(module)
+            module = torch.nn.utils.remove_spectral_norm(module)
 
-        for n, m in tqdm(
-            module.named_modules(),
-            desc="Counting parameters",
-            unit="params",
-            disable=not self.verbose,
-            leave=False
-        ):
+        for n, m in module.named_modules():
             # First entry corresponds to the module itself
             if n == "":
                 n = "__root__"
@@ -464,9 +451,6 @@ class ModuleProfiler:
         df = self.count_params_df(*args, **kwargs)
         df.to_csv(file, index=False)
 
-        if self.verbose:
-            self._logger.log(f"Results saved to <b>{file}</b>")
-
     def count_params_html(self, file: str, *args, **kwargs) -> None:
         """Same as ``count_params`` but saves a ``.html`` file instead."""
         file = add_extension(file, ".html")
@@ -475,9 +459,6 @@ class ModuleProfiler:
         with open(file, "w") as f:
             f.write(df.to_html())
         
-        if self.verbose:
-            self._logger.log(f"Results saved to <b>{file}</b>")
-
     def count_params_latex(self, *args, index: bool = False, **kwargs) -> str:
         """Same as ``count_params`` but returns a LaTeX output instead."""
         df = self.count_params_df(*args, **kwargs)
@@ -515,21 +496,8 @@ class ModuleProfiler:
                     f"{num_iters=} should be greater than {drop_first=}"
                 )
             
-            if self.verbose:
-                self._logger.log(
-                    "Estimating inference time of "
-                    f"<b><magenta>{module.__class__.__name__}</magenta></b>"
-                )
-            
             # Setup
             if eval:
-                if self.verbose:
-                    self._logger.log(
-                        "Setting module <b><magenta>"
-                        f"{module.__class__.__name__}</magenta></b> to "
-                        "<b><magenta>eval</magenta></b> mode"
-                    )
-
                 was_training = bool(module.training)
                 module.eval()
             
@@ -581,13 +549,6 @@ class ModuleProfiler:
             self._remove_registered_hooks()
 
             if eval and was_training:
-                if self.verbose:
-                    self._logger.log(
-                        "Setting module <b><magenta>"
-                        f"{module.__class__.__name__}</magenta></b> to "
-                        "<b><magenta>train</magenta></b> mode"
-                    )
-
                 module.train()
             
             for k in data:
@@ -654,9 +615,6 @@ class ModuleProfiler:
         df = self.estimate_inference_time_df(*args, **kwargs)
         df.to_csv(file, index=False)
 
-        if self.verbose:
-            self._logger.log(f"Results saved to <b>{file}</b>")
-    
     def estimate_inference_time_html(self, file: str, *args, **kwargs) -> None:
         """Same as ``estimate_inference_time`` but saves a ``.html`` file
         instead.
@@ -667,9 +625,6 @@ class ModuleProfiler:
         with open(file, "w") as f:
             f.write(df.to_html())
 
-        if self.verbose:
-            self._logger.log(f"Results saved to <b>{file}</b>")
-        
     def estimate_inference_time_latex(
             self,
             *args,
@@ -712,21 +667,8 @@ class ModuleProfiler:
                     f"{num_iters=} should be greater than {drop_first=}"
                 )
 
-            if self.verbose:
-                self._logger.log(
-                    "Estimating total inference time of "
-                    f"<b><magenta>{module.__class__.__name__}</magenta></b>"
-                )
-
             # Setup
             if eval:
-                if self.verbose:
-                    self._logger.log(
-                        "Setting module <b><magenta>"
-                        f"{module.__class__.__name__}</magenta></b> to "
-                        "<b><magenta>eval</magenta></b> mode"
-                    )
-
                 was_training = bool(module.training)
                 module.eval()
 
@@ -742,13 +684,6 @@ class ModuleProfiler:
 
             # Tear down
             if eval and was_training:
-                if self.verbose:
-                    self._logger.log(
-                        "Setting module <b><magenta>"
-                        f"{module.__class__.__name__}</magenta></b> to "
-                        "<b><magenta>train</magenta></b> mode"
-                    )
-
                 module.train()
 
             # Collect stats
@@ -819,9 +754,6 @@ class ModuleProfiler:
         df = self.estimate_total_inference_time_df(*args, **kwargs)
         df.to_csv(file, index=False)
 
-        if self.verbose:
-            self._logger.log(f"Results saved to <b>{file}</b>")
-
     def estimate_total_inference_time_html(
             self,
             file: str,
@@ -837,9 +769,6 @@ class ModuleProfiler:
         with open(file, "w") as f:
             f.write(df.to_html())
         
-        if self.verbose:
-            self._logger.log(f"Results saved to <b>{file}</b>")
-
     def estimate_total_inference_time_latex(
             self,
             *args,
@@ -875,12 +804,6 @@ class ModuleProfiler:
             (dict): Results containing input and output shapes of each module.
         """
         with torch.no_grad():
-            if self.verbose:
-                self._logger.log(
-                    "Tracing I/O shapes of <b><magenta>"
-                    f"{module.__class__.__name__}</magenta></b>"
-                )
-
             # Set attrs and hooks
             for m in module.modules():
                 self._setattr(m, self.input_size_attr)
@@ -889,13 +812,6 @@ class ModuleProfiler:
             
             # Model setup
             if eval:
-                if self.verbose:
-                    self._logger.log(
-                        "Setting module <b><magenta>"
-                        f"{module.__class__.__name__}</magenta></b> to "
-                        "<b><magenta>eval</magenta></b> mode"
-                    )
-
                 was_training = bool(module.training)
                 module.eval()
             
@@ -934,13 +850,6 @@ class ModuleProfiler:
             
             # Tear down
             if eval and was_training:
-                if self.verbose:
-                    self._logger.log(
-                        "Setting module <b><magenta>"
-                        f"{module.__class__.__name__}</magenta></b> to "
-                        "<b><magenta>train</magenta></b> mode"
-                    )
-
                 module.train()
             
             for m in module.modules():
@@ -972,9 +881,6 @@ class ModuleProfiler:
         df = self.trace_io_sizes_df(*args, **kwargs)
         df.to_csv(file, index=False)
 
-        if self.verbose:
-            self._logger.log(f"Results saved to <b>{file}</b>")
-
     def trace_io_sizes_html(self, file: str, *args, **kwargs) -> None:
         """Same as ``trace_io_sizes`` but saves a ``.html`` file instead."""
         file = add_extension(file, ".html")
@@ -983,9 +889,6 @@ class ModuleProfiler:
         with open(file, "w") as f:
             f.write(df.to_html())
         
-        if self.verbose:
-            self._logger.log(f"Results saved to <b>{file}</b>")
-    
     def trace_io_sizes_latex(
             self,
             *args,
@@ -1001,7 +904,8 @@ class ModuleProfiler:
         module: nn.Module,
         input: Union[torch.Tensor, Tuple[torch.Tensor]],
         pred_fn: Optional[Callable] = None,
-        eval: bool = True
+        eval: bool = True,
+        remove_weight_and_spectral_norm: bool = False
     ) -> dict:
         """Estimates the number of operations computed in a forward pass of a
         module.
@@ -1014,17 +918,17 @@ class ModuleProfiler:
                 steps.
             eval (bool): If ``True``, the module is set to eval mode before
                 computing the inference time.
+            remove_weight_and_spectral_norm (bool): If ``True``, modules
+                wrapped in ``weight_norm`` or ``spectral_norm`` are unwrapped.
         
         Returns:
             (dict): Results containing the estimated operations per module.
         """
+        if remove_weight_and_spectral_norm:
+            torch.nn.utils.remove_weight_norm(module)
+            torch.nn.utils.remove_spectral_norm(module)
+
         with torch.no_grad():
-            if self.verbose:
-                self._logger.log(
-                    f"Estimating ops of <b><magenta>"
-                    f"{module.__class__.__name__}</magenta></b>"
-                )
-            
             # Set attrs and hooks
             for m in module.modules():
                 self._setattr(m, self.ops_attr)
@@ -1032,13 +936,6 @@ class ModuleProfiler:
 
             # Model setup
             if eval:
-                if self.verbose:
-                    self._logger.log(
-                        "Setting module <b><magenta>"
-                        f"{module.__class__.__name__}</magenta></b> to "
-                        "<b><magenta>eval</magenta></b> mode"
-                    )
-
                 was_training = bool(module.training)
                 module.eval()
 
@@ -1083,13 +980,6 @@ class ModuleProfiler:
 
             # Tear down
             if eval and was_training:
-                if self.verbose:
-                    self._logger.log(
-                        "Setting module <b><magenta>"
-                        f"{module.__class__.__name__}</magenta></b> to "
-                        "<b><magenta>train</magenta></b> mode"
-                    )
-
                 module.train()
             
             for m in module.modules():
@@ -1120,9 +1010,6 @@ class ModuleProfiler:
         df = self.estimate_ops_df(*args, **kwargs)
         df.to_csv(file, index=False)
 
-        if self.verbose:
-            self._logger.log(f"Results saved to <b>{file}</b>")
-
     def estimate_ops_html(self, file: str, *args, **kwargs) -> None:
         """Same as ``estimate_ops`` but saves a ``.html`` file instead."""
         file = add_extension(file, ".html")
@@ -1131,9 +1018,6 @@ class ModuleProfiler:
         with open(file, "w") as f:
             f.write(df.to_html())
         
-        if self.verbose:
-            self._logger.log(f"Results saved to <b>{file}</b>")
-
     def estimate_ops_latex(self, *args, index: bool = False, **kwargs) -> str:
         """Same as ``estimate_ops`` but returns a LaTeX output instead."""
         df = self.estimate_ops_df(*args, **kwargs)
