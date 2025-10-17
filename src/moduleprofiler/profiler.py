@@ -322,10 +322,6 @@ class ModuleProfiler:
             output (Tuple[torch.Tensor]): Output tensor(s) of the module's
                 forward method.
         """
-        # Check if module is excluded
-        # NOTE: weight_norm and spectral_norm result in artificial class names
-
-
         # Obtain method to estimate ops
         if (
             module.__class__ in self.ops_fn_map
