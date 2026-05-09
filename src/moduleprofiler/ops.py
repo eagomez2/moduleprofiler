@@ -3,7 +3,7 @@ import math
 import torch.nn as nn
 from typing import (
     Any,
-    Tuple
+    Tuple,
 )
 
 

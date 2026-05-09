@@ -6,7 +6,6 @@ import multiprocessing
 from typing import (
     Any,
     List, 
-    Optional
 )
 
 
@@ -14,21 +13,21 @@ def make_list(x: Any) -> list:
     """If a single element into a list of one element.
 
     Args:
-        x (Any): Element(s) to be returned as a list.
+        x: Element(s) to be returned as a list.
 
     Returns:
-        (list): Resulting ``list``.
+        Resulting `list`.
     """
     return [x] if not isinstance(x, list) and x is not None else x
 
 
 def get_hardware_specs() -> dict:
-    """Returns a ``dict`` with a set of hardware specifications of the host
+    """Returns a `dict` with a set of hardware specifications of the host
     computer.
 
     Returns:
-        (dict): Hardware specifications including host name, OS, OS release,
-            CPU count, total memory, and GPU.
+        Hardware specifications including host name, OS, OS release,
+        CPU count, total memory, and GPU.
     """
     gpu_repr = "unavailable"
 
@@ -50,10 +49,12 @@ def get_hardware_specs() -> dict:
     }
 
 
-def ops_to_flops(ops_per_frame: int,
-                 sample_rate: int,
-                 frame_size: int,
-                 hop_size: Optional[int] = None) -> float:
+def ops_to_flops(
+        ops_per_frame: int,
+        sample_rate: int,
+        frame_size: int,
+        hop_size: int | None = None
+) -> float:
     """Calculates the number of floating-point operations per second FLOPs
     based on a give number of operations per frame and frame size.
 
@@ -66,13 +67,12 @@ def ops_to_flops(ops_per_frame: int,
         the length of a valid output on each time step.
 
     Args:
-        ops_per_frame (int): Number of operations per frame.
-        frame_size (int): Size of the output frame.
-        sample_rate (int): Sample rate using with the given frame size.
+        ops_per_frame: Number of operations per frame.
+        frame_size: Size of the output frame.
+        sample_rate: Sample rate using with the given frame size.
 
     Returns:
-        (float) Estimate of the floating-point operations per second a model
-        performs.
+        Estimate of the floating-point operations per second a model performs.
     """
     if sample_rate < frame_size:
         raise ValueError(
@@ -87,26 +87,28 @@ def ops_to_flops(ops_per_frame: int,
     return inferences_per_second * ops_per_frame
 
 
-def realtime_factor(inference_time: float,
-                    sample_rate: int,
-                    frame_size: int,
-                    hop_size: Optional[int] = None,
-                    inverse: bool = False) -> float:
+def realtime_factor(
+        inference_time: float,
+        sample_rate: int,
+        frame_size: int,
+        hop_size: int | None = None,
+        inverse: bool = False
+) -> float:
     """Calculates the real-time factor of a model.
 
     Args:
-        inference_time (float): Time in milliseconds needed by a model to
-            compute an inference with frame size ``frame_size``, hop size
-            ``hop_size`` at a sample rate of ``sample_rate``.
-        sample_rate (int): Sample rate used to compute the inference time.
-        frame_size (int): Frame size used to compute the inference time.
-        hop_size (Optional[int]): Hop size used to compute the inference. If
-            ``None`` it will be set to ``frame_size``.
-        inverse (bool): If ``True``, the resulting value is calculated as
-            ``inference_time * inferences_per_second``, resulting in numbers
-            below 1.0 if the model requires less time to compute the inference
-            than the time represented by the input samples, otherwise, such
-            situation will result in numbers above 1.0.
+        inference_time: Time in milliseconds needed by a model to compute an
+            inference with frame size `frame_size`, hop size `hop_size` at a
+            sample rate of `sample_rate`.
+        sample_rate: Sample rate used to compute the inference time.
+        frame_size: Frame size used to compute the inference time.
+        hop_size: Hop size used to compute the inference. If `None` it will be
+            set to `frame_size`.
+        inverse: If `True`, the resulting value is calculated as 
+            `inference_time * inferences_per_second`, resulting in numbers
+            below `1.0` if the model requires less time to compute the
+            inference than the time represented by the input samples,
+            otherwise, such situation will result in numbers above 1.0.
     """
     if hop_size is None:
         hop_size = frame_size
@@ -123,15 +125,15 @@ def realtime_factor(inference_time: float,
 
 
 def dict_keys_common(input: dict, query: dict) -> List[str]:
-    """Returns a list with all common keys that are in ``query`` ``dict`` and
-    in ``input`` ``dict``.
+    """Returns a list with all common keys that are in `query` `dict` and
+    in `input` `dict`.
 
     Args:
-        input (dict): Input ``dict``.
-        query (dict): Query ``dict``.
+        input: Input `dict`.
+        query: Query `dict`.
 
     Returns:
-        (list): Keys that are present in both ``query`` and ``input``.
+        Keys that are present in both `query` and `input`.
     """
     input_keys = list(input.keys())
     common_keys = []
@@ -144,15 +146,15 @@ def dict_keys_common(input: dict, query: dict) -> List[str]:
 
 
 def dict_keys_diff(input: dict, query: dict) -> List[str]:
-    """Returns a list with all keys that are in ``query`` ``dict`` but not
-    in ``input`` ``dict``.
+    """Returns a list with all keys that are in `query` `dict` but not in
+    `input` `dict`.
 
     Args:
-        input (dict): Input ``dict``.
-        query (dict): Query ``dict``.
+        input: Input `dict`.
+        query: Query `dict`.
 
     Returns:
-        (list): Keys that are present in ``query`` but not in ``input``.
+        Keys that are present in `query` but not in `input`.
     """
     input_keys = list(input.keys())
     diff_keys = []
@@ -165,15 +167,15 @@ def dict_keys_diff(input: dict, query: dict) -> List[str]:
 
 
 def dict_merge(input: dict, other: dict) -> dict:
-    """Merges two dictionaries (``input`` and ``other``) combining their
-    keys and values.
+    """Merges two dictionaries (`input` and `other`) combining their keys and
+    values.
 
     Args:
-        input (dict): Input dictionary.
-        other (dict): Dictionary to be merged with ``input``.
+        input: Input dictionary.
+        other: Dictionary to be merged with `input`.
 
     Returns:
-        (dict): Merged dictionary.
+        Merged dictionary.
     """
     # Check all common keys are equal, otherwise merge won't occur
     common_keys = dict_keys_common(input, other)
@@ -200,7 +202,7 @@ def add_extension(file: str, extension: str) -> str:
     then the name is returned without modifications.
     
     Args:
-        file (str): Input filename.
-        extension (str): Extension to be added.
+        file: Input filename.
+        extension: Extension to be added.
     """
     return f"{file}.{extension}" if not file.endswith(extension) else file

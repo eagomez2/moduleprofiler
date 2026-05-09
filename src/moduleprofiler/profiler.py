@@ -7,46 +7,41 @@ from typing import (
     Callable,
     Dict,
     List,
-    Optional,
     Tuple, 
-    Union
 )
 from time import perf_counter
 from .utils import (
     make_list,
     dict_merge,
     add_extension,
-    get_hardware_specs
+    get_hardware_specs,
 )
 from .io_size import get_default_io_size_map
 from .ops import get_default_ops_map
 
 
 class ModuleProfiler:
-    """Main class used to profile an arbitrary ``nn.Module`` and describe
+    """Main class used to profile an arbitrary `nn.Module` and describe
     different specifications of it such as tracing input and output shapes,
     counting model parameters or estimating the number of operations the model
-    peforms:
+    peforms.
 
     Args:
-        input_size_attr (str): Hidden attribute in the module under measurement
-            used to store its input size.
-        output_size_attr (str): Hidden attribute in the module under
-            measurement used to store its output size.
-        ops_attr (str): Hidden attribute in the module under measurement used
-            to store the number of operations it performs.
-        inference_start_attr (str): Hidden attribute used to store inference
-            start times while timing a model.
-        inference_end_attr (str): Hidden attribute used to store inference end
+        input_size_attr: Hidden attribute in the module under measurement used
+            to store its input size.
+        output_size_attr: Hidden attribute in the module under measurement used
+            to store its output size.
+        ops_attr: Hidden attribute in the module under measurement used to
+            store the number of operations it performs.
+        inference_start_attr: Hidden attribute used to store inference start
             times while timing a model.
-        io_size_fn_map (Optional[dict]): Dictionary containing a map between
-            modules and their corresponding functions useed to trace the its
-            size.
-        ops_fn_map (Optional[dict]): Dictionary containing a map between
-            modules and their corresponding function to estimate the number of
-            operations.
-        exclude_from_ops (Optional[List[nn.Module]]): Modules to exclude from
-            ops estimations.
+        inference_end_attr: Hidden attribute used to store inference end times
+            while timing a model.
+        io_size_fn_map: Dictionary containing a map between modules and their
+            corresponding functions useed to trace the its size.
+        ops_fn_map: Dictionary containing a map between modules and their
+            corresponding function to estimate the number of operations.
+        exclude_from_ops: Modules to exclude from ops estimations.
     """
     def __init__(
             self,
@@ -55,9 +50,9 @@ class ModuleProfiler:
             ops_attr: str = "__ops__",
             inference_start_attr: str = "__inference_start__",
             inference_end_attr: str = "__inference_end__",
-            io_size_fn_map: Optional[dict] = None,
-            ops_fn_map: Optional[dict] = None,
-            exclude_from_ops: Optional[List[nn.Module]] = None
+            io_size_fn_map: dict | None = None,
+            ops_fn_map: dict | None = None,
+            exclude_from_ops: List[nn.Module] | None = None
     ) -> None:
         super().__init__()
 
@@ -80,16 +75,16 @@ class ModuleProfiler:
     def _setattr(
             self,
             module: nn.Module,
-            attr: Union[str, list],
+            attr: str | list,
             value: Any = None
     ) -> None:
         """Sets attributes with a value. This is internally used to store
-        temporary results in different nested ``nn.Module`` instances.
+        temporary results in different nested `nn.Module` instances.
 
         Args:
-            module (nn.Module): Input module.
-            attr (Union[str, list]): Attribute name(s).
-            value (Any): Default value of the attribute(s).
+            module: Input module.
+            attr: Attribute name(s).
+            value: Default value of the attribute(s).
         """
         attrs = make_list(attr)
 
@@ -105,12 +100,12 @@ class ModuleProfiler:
             else:
                 setattr(module, attr_, value)
 
-    def _delattr(self, module: nn.Module, attr: Union[str, list]) -> None:
+    def _delattr(self, module: nn.Module, attr: str | list) -> None:
         """Removes model attribute(s) if present.
 
         Args:
-            module (nn.Module): Input module.
-            attr (Union[str, list]): Name of the attribute(s) to be removed.
+            module: Input module.
+            attr: Name of the attribute(s) to be removed.
         """
         attrs = make_list(attr)
 
@@ -122,10 +117,10 @@ class ModuleProfiler:
         """Returns the size in bits of a numeric data type.
 
         Args:
-            dtype (torch.dtype): Data type.
+            dtype: Data type.
 
         Returns:
-            (int): Size of ``dtype`` in bits.
+            Size of `dtype` in bits.
         """
         # Basic dtypes: https://pytorch.org/docs/stable/type_info.html
         # All dtypes: https://pytorch.org/docs/stable/tensor_attributes.html
@@ -161,8 +156,8 @@ class ModuleProfiler:
         handle to be deleted later.
 
         Args:
-            module (nn.Module): Input module.
-            hook (Callable): Hook to be registered.
+            module: Input module.
+            hook: Hook to be registered.
         """
         self._hook_handles.append(module.register_forward_hook(hook))
 
@@ -174,8 +169,8 @@ class ModuleProfiler:
         corresponding handle to be deleted later.
 
         Args:
-            module (nn.Module): Input module.
-            hook (Callable): Hook to be registered.
+            module: Input module.
+            hook: Hook to be registered.
         """
         self._hook_handles.append(module.register_forward_pre_hook(hook))
     
@@ -187,18 +182,16 @@ class ModuleProfiler:
         self._hook_handles = []
 
     def _merge_specs(self, specs: Tuple[Dict[str, dict]]) -> Dict[str, dict]:
-        """Merges two or more ``dict`` instances containing the same keys.
-        This will result in a ``dict`` containing the values of both ``dict``
-        instances.
+        """Merges two or more `dict` instances containing the same keys. This
+        will result in a `dict` containing the values of both `dict` instances.
 
         Args:
-            specs (Tuple[Dict[str, dict]]): Specifications ``dict`` or tuple
-                with two or more specification ``dict`` instances to be
-                merged.
+            specs: Specifications `dict` or tuple with two or more
+                specification `dict` instances to be merged.
 
         Returns:
-            Dict[str, dict]: Merged ``dict`` containing the same keys
-                but a merged set of values for each key.
+            Merged `dict` containing the same keys but a merged set of values
+            for each key.
         """
         # Take first dict as reference
         ref_spec = specs[0]
@@ -235,13 +228,13 @@ class ModuleProfiler:
             output: Tuple[torch.Tensor]
     ) -> None:
         """Method used to obtain the input and output sizes of a
-        ``nn.Module`` instance based on its class type and the function
-        it is mapped to in ``io_size_fn_map``.
+        `nn.Module` instance based on its class type and the function it is
+        mapped to in `io_size_fn_map`.
 
         Args:
-            module (nn.Module): Input module.
-            input (Tuple[torch.Tensor]): Input tensor(s).
-            output (Tuple[torch.Tensor]): Output tensor(s).
+            module: Input module.
+            input: Input tensor(s).
+            output: Output tensor(s).
         """
         # Obtain method to calculate io shapes
         if type(module) not in self.io_size_fn_map:
@@ -270,9 +263,8 @@ class ModuleProfiler:
             pre-forward hook attached to the module.
 
         Args:
-            module (nn. Module): Input module.
-            input (Tuple[torch.Tensor]): Input tensor(s) of the module's
-                forward method.
+            module: Input module.
+            input: Input tensor(s) of the module's forward method.
         """
         setattr(module, self.inference_start_attr, perf_counter())
 
@@ -290,11 +282,9 @@ class ModuleProfiler:
             forward hook attached to the module.
 
         Args:
-            module (nn.Module): Input module.
-            input (Tuple[torch.Tensor]): Input tensor(s) of the module's
-                forward method.
-            output (Tuple[torch.Tensor]): Output tensor(s) of the module's
-                forward method.
+            module: Input module.
+            input: Input tensor(s) of the module's forward method.
+            output: Output tensor(s) of the module's forward method.
         """
         setattr(module, self.inference_end_attr, perf_counter())
 
@@ -308,11 +298,9 @@ class ModuleProfiler:
         by a module during the forward pass.
 
         Args:
-            module (nn.Module): Input module.
-            input (Tuple[torch.Tensor]): Input tensor(s) of the module's
-                forward method.
-            output (Tuple[torch.Tensor]): Output tensor(s) of the module's
-                forward method.
+            module: Input module.
+            input: Input tensor(s) of the module's forward method.
+            output: Output tensor(s) of the module's forward method.
         """
         # Obtain method to estimate ops
         if (
@@ -355,20 +343,20 @@ class ModuleProfiler:
         """Counts the number of parameters in a model.
 
         Args:
-            module (nn.Module): Model whose parameters will be counted.
-            param_size (bool): If ``True``, the size in bits of each parameters
-                will be calculated.
-            param_dtype (bool): If ``True``, the data type of different
-                parameters will be reported.
-            percent (bool): If ``True``, the percentage each parameter
-                represents with respect to the total amount of parameters of
-                the model will be reported.
-            remove_weight_and_spectral_norm (bool): If ``True``, modules
-                wrapped in ``weight_norm`` or ``spectral_norm`` are unwrapped.
+            module: Model whose parameters will be counted.
+            param_size: If `True`, the size in bits of each parameters will be
+                calculated.
+            param_dtype: If `True`, the data type of different parameters will
+                be reported.
+            percent: If `True`, the percentage each parameter represents with
+                respect to the total amount of parameters of the model will be
+                reported.
+            remove_weight_and_spectral_norm: If `True`, modules wrapped in
+                `weight_norm` or `spectral_norm` are unwrapped.
 
         Returns:
-            (dict): Analysis results containing the measured module names and
-                each corresponding parameter count.
+            Analysis results containing the measured module names and each
+            corresponding parameter count.
         """
         data = {}
 
@@ -431,7 +419,7 @@ class ModuleProfiler:
         return data
 
     def count_params_df(self, *args, **kwargs) -> pd.DataFrame:
-        """Same as ``count_params`` but returns a ``DataFrame`` instead."""
+        """Same as `count_params` but returns a `DataFrame` instead."""
         # Count params
         data = self.count_params(*args, **kwargs)
 
@@ -446,13 +434,13 @@ class ModuleProfiler:
         return df
 
     def count_params_csv(self, file: str, *args, **kwargs) -> None:
-        """Same as ``count_params`` but saves a ``.csv`` file instead."""
+        """Same as `count_params` but saves a `.csv` file instead."""
         file = add_extension(file, ".csv")
         df = self.count_params_df(*args, **kwargs)
         df.to_csv(file, index=False)
 
     def count_params_html(self, file: str, *args, **kwargs) -> None:
-        """Same as ``count_params`` but saves a ``.html`` file instead."""
+        """Same as `count_params` but saves a `.html` file instead."""
         file = add_extension(file, ".html")
         df = self.count_params_df(*args, **kwargs)
 
@@ -460,37 +448,36 @@ class ModuleProfiler:
             f.write(df.to_html())
         
     def count_params_latex(self, *args, index: bool = False, **kwargs) -> str:
-        """Same as ``count_params`` but returns a LaTeX output instead."""
+        """Same as `count_params` but returns a LaTeX output instead."""
         df = self.count_params_df(*args, **kwargs)
         return df.to_latex(index=index)
 
     def estimate_inference_time(
         self,
         module: nn.Module,
-        input: Union[torch.Tensor, Tuple[torch.Tensor]],
+        input: torch.Tensor | Tuple[torch.Tensor],
         eval: bool = True,
         num_iters: int = 1000,
         drop_first: int = 100,
         remove_weight_and_spectral_norm: bool = False
     ) -> dict:
         """Estimates the time spent on each module during the forward pass of
-        a model. The final results are statistical aggregation of ``num_iters``
-        dropping the first ``drop_first`` iterations to avoid outliers caused
+        a model. The final results are statistical aggregation of `num_iters`
+        dropping the first `drop_first` iterations to avoid outliers caused
         by warmup routines.
 
         Args:
-            module (nn.Module): Input module.
-            input (Union[torch.Tensor], Tuple[torch.Tensor]): Model input.
-            eval (bool): If ``True``, the module is set to eval mode before
-                computing the inference time.
-            num_iters (int): Number of iterations to be performed.
-            drop_first (int): Inferences to be dropped before aggregating the
-                results.
-            remove_weight_and_spectral_norm (bool): If ``True``, modules
-                wrapped in ``weight_norm`` or ``spectral_norm`` are unwrapped.
+            module: Input module.
+            input: Model input.
+            eval: If `True`, the module is set to eval mode before computing
+                the inference time.
+            num_iters: Number of iterations to be performed.
+            drop_first: Inferences to be dropped before aggregating the results.
+            remove_weight_and_spectral_norm: If `True`, modules wrapped in
+                `weight_norm` or `spectral_norm` are unwrapped.
         
         Returns:
-            (dict): Measurement results.
+            Measurement results.
         """
         if remove_weight_and_spectral_norm:
             module = torch.nn.utils.remove_weight_norm(module)
@@ -588,9 +575,9 @@ class ModuleProfiler:
             aggr: bool = True,
             **kwargs
     ) -> pd.DataFrame:
-        """Same as ``estimate_inference_time`` but returns a ``DataFrame``
-        instead. Additional argument ``aggr`` can be set to ``True`` if only
-        aggregations should be kept.
+        """Same as `estimate_inference_time` but returns a `DataFrame` instead.
+        Additional argument `aggr` can be set to `True` if only aggregations
+        should be kept.
         """
         # Estimate inference time
         data = self.estimate_inference_time(*args, **kwargs)
@@ -615,16 +602,14 @@ class ModuleProfiler:
         return df
     
     def estimate_inference_time_csv(self, file: str, *args, **kwargs) -> None:
-        """Same as ``estimate_inference_time`` but saves a ``.csv`` file
-        instead.
+        """Same as `estimate_inference_time` but saves a `.csv` file instead.
         """
         file = add_extension(file, ".csv")
         df = self.estimate_inference_time_df(*args, **kwargs)
         df.to_csv(file, index=False)
 
     def estimate_inference_time_html(self, file: str, *args, **kwargs) -> None:
-        """Same as ``estimate_inference_time`` but saves a ``.html`` file
-        instead.
+        """Same as `estimate_inference_time` but saves a `.html` file instead.
         """
         file = add_extension(file, ".html")
         df = self.estimate_inference_time_df(*args, **kwargs)
@@ -638,8 +623,7 @@ class ModuleProfiler:
             index: bool = False,
             **kwargs
     ) -> str:
-        """Same as ``estimate_inference_time`` but return a LaTeX output
-        instead.
+        """Same as `estimate_inference_time` but return a LaTeX output instead.
         """
         df = self.estimate_inference_time_df(*args, **kwargs)
         return df.to_latex(index=index)
@@ -647,7 +631,7 @@ class ModuleProfiler:
     def estimate_total_inference_time(
         self,
         module: nn.Module,
-        input: Union[torch.Tensor, Tuple[torch.Tensor]],
+        input: torch.Tensor | Tuple[torch.Tensor],
         eval: bool = True,
         num_iters: int = 1000,
         drop_first: int = 100,
@@ -657,18 +641,17 @@ class ModuleProfiler:
         inference.
         
         Args:
-            module (nn.Module): Input module.
-            input (Union[torch.Tensor, Tuple[torch.Tensor]]): Model input.
-            eval (bool): If ``True``, the module is set to eval mode before
-                computing the inference time.
-            num_iters (int): Number of iterations to be performed.
-            drop_first (int): Inferences to be dropped before aggregating the
-                results.
-            remove_weight_and_spectral_norm (bool): If ``True``, modules
-                wrapped in ``weight_norm`` or ``spectral_norm`` are unwrapped.
+            module: Input module.
+            input: Model input.
+            eval: If `True`, the module is set to eval mode before computing
+                the inference time.
+            num_iters: Number of iterations to be performed.
+            drop_first: Inferences to be dropped before aggregating the results.
+            remove_weight_and_spectral_norm: If `True`, modules wrapped in
+                `weight_norm` or `spectral_norm` are unwrapped.
 
         Returns:
-            (dict): Measurement results.
+            Measurement results.
         """
         if remove_weight_and_spectral_norm:
             torch.nn.utils.remove_weight_norm(module)
@@ -729,9 +712,9 @@ class ModuleProfiler:
             aggr: bool = False,
             **kwargs
     ) -> pd.DataFrame:
-        """Same as ``estimate_total_inference_time`` but returns a
-        ``DataFrame`` instead. Additional argument ``aggr`` can be set to
-        ``True`` if only aggregations should be kept.
+        """Same as `estimate_total_inference_time` but returns a `DataFrame`
+        instead. Additional argument `aggr` can be set to `True` if only
+        aggregations should be kept.
         """
         # Estimate inference total time
         data = self.estimate_total_inference_time(*args, **kwargs)
@@ -761,8 +744,8 @@ class ModuleProfiler:
             *args,
             **kwargs
     ) -> None:
-        """Same as ``estimate_total_inference_time`` but saves a ``.csv``
-        file instead.
+        """Same as `estimate_total_inference_time` but saves a `.csv` file
+        instead.
         """
         file = add_extension(file, ".csv")
         df = self.estimate_total_inference_time_df(*args, **kwargs)
@@ -774,8 +757,8 @@ class ModuleProfiler:
             *args,
             **kwargs
     ) -> None:
-        """Same as ``estimate_total_inference_time`` but saves a ``.html``
-        file instead.
+        """Same as `estimate_total_inference_time` but saves a `.html` file
+        instead.
         """ 
         file = add_extension(file, ".html")
         df = self.estimate_total_inference_time_df(*args, **kwargs)
@@ -789,8 +772,8 @@ class ModuleProfiler:
             index: bool = False,
             **kwargs
     ) -> str:
-        """Same as ``estimate_total_inference_time`` but returns a LaTeX
-        output instead.
+        """Same as `estimate_total_inference_time` but returns a LaTeX output
+        instead.
         """
         df = self.estimate_inference_time_df(*args, **kwargs)
         return df.to_latex(index=index)
@@ -798,27 +781,26 @@ class ModuleProfiler:
     def trace_io_sizes(
             self,
             module: nn.Module,
-            input: Union[torch.Tensor, Tuple[torch.Tensor]],
-            pred_fn: Optional[Callable] = None,
+            input: torch.Tensor | Tuple[torch.Tensor],
+            pred_fn: Callable | None = None,
             eval: bool = False,
             remove_weight_and_spectral_norm: bool = False
     ) -> dict:
-        """Traces the input and output tensor shapes of a module given a
-        sample input.
+        """Traces the input and output tensor shapes of a module given a sample
+        input.
         
         Args:
-            module (nn.Module): Input module.
-            input (Union[torch.Tensor, Tuple[torch.Tensor]): Model input.
-            pred_fn (Optional[Callable]): Optional prediction function that
-                replaces the forward call if the module requires additional
-                steps.
-            eval (bool): If ``True``, the module is set to eval mode before
-                tracing the I/O sizes.
-            remove_weight_and_spectral_norm (bool): If ``True``, modules
-                wrapped in ``weight_norm`` or ``spectral_norm`` are unwrapped.
+            module: Input module.
+            input: Model input.
+            pred_fn: Optional prediction function that replaces the forward
+                call if the module requires additional steps.
+            eval: If `True`, the module is set to eval mode before tracing the
+                I/O sizes.
+            remove_weight_and_spectral_norm: If `True`, modules wrapped in
+                `weight_norm` or `spectral_norm` are unwrapped.
         
         Returns:
-            (dict): Results containing input and output shapes of each module.
+            Results containing input and output shapes of each module.
         """
         if remove_weight_and_spectral_norm:
             torch.nn.utils.remove_weight_norm(module)
@@ -882,7 +864,7 @@ class ModuleProfiler:
             return data
 
     def trace_io_sizes_df(self, *args, **kwargs) -> pd.DataFrame:
-        """Same as ``trace_io_sizes`` but returns a ``DataFrame`` instead."""
+        """Same as `trace_io_sizes` but returns a `DataFrame` instead."""
         # Trace I/O sizes
         data = self.trace_io_sizes(*args, **kwargs)
 
@@ -897,13 +879,13 @@ class ModuleProfiler:
         return df
 
     def trace_io_sizes_csv(self, file: str, *args, **kwargs) -> None:
-        """Same as ``trace_io_sizes`` but saves a ``.csv`` file instead."""
+        """Same as `trace_io_sizes` but saves a `.csv` file instead."""
         file = add_extension(file, ".csv")
         df = self.trace_io_sizes_df(*args, **kwargs)
         df.to_csv(file, index=False)
 
     def trace_io_sizes_html(self, file: str, *args, **kwargs) -> None:
-        """Same as ``trace_io_sizes`` but saves a ``.html`` file instead."""
+        """Same as `trace_io_sizes` but saves a `.html` file instead."""
         file = add_extension(file, ".html")
         df = self.trace_io_sizes_df(*args, **kwargs)
         
@@ -916,15 +898,15 @@ class ModuleProfiler:
             index: bool = False,
             **kwargs
     ) -> str:
-        """Same as ``trace_io_sizes`` but returns a LaTeX output instead."""
+        """Same as `trace_io_sizes` but returns a LaTeX output instead."""
         df = self.trace_io_sizes_df(*args, **kwargs)
         return df.to_latex(index=index)
 
     def estimate_ops(
         self,
         module: nn.Module,
-        input: Union[torch.Tensor, Tuple[torch.Tensor]],
-        pred_fn: Optional[Callable] = None,
+        input: torch.Tensor | Tuple[torch.Tensor],
+        pred_fn: Callable | None = None,
         eval: bool = True,
         remove_weight_and_spectral_norm: bool = False
     ) -> dict:
@@ -932,18 +914,17 @@ class ModuleProfiler:
         module.
 
         Args:
-            module (nn.Module): Input module.
-            input (Union[torch.Tensor, Tuple[torch.Tensor]]): Model input.
-            pred_fn (Optional[Callable]): Optional prediction function that
-                replaces the forward call if the module requires additional
-                steps.
-            eval (bool): If ``True``, the module is set to eval mode before
-                computing the inference time.
-            remove_weight_and_spectral_norm (bool): If ``True``, modules
-                wrapped in ``weight_norm`` or ``spectral_norm`` are unwrapped.
+            module: Input module.
+            input: Model input.
+            pred_fn: Optional prediction function that replaces the forward
+                call if the module requires additional steps.
+            eval: If `True`, the module is set to eval mode before computing
+                the inference time.
+            remove_weight_and_spectral_norm: If `True`, modules wrapped in
+                `weight_norm` or `spectral_norm` are unwrapped.
         
         Returns:
-            (dict): Results containing the estimated operations per module.
+            Results containing the estimated operations per module.
         """
         if remove_weight_and_spectral_norm:
             torch.nn.utils.remove_weight_norm(module)
@@ -1026,13 +1007,13 @@ class ModuleProfiler:
         return df
     
     def estimate_ops_csv(self, file: str, *args, **kwargs) -> None:
-        """Same as ``estimate_ops`` but saves a ``.csv`` file instead."""
+        """Same as `estimate_ops` but saves a `.csv` file instead."""
         file = add_extension(file, ".csv")
         df = self.estimate_ops_df(*args, **kwargs)
         df.to_csv(file, index=False)
 
     def estimate_ops_html(self, file: str, *args, **kwargs) -> None:
-        """Same as ``estimate_ops`` but saves a ``.html`` file instead."""
+        """Same as `estimate_ops` but saves a `.html` file instead."""
         file = add_extension(file, ".html")
         df = self.estimate_ops_df(*args, **kwargs)
 
@@ -1040,6 +1021,6 @@ class ModuleProfiler:
             f.write(df.to_html())
         
     def estimate_ops_latex(self, *args, index: bool = False, **kwargs) -> str:
-        """Same as ``estimate_ops`` but returns a LaTeX output instead."""
+        """Same as `estimate_ops` but returns a LaTeX output instead."""
         df = self.estimate_ops_df(*args, **kwargs)
         return df.to_latex(index=index)
