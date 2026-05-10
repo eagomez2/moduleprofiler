@@ -646,7 +646,6 @@ def _batchnorm2d_ops_fn(
     return total_ops
 
 
-
 def get_default_ops_map() -> dict:
     return {
         # Default method

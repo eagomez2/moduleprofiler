@@ -992,7 +992,7 @@ class ModuleProfiler:
             return data
 
     def estimate_ops_df(self, *args, **kwargs) -> pd.DataFrame:
-        """Same as ``estimate_ops`` but returns a ``DataFrame`` instead."""
+        """Same as `estimate_ops` but returns a `DataFrame` instead."""
         # Estimate ops
         data = self.estimate_ops(*args, **kwargs)
 
@@ -1024,3 +1024,41 @@ class ModuleProfiler:
         """Same as `estimate_ops` but returns a LaTeX output instead."""
         df = self.estimate_ops_df(*args, **kwargs)
         return df.to_latex(index=index)
+
+    def profile_df(
+            self,
+            module: nn.Module,
+            input: torch.Tensor | Tuple[torch.Tensor],
+            pred_fn: Callable | None = None,
+            eval: bool = False,
+            remove_weight_and_spectral_norm: bool = False
+    ) -> pd.DataFrame:
+        df_io_sizes = self.trace_io_sizes_df(
+            module=module,
+            input=input,
+            pred_fn=pred_fn,
+            eval=eval,
+            remove_weight_and_spectral_norm=remove_weight_and_spectral_norm
+        )
+        df_params = self.count_params_df(
+            module=module,
+            param_size=True,
+            param_dtype=True,
+            percent=True,
+            remove_weight_and_spectral_norm=remove_weight_and_spectral_norm
+        )
+        df_ops = self.estimate_ops_df(
+            module=module,
+            input=input,
+            pred_fn=pred_fn,
+            eval=eval,
+            remove_weight_and_spectral_norm=remove_weight_and_spectral_norm
+        )
+        df_profile = df_io_sizes.merge(
+            df_ops,
+            on=["module", "type"]
+        ).merge(
+            df_params,
+            on=["module", "type"]
+        )
+        return df_profile
