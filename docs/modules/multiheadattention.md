@@ -127,3 +127,10 @@ The number of operations $\phi$ operformed by a `torch.nn.MultiheadAttention` mo
 
     === "Self-attention ($E_q=E_k=E_v$)"
         $\text{MultiheadAttention}_{ops}=N\times H\times L\left[2E(3E+2L-2) + 4L - 1\right]$
+
+Where
+
+* $N$ is the batch size.
+* $H$ is the number of heads.
+* $L$ is the sequence length.
+* $E_q$, $E_k$ and $E_v$ are the embedding dimensions if the query, key and value tensors, respectively.
