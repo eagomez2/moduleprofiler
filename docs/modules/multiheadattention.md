@@ -61,8 +61,67 @@ Then
 
 $$
 \begin{align}
-\left(\frac{QK^T}{\sqrt{d_k}}\right)_{ops} &= L^2\times\left(2\times E_k\right)+L\times E_k
+\text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)_{ops} &= \underbrace{L^2\times\left(2\times E_k-1\right)}_{QK^T_\text{ops}}+\underbrace{L\times\left(4\times L-1\right)}_{\text{softmax}_\text{ops}}+L^2=2\times L^2\times\left(E_k+2\right)-L
 \end{align}
 $$
 
+!!! note
+    Here it is assumed that $\sqrt{d_k}$ can be calculated one and cached, so only one division per element in the tensor resulting from $QK^T$ is considered. Also note that $E_q=E_k$ is required to make the multiplication compatible.
+
+The result of this operation is a square matrix of size $\left(L, L\right)$ that when mulplied by $V$ of size $\left(L, E_v\right)$, results in $L\times E_v\times\left(2\times L-1\right)$ operations.
+
+Finally, for each attention head, the total number of operations is
+
+$$
+\begin{equation}
+\begin{split}
+\left(\text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V\right)_{\text{ops}} &= \underbrace{L\times E_{q}\times\left(2\times E_{q}-1\right)}_{Q_\text{ops}} \\
+&+ \underbrace{L\times E_{k}\times\left(2\times E_{k}-1\right)}_{K_\text{ops}} \\
+&+ \underbrace{L\times E_{v}\times\left(2\times E_{v}-1\right)}_{V_\text{ops}} \\
+&+ \underbrace{L^2\times\left(2\times E_k-1\right)}_{QK^T_\text{ops}} \\
+&+ \underbrace{L\times\left(4\times L-1\right)}_{\text{softmax}_\text{ops}} \\
+&+ L^2 \\
+&+ L\times E_v \times \left(2\times L - 1\right)
+\end{split}
+\end{equation}
+$$
+
+This results in
+$$
+\begin{equation}
+L\left[E_q(2E_q-1) + E_k(2E_k+2L-1) + 2E_v(E_v+L-1) + 4L - 1\right]
+\end{equation}
+$$
+
+For self-attention (i.e. $E_q=E_k=E_v$) this simplifies to
+$$
+\begin{equation}
+L\left[2E(3E+2L-2) + 4L - 1\right]
+\end{equation}
+$$
+
+This corresponds to a single head. Then, including the number of heads $H$ and the batch size $N$, this results in
+
+$$
+\begin{equation}
+N\times H\times L\left[E_q(2E_q-1) + E_k(2E_k+2L-1) + 2E_v(E_v+L-1) + 4L - 1\right]
+\end{equation}
+$$
+
+and for self-attetion, it can be simplified to 
+
+$$
+\begin{equation}
+N\times H\times L\left[2E(3E+2L-2) + 4L - 1\right]
+\end{equation}
+$$
+
 ## Summary
+The number of operations $\phi$ operformed by a `torch.nn.MultiheadAttention` module can be estimated as
+
+!!! success ""
+    === "General"
+        $\text{MultiheadAttention}_{ops}=N\times H\times L\left[E_q(2E_q-1) + E_k(2E_k+2L-1) + 2E_v(E_v+L-1) + 4L - 1\right]$  
+
+    === "Self-attention ($E_q=E_k=E_v$)"
+        $\text{MultiheadAttention}_{ops}=N\times H\times L\left[2E(3E+2L-2) + 4L - 1\right]$
