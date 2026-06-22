@@ -87,6 +87,7 @@ $$
 $$
 
 This results in
+
 $$
 \begin{equation}
 L\left[E_q(2E_q-1) + E_k(2E_k+2L-1) + 2E_v(E_v+L-1) + 4L - 1\right]
@@ -94,6 +95,7 @@ L\left[E_q(2E_q-1) + E_k(2E_k+2L-1) + 2E_v(E_v+L-1) + 4L - 1\right]
 $$
 
 For self-attention (i.e. $E_q=E_k=E_v$) this simplifies to
+
 $$
 \begin{equation}
 L\left[2E(3E+2L-2) + 4L - 1\right]
